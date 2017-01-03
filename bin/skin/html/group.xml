@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<GroupInfo>
+  <Group id="Group01">
+    <Student id="01" name="小明1" talk="true" />
+    <Student id="02" name="小王1" talk="false" />
+    <Student id="03" name="小彬1" talk="false" />
+    <Student id="04" name="阿文" talk="false" />
+  </Group>
+  <Group id="Group02">
+    <Student id="01" name="小明2" talk="true" />
+    <Student id="02" name="小王2" talk="false" />
+    <Student id="03" name="小彬2" talk="false" />
+    <Student id="04" name="阿志" talk="false" />
+  </Group>
+  <Group id="Group03">
+    <Student id="01" name="小明3" talk="true" />
+    <Student id="02" name="小王3" talk="false" />
+    <Student id="03" name="小彬3" talk="false" />
+    <Student id="04" name="阿苏" talk="false" />
+  </Group>
+  <Group id="Group04">
+    <Student id="01" name="小明4" talk="true" />
+    <Student id="02" name="小王4" talk="false" />
+    <Student id="03" name="小彬44444" talk="false" />
+    <Student id="04" name="阿meiy" talk="false" />
+  </Group>
+</GroupInfo>

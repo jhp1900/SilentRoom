@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>ParseXML</title>
+	<link rel="stylesheet" href="jquery.treeview.css" />
+	<link rel="stylesheet" href="screen.css" />
+	<link rel="stylesheet" href="bootstrap.css" />
+
+	<script src="jquery-2.2.3.min.js"></script>
+	<script src="jquery.cookie.js"></script>
+	<script src="jquery.treeview.js" type="text/javascript"></script>
+	<script src="bootstrap-dropdown.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#browser").treeview({
+			toggle: function() {
+				console.log("%s was toggled.", $(this).find(">span").text());
+			}
+		});
+		
+		$("#addfile").click(function(){
+			var grup_branches = $("<li><span class='file'>Item2</span></li>").appendTo("#grup2");
+		});
+		
+		$(".file").click(function(){
+			var id = $(this).attr("id");
+			var values = $(this).attr("value");
+			var data = {id:id,values:values};
+			$.ajax({
+				type:"get",
+				url:"http://127.0.0.1:8081/",
+				data:data,
+				success:function(result){
+					//alert(result);
+				}
+			});
+		});
+	});
+	</script>
+	</head>
+	<body style="background-color:#22252c">
+		<div id="main">
+			<ul id="browser" class="filetree treeview-famfamfam">
+			<li><h2 style="text-align:center; color:#cccccc">学生状态</h2></li>
+			</ul>
+			<script>
+				function addGroup(g_id){
+					if(document.getElementById(g_id) == null)
+						$("<li><span class='folder'>" + g_id + "</span><ul id='" + g_id + "'>" +
+						"</ul></li>").appendTo("#browser");
+				}
+				
+				function addStudent(g_id, s_id, s_name, talk){
+					if(document.getElementById(g_id) == null)
+						addGroup(g_id);
+					if(document.getElementById(s_id) == null){
+						$("<li class='dropdown'>" + 
+							"<a class='dropdown-toggle' data-toggle='dropdown'>" +
+							"<span id='" + s_id + "' class='file'>" + s_name + "<b class='caret'></b></span></a>" +
+								"<ul class='dropdown-menu'>" +
+								"<li><a>拉到小组大屏</a></li>" +
+								"<li><a>拉到教室大屏</a></li>" +
+							"</ul></li>").appendTo("#" + g_id);
+					}
+					if(talk == "true")
+						$(document.getElementById(s_id)).css("background", "url(images/file-closed.jpg) no-repeat 0 0");
+				} 
+				
+				function parse_xml(){
+					var xmlDoc = null;
+					var xmlDomVersions = ['MSXML.2.DOMDocument.6.0', 'MSXML.2.DOMDocument.3.0', 'Microsoft.XMLDOM'];
+					for(var i = 0; i < xmlDomVersions.length; i++){
+						try{
+							xmlDoc = new ActiveXObject(xmlDomVersions[i]);
+							break;
+						}catch(e){}
+					}
+					
+					if(xmlDoc != null){
+						xmlDoc.async = false;
+						xmlDoc.load("group.xml");
+					}
+
+					var group_info = xmlDoc.documentElement.getElementsByTagName("Group")[0];
+					while(group_info){
+						var group_id = group_info.getAttribute("id");
+						var stu_info = group_info.childNodes[0];
+						group_info = group_info.nextSibling;
+						while(stu_info){
+							var s_id = group_id + stu_info.getAttribute("id");
+							var s_name = stu_info.getAttribute("name");
+							var talk = stu_info.getAttribute("talk")
+							addStudent(group_id, s_id, s_name, talk);
+							stu_info = stu_info.nextSibling;
+						}
+					}
+				}
+				
+				parse_xml();
+			</script>
+		</div>
+	</body>
+</html>
