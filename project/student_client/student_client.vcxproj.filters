@@ -30,6 +30,18 @@
     <ClInclude Include="application.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="json_operate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common_define.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="student_hand_h.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="rpc_client.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -44,5 +56,19 @@
     <ClCompile Include="application.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="json_operate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="student_hand_c.c">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="rpc_client.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="student_hand.idl">
+      <Filter>头文件</Filter>
+    </Midl>
   </ItemGroup>
 </Project>

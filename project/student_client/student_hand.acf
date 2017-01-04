@@ -1,0 +1,10 @@
+[  
+      implicit_handle(handle_t  Handup_Binding)  
+]  
+
+ 
+interface StudentHand
+{
+	[async] Handup();
+	[async] HandupEnd();
+}

@@ -1,0 +1,13 @@
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid("4556509F-618A-46CF-AB3D-ED736ED66476"), // genurate by GUIDGen.exe
+	version(1.0)
+]
+
+interface StudentHand
+{
+	void Handup([in, string]unsigned char * start);
+	void HandupEnd([in, string]unsigned char* end);
+}
