@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window size="60,60">
-  <VerticalLayout bkcolor="#FFffffff">
-    <Container name="frame_body" bkcolor="#ffaaaaaa">
-      <Panel name="video_wnd" id="0" />
-      <Panel name="control_wnd" id="1" />
-    </Container>
-  </VerticalLayout>
+<Window bktrans="true" shadowimage="" size="325,325" caption="0,0,0,150">
+  <AnimationTabLayout name="anima_tab">
+    <VerticalLayout inset="0,25,25,0">
+      <Container bkcolor="#FFffffff">
+        <GifAnim bkimage="res/test.gif" />
+        <Label float="true" pos="0,0,300,300" bkcolor="" />
+      </Container>
+      <VerticalLayout height="135" bkcolor="#FFffffff">
+        <HorizontalLayout height="40" inset="60,5,60,5">
+          <Edit name="" text="学号" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+        </HorizontalLayout>
+        <HorizontalLayout height="40" inset="60,5,60,5">
+          <Edit name="" text="姓名" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+        </HorizontalLayout>
+        <HorizontalLayout height="45" inset="60,5,60,5">
+          <Button name="login_btn" text="登录" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+        </HorizontalLayout>
+      </VerticalLayout>
+      <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
+    </VerticalLayout>
+    <VerticalLayout bkcolor="#ff846123">
+    </VerticalLayout>
+  </AnimationTabLayout>
 </Window>

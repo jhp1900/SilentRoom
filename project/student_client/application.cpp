@@ -39,6 +39,8 @@ int App::Run()
 	main_wnd_->CreateDuiWindow(NULL, _T(""), UI_WNDSTYLE_FRAME, 0L);
 	if (main_wnd_->GetHWND() == nullptr)
 		return -1;
+	main_wnd_->CenterWindow();
+	::ShowWindow(*main_wnd_, SW_SHOW);
 
 	CPaintManagerUI::MessageLoop();
 
