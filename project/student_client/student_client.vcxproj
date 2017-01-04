@@ -71,9 +71,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\third_party\duilib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -155,16 +156,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="common_define.h" />
+    <ClInclude Include="json_operate.h" />
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="debug_tools.h" />
+    <ClInclude Include="rpc_client.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="student_hand_h.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="json_operate.cpp" />
     <ClCompile Include="main_wnd.cpp" />
     <ClCompile Include="inlet.cpp" />
+    <ClCompile Include="rpc_client.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="student_hand_c.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="student_hand.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

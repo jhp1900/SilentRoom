@@ -53,7 +53,7 @@ namespace DuiLib {
 		UIEVENT_SETCURSOR,
 		UIEVENT_TIMER,
 		UIEVENT__LAST,
-	};
+	}EVENTTYPE_UI;
 
 	typedef enum MSGTYPE_UI
 	{
@@ -61,7 +61,7 @@ namespace DuiLib {
 		UIMSG_TRAYICON = WM_USER + 1,
 		// 程序自定义消息
 		UIMSG_USER = WM_USER + 100,
-	};
+	}MSGTYPE_UI;
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
