@@ -4,6 +4,8 @@
 
 RpcClient::RpcClient()
 	:pszStringBinding_(NULL)
+	,test_ip_("")
+	,test_port_("")
 {
 }
 
@@ -24,6 +26,18 @@ void RpcClient::Initial()
 	RpcBindingFromStringBinding(pszStringBinding_, &Handup_Binding);
 }
 
+void RpcClient::SetDisplayPointIp(const char * ip)
+{
+	assert(ip);
+	test_ip_ = ip;
+}
+
+void RpcClient::SetDisplayPointPort(const char * port)
+{
+	assert(port);
+	test_port_ = port;
+}
+
 bool RpcClient::HandupOperat()
 {
 	RPC_ASYNC_STATE async;
@@ -32,7 +46,7 @@ bool RpcClient::HandupOperat()
 	async.NotificationType = RpcNotificationTypeNone;
 
 	//×é×°JSON
-	std::string student_data;
+	std::string student_data = "test_handup";
 
 	Handup(&async, (unsigned char*)student_data.c_str());
 

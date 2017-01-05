@@ -81,8 +81,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>..\..\third_party\duilib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

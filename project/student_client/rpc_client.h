@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <assert.h>
 #include "student_hand_h.h"
 
 #pragma comment(lib, "rpcrt4")
@@ -13,6 +14,10 @@ public:
 	~RpcClient();
 
 	void Initial();
+
+	//≤‚ ‘”√
+	void SetDisplayPointIp(const char* ip);
+	void SetDisplayPointPort(const char* port);
 
 	bool HandupOperat();
 	bool HandupEnd();

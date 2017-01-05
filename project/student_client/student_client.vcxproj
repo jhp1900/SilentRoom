@@ -81,9 +81,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\third_party\duilib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -172,7 +173,9 @@
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="rpc_client.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="student_hand_c.c" />
+    <ClCompile Include="student_hand_c.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="student_hand.idl" />
