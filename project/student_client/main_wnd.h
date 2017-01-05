@@ -15,8 +15,16 @@ public:
 		//DUIMSG_HANDLER(kAM_DPISetMsg, OnDPISetMsg)
 	END_DUIMSG_MAP()
 
+	BEGIN_DUINOTIFY_MAP(MainWnd)
+		DUINOTIFY_TYPE_HANDLER(DUI_MSGTYPE_CLICK, OnClickBtn)
+	END_DUINOTIFY_MAP()
+
 public:
 	virtual void InitWindow() override;
 
 private:
+	void OnClickBtn(TNotifyUI &msg, bool &handled);
+
+	bool Login();
+	void LoginAnimation();
 };
