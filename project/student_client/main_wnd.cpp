@@ -2,6 +2,7 @@
 #include <math.h>
 #include "application.h"
 #include "resource.h"
+#include "vlc_tool.h"
 
 MainWnd::MainWnd()
 	: tray_data_({0})
@@ -25,7 +26,7 @@ void MainWnd::InitWindow()
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 {
 	if (msg.pSender->GetName() == _T("close_btn"))
-		exit(0);
+		::PostQuitMessage(0);
 	else if (msg.pSender->GetName() == _T("login_btn"))
 		Login();
 	else if (msg.pSender->GetName() == _T("speak_btn"))
@@ -50,6 +51,9 @@ bool MainWnd::Login()
 
 		// TODO... 
 		// ³õÊ¼»¯¡¢Æô¶¯ ivga
+		VLCTool vlc_tool;
+		if (!vlc_tool.BeginBroadcast("10.18.3.62"))
+			MessageBox(m_hWnd, _T("ÆÁÄ»ÍÆÁ÷Ê§°Ü!"), _T("Message"), MB_OK);
 	} else {
 		MessageBox(m_hWnd, _T("µÇÂ¼Ê§°Ü£¡"), _T("Message"), MB_OK);
 	}
