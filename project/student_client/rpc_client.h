@@ -13,7 +13,7 @@ public:
 	RpcClient();
 	~RpcClient();
 
-	void Initial();
+	void BindRpcServer(const char *ip, const char *port);
 
 	//≤‚ ‘”√
 	void SetDisplayPointIp(const char* ip);

@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "msg_head.h"
 
 class MainWnd : public WindowImplBase
 {
@@ -13,6 +14,7 @@ public:
 		//DUIMSG_HANDLER(kAM_InitOtherWndMsg, OnInitOtherWndMsg)
 		//DUIMSG_HANDLER(kAM_ResetIPInfo, OnResetIPInfoMsg)
 		//DUIMSG_HANDLER(kAM_DPISetMsg, OnDPISetMsg)
+		DUIMSG_HANDLER(kAM_TrayCallbackMsg, OnTray)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUINOTIFY_MAP(MainWnd)
@@ -23,8 +25,15 @@ public:
 	virtual void InitWindow() override;
 
 private:
-	void OnClickBtn(TNotifyUI &msg, bool &handled);
+	void OnClickBtn(TNotifyUI &msg, bool &handled);		// 点击事件过滤器
 
-	bool Login();
-	void LoginAnimation();
+	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+
+	bool Login();			// 响应登录事件
+	void LoginAnimation();	// 登录动效
+	void Speak();			// 响应发言事件
+	void AddTray();			// 添加托盘
+
+private:
+	NOTIFYICONDATA tray_data_;
 };

@@ -19,7 +19,8 @@
       </VerticalLayout>
       <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
     </VerticalLayout>
-    <VerticalLayout bkcolor="#ff846123">
-    </VerticalLayout>
+    <Container bkcolor="#ff846123">
+      <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" />
+    </Container>
   </AnimationTabLayout>
 </Window>

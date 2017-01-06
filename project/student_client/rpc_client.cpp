@@ -14,8 +14,11 @@ RpcClient::~RpcClient()
 {
 }
 
-void RpcClient::Initial()
+void RpcClient::BindRpcServer(const char *ip, const char *port)
 {
+	SetDisplayPointIp(ip);
+	SetDisplayPointPort(port);
+
 	RpcStringBindingCompose(NULL
 		,(unsigned short*)"ncacn_ip_tcp"
 		,(unsigned short*)test_ip_.c_str()
