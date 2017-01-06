@@ -156,7 +156,9 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="main_wnd.cpp" />
-    <ClCompile Include="rpc_server.cpp" />
+    <ClCompile Include="rpc_server.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="student_hand_s.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -170,6 +172,9 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="student_hand_h.h" />
     <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\DemoApiTest\DemoApiTest.vcxproj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

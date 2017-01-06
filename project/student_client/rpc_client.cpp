@@ -4,8 +4,8 @@
 
 RpcClient::RpcClient()
 	:pszStringBinding_(NULL)
-	,test_ip_("")
-	,test_port_("")
+	,test_ip_("10.18.3.67")
+	,test_port_("2016")
 {
 }
 
@@ -16,14 +16,15 @@ RpcClient::~RpcClient()
 
 void RpcClient::Initial()
 {
-	RpcStringBindingCompose(NULL
-		,(unsigned short*)"ncacn_ip_tcp"
-		,(unsigned short*)test_ip_.c_str()
-		,(unsigned short*)test_port_.c_str()
+	//unsigned char* pszStringBinding_ = NULL;
+	RpcStringBindingComposeA(NULL
+		,(unsigned char*)"ncacn_ip_tcp"
+		,(unsigned char*)test_ip_.c_str()
+		,(unsigned char*)test_port_.c_str()
 		,NULL
 		,&pszStringBinding_);
 
-	RpcBindingFromStringBinding(pszStringBinding_, &Handup_Binding);
+	RpcBindingFromStringBindingA(pszStringBinding_, &Handup_Binding);
 }
 
 void RpcClient::SetDisplayPointIp(const char * ip)
@@ -56,7 +57,7 @@ bool RpcClient::HandupOperat()
 
 bool RpcClient::HandupEnd()
 {
-	RpcStringFree(&pszStringBinding_);
+	RpcStringFreeA(&pszStringBinding_);
 	RpcBindingFree(&Handup_Binding);
 
 	return true;
