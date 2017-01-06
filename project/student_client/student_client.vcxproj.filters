@@ -45,6 +45,9 @@
     <ClInclude Include="msg_head.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -73,5 +76,10 @@
     <Midl Include="student_hand.idl">
       <Filter>头文件</Filter>
     </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="student_client.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

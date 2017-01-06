@@ -162,6 +162,7 @@
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="msg_head.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="rpc_client.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="student_hand_h.h" />
@@ -180,6 +181,9 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="student_hand.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="student_client.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

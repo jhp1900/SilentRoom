@@ -24,7 +24,7 @@ public:
 
 private:
 	std::string test_ip_, test_port_;
-	unsigned short* pszStringBinding_;
+	unsigned char* pszStringBinding_;
 };
 
 void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)
