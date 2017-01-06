@@ -18,7 +18,7 @@ void RpcClient::BindRpcServer(const char *ip, const char *port)
 {
 	SetDisplayPointIp(ip);
 	SetDisplayPointPort(port);
-	//unsigned char* pszStringBinding_ = NULL;
+
 	RpcStringBindingComposeA(NULL
 		,(unsigned char*)"ncacn_ip_tcp"
 		,(unsigned char*)test_ip_.c_str()
@@ -41,26 +41,34 @@ void RpcClient::SetDisplayPointPort(const char * port)
 	test_port_ = port;
 }
 
-bool RpcClient::HandupOperat()
+bool RpcClient::HandupOperat(const char* student_data)
 {
 	RPC_ASYNC_STATE async;
+	RpcTryExcept{
+
 	RpcAsyncInitializeHandle(&async, sizeof(async));
 	async.UserInfo = NULL;
 	async.NotificationType = RpcNotificationTypeNone;
 
-	//×é×°JSON
-	std::string student_data = "test_handup";
+	Handup(&async, (unsigned char*)student_data);
 
-	Handup(&async, (unsigned char*)student_data.c_str());
+	while (RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING)
+	{
+		//printf("call hello() pending, wait 1s...\n");
+		Sleep(50);
+	}
 
 	RpcAsyncCompleteCall(&async, NULL);
-	return false;
-}
+	}
+		RpcExcept(1) {
+		printf("RPC Exception %d\n", RpcExceptionCode());
+	}
 
-bool RpcClient::HandupEnd()
-{
+	RpcEndExcept
+
 	RpcStringFreeA(&pszStringBinding_);
 	RpcBindingFree(&Handup_Binding);
 
 	return true;
 }
+
