@@ -1,6 +1,7 @@
 #include "main_wnd.h"
 #include <math.h>
 #include "application.h"
+#include "resource.h"
 
 MainWnd::MainWnd()
 	: tray_data_({0})
@@ -18,7 +19,7 @@ void MainWnd::InitWindow()
 	AddTray();
 
 	// TODO...
-	// 设置ip
+	// 获取本机ip
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
@@ -117,7 +118,7 @@ void MainWnd::AddTray()
 	tray_data_.uID = 1;
 	tray_data_.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 	tray_data_.uCallbackMessage = kAM_TrayCallbackMsg;
-	//tray_data_.hIcon = LoadIcon((HINSTANCE)GetWindowLongPtr(m_hWnd, GWLP_HINSTANCE), MAKEINTRESOURCE(IDI_ICON1));
+	tray_data_.hIcon = LoadIcon((HINSTANCE)GetWindowLongPtr(m_hWnd, GWLP_HINSTANCE), MAKEINTRESOURCE(IDI_ICON1));
 
 	wcscpy_s(tray_data_.szTip, L"iVGA");
 	Shell_NotifyIcon(NIM_ADD, &tray_data_);
