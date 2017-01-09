@@ -33,6 +33,12 @@
     <ClCompile Include="rpc_server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="vlc_tool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_wnd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -56,8 +62,27 @@
     <ClInclude Include="rpc_server.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="msg_head.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="vlc_tool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="menu_wnd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\DemoApiTest\DemoApiTest.vcxproj" />
+    <ResourceCompile Include="display_point.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\bin\skin\res\logo.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

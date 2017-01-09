@@ -1,10 +1,12 @@
 #include "application.h"
 #include "main_wnd.h"
+#include "vlc_tool.h"
 
 App *App::instance_ = nullptr;
 
 App::App()
 {
+	vlc_tool_.reset(new VLCTool());
 }
 
 App::~App()
@@ -36,9 +38,11 @@ int App::Run()
 	if (!main_wnd_)
 		return -1;
 
-	main_wnd_->CreateDuiWindow(NULL, _T(""), UI_WNDSTYLE_FRAME | WS_MINIMIZE, 0L);
+	main_wnd_->CreateDuiWindow(NULL, _T(""), UI_WNDSTYLE_FRAME | WS_MAXIMIZE, 0L);
 	if (main_wnd_->GetHWND() == nullptr)
 		return -1;
+	main_wnd_->CenterWindow();
+	::ShowWindow(*main_wnd_, SW_HIDE);		// 程序启动时，窗体隐藏
 
 	CPaintManagerUI::MessageLoop();
 

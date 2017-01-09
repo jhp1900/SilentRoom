@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window>
+<Window size="1000,600">
   <Container name="frame_body" bkcolor="#ffaaaaaa">
     <Panel name="video_wnd" id="0" />
   </Container>

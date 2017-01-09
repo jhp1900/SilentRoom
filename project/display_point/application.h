@@ -3,6 +3,7 @@
 #include <memory>
 
 class MainWnd;
+class VLCTool;
 
 class App
 {
@@ -18,6 +19,7 @@ public:
 	int Run();
 
 	MainWnd *GetMainWnd() { return main_wnd_.get(); }
+	VLCTool *GetVLCTool() { return vlc_tool_.get(); }
 
 private:
 	void InitResource(HINSTANCE inst);
@@ -25,5 +27,6 @@ private:
 private:
 	static App *instance_;
 	std::unique_ptr<MainWnd> main_wnd_;
+	std::unique_ptr<VLCTool> vlc_tool_;
 };
 

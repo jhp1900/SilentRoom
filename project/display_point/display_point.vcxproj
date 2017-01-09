@@ -73,17 +73,18 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\third_party\duilib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\third_party\duilib;..\..\third_party\libvlc_lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);..\..\third_party\libvlc_include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>..\..\third_party\duilib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\third_party\duilib;..\..\third_party\libvlc_lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>..\..\third_party\libvlc_include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -100,6 +101,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libvlc.lib;libvlccore.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -132,6 +134,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libvlc.lib;libvlccore.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,6 +159,7 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="main_wnd.cpp" />
+    <ClCompile Include="menu_wnd.cpp" />
     <ClCompile Include="rpc_server.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -163,18 +167,26 @@
     <ClCompile Include="student_hand_s.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="vlc_tool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="main_wnd.h" />
+    <ClInclude Include="menu_wnd.h" />
+    <ClInclude Include="msg_head.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="rpc_server.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="student_hand_h.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="vlc_tool.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\DemoApiTest\DemoApiTest.vcxproj" />
+    <ResourceCompile Include="display_point.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\bin\skin\res\logo.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

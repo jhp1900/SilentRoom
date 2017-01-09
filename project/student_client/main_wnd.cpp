@@ -23,11 +23,8 @@ MainWnd::~MainWnd()
 
 void MainWnd::InitWindow()
 {
-	// 添加托盘
-	AddTray();
-
-	// 获取本机ip
-	GetLocalIP();
+	AddTray();		// 添加托盘
+	GetLocalIP();	// 获取本机ip
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
