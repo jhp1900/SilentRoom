@@ -1,10 +1,12 @@
 #include "application.h"
 #include "main_wnd.h"
+#include "vlc_tool.h"
 
 App *App::instance_ = nullptr;
 
 App::App()
 {
+	vlc_tool_.reset(new VLCTool());
 }
 
 App::~App()

@@ -33,7 +33,10 @@ private:
 	void LoginAnimation();	// 登录动效
 	void Speak();			// 响应发言事件
 	void AddTray();			// 添加托盘
+	void GetLocalIP();		// 获取本机IP
+	void AutoGetIp();		// 设置为自动获取IP
 
 private:
 	NOTIFYICONDATA tray_data_;
+	string ip_info_;
 };
