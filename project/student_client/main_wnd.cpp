@@ -166,9 +166,9 @@ void MainWnd::GetLocalIP()
 void MainWnd::AutoGetIp()
 {
 	auto set_ip = [](LPCTSTR type, LPCTSTR net_name) {
-		CDuiString comline = _T("/c netsh interface ip set ");
+		CDuiString comline = _T("/c netsh interface ip set name=\"");
 		comline += type;
-		comline += _T(" ");
+		comline += _T("\" ");
 		comline += net_name;
 		comline += _T(" dhcp");
 
