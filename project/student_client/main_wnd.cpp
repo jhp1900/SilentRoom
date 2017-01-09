@@ -33,11 +33,17 @@ void MainWnd::InitWindow()
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 {
 	if (msg.pSender->GetName() == _T("close_btn"))
-		::PostQuitMessage(0);
+		Close();
 	else if (msg.pSender->GetName() == _T("login_btn"))
 		Login();
 	else if (msg.pSender->GetName() == _T("speak_btn"))
 		Speak();
+}
+
+LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
+{
+	::PostQuitMessage(0);
+	return LRESULT();
 }
 
 LRESULT MainWnd::OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
@@ -111,7 +117,7 @@ void MainWnd::LoginAnimation()
 		}
 		
 		MoveWindow(m_hWnd, top.x, top.y, 60, 60, true);
-		Sleep(3);
+		Sleep(2);
 	}
 }
 
@@ -153,7 +159,7 @@ void MainWnd::GetLocalIP()
 			while (iter) {
 				oss.str("");
 				oss << iter->IpAddress.String;
-				MessageBoxA(m_hWnd, oss.str().c_str(), "Message", MB_OK);
+				//MessageBoxA(m_hWnd, oss.str().c_str(), "Message", MB_OK);
 				ip_info_ = oss.str();
 				iter = iter->Next;
 			}
@@ -207,6 +213,6 @@ void MainWnd::AutoGetIp()
 		net_conn->GetProperties(&net_proper);
 		set_ip(_T("address"), net_proper->pszwName);
 		set_ip(_T("dnsservers"), net_proper->pszwName);
-		MessageBox(m_hWnd, net_proper->pszwName, _T("Message"), MB_OK);
+		//MessageBox(m_hWnd, net_proper->pszwName, _T("Message"), MB_OK);
 	}
 }

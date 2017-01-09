@@ -27,6 +27,7 @@ public:
 private:
 	void OnClickBtn(TNotifyUI &msg, bool &handled);		// 点击事件过滤器
 
+	virtual LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) override;
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	bool Login();			// 响应登录事件
