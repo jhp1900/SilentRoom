@@ -9,11 +9,30 @@
 
 #pragma comment(lib,"Iphlpapi.lib")
 
+HWND VideoWnd::Init(HWND pa_hwnd)
+{
+	HWND ret_hwnd = Create(pa_hwnd, _T(""), UI_WNDSTYLE_CHILD & ~WS_VISIBLE, 0, 0, 0, 0, 0, (HMENU)(0));
+	::SetWindowPos(*this, NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+	ShowWindow();
+	return ret_hwnd;
+}
+
+void VideoWnd::SetWndShow(bool show)
+{
+	if(show)
+		::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+	else 
+		::ShowWindow(m_hWnd, SW_HIDE);
+}
+
 MainWnd::MainWnd()
 	: tray_data_({0})
 	, ip_info_("")
 	, show_wnd_(false)
 	, tray_menu_(nullptr)
+	, Video_wnd_(nullptr)
+	, alpha_(255)
+	, play_hwnd_(NULL)
 {
 }
 
@@ -26,11 +45,11 @@ void MainWnd::InitWindow()
 {
 	AddTray();		// 添加托盘
 	GetLocalIP();	// 获取本机IP
+	Animation();	// 启动动效
 
-	// 创建、初始化 托盘菜单
-	tray_menu_.reset(new MenuWnd(m_hWnd));
-	tray_menu_->CreateWithDefaltStyle();
-	
+	Video_wnd_.reset(new VideoWnd);
+	play_hwnd_ = Video_wnd_->Init(m_hWnd);
+
 	// TODO ...
 	// 启动 RPC 服务器
 
@@ -53,9 +72,9 @@ LRESULT MainWnd::OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
 	{
 		case WM_LBUTTONUP:
 			if (show_wnd_)
-				ShowWindow(SW_HIDE);
-			else
-				ShowWindow(SW_SHOW);
+				::ShowWindow(m_hWnd, SW_HIDE);
+			else 
+				::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
 			show_wnd_ = !show_wnd_;
 			break;
 		case WM_RBUTTONUP:
@@ -74,14 +93,13 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 			Close();
 			break;
 		case MenuMsgTemp1:
-			ShowWindow(SW_SHOW);
-			show_wnd_ = true;
-			App::GetInstance()->GetVLCTool()->PlayStream(m_hWnd, "rtsp://10.18.3.62:554/live");
+			PlayStream("rtsp://10.18.3.92:554/live123", _T("Stream 1"));
 			break;
 		case MenuMsgTemp2:
-			App::GetInstance()->GetVLCTool()->DestoryPlay();
-			ShowWindow(SW_HIDE);
-			show_wnd_ = false;
+			PlayStream("rtsp://10.18.3.62:554/live", _T("Stream 2"));
+			break;
+		case MenuMsgStop:
+			StopStream();
 			break;
 		default:
 			break;
@@ -89,17 +107,77 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	auto point_timer = [&]() {
+		KillTimer(m_hWnd, 1);
+		SetTimer(m_hWnd, 2, 5, nullptr);
+	};
+
+	auto alpha_timer = [&]() {
+		SetLayeredWindowAttributes(m_hWnd, 0, alpha_--, LWA_ALPHA);
+		if (alpha_ == 0) {
+			KillTimer(m_hWnd, 2);
+			alpha_ = 255;
+			::ShowWindow(m_hWnd, SW_HIDE);
+			SetLayeredWindowAttributes(m_hWnd, 0, alpha_, LWA_ALPHA);
+		}
+	};
+
+	auto play_timer = [&]() {
+		//SetTimer(m_hWnd, 4, 0, nullptr);
+		m_pm.FindControl(_T("point_body"))->SetVisible(false);
+		m_pm.FindControl(_T("video_body"))->SetVisible(true);
+		KillTimer(m_hWnd, 3);
+	};
+
+	auto play_anima = [&]() {
+		RECT point_rect = m_pm.FindControl(_T("point_body"))->GetPos();
+		point_rect.bottom -= 3;
+		m_pm.FindControl(_T("point_body"))->SetPos(point_rect);
+
+		RECT video_rect = m_pm.FindControl(_T("video_body"))->GetPos();
+		video_rect.top += 3;
+		m_pm.FindControl(_T("video_body"))->SetPos(video_rect);
+
+		if (point_rect.bottom <= point_rect.top)
+			KillTimer(m_hWnd, 4);
+	};
+
+	switch (wparam) {
+		case 1: 
+			point_timer();
+			break;
+		case 2: 
+			alpha_timer();
+			break;
+		case 3:
+			play_timer();
+			break;
+		case 4:
+			play_anima();
+			break;
+	}
+	
+	return LRESULT();
+}
+
 void MainWnd::AddTray()
 {
+	// 创建、初始化 托盘菜单窗体
+	tray_menu_.reset(new MenuWnd(m_hWnd));
+	tray_menu_->CreateWithDefaltStyle();
+
+	// 初始化托盘结构体
 	tray_data_.cbSize = (DWORD)sizeof(NOTIFYICONDATA);
 	tray_data_.hWnd = this->m_hWnd;
 	tray_data_.uID = 1;
 	tray_data_.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 	tray_data_.uCallbackMessage = kAM_TrayCallbackMsg;
 	tray_data_.hIcon = LoadIcon((HINSTANCE)GetWindowLongPtr(m_hWnd, GWLP_HINSTANCE), MAKEINTRESOURCE(IDI_ICON1));
-
 	wcscpy_s(tray_data_.szTip, L"iVGA");
-	Shell_NotifyIcon(NIM_ADD, &tray_data_);
+
+	Shell_NotifyIcon(NIM_ADD, &tray_data_);		// 添加托盘
 }
 
 void MainWnd::GetLocalIP()
@@ -127,4 +205,38 @@ void MainWnd::GetLocalIP()
 		}
 		delete pIpAdapterInfo;	// 释放掉
 	}
+}
+
+void MainWnd::Animation()
+{
+	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+	SetWindowLong(m_hWnd, GWL_EXSTYLE, GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+	// 设置透明色  		
+	COLORREF cr_key = RGB(0, 0, 0);
+	SetLayeredWindowAttributes(m_hWnd, cr_key, 0, LWA_COLORKEY);
+	SetTimer(m_hWnd, 1, 2000, nullptr);
+}
+
+bool MainWnd::PlayStream(string url, LPCTSTR point_text)
+{
+	VLCTool *vlc = App::GetInstance()->GetVLCTool();
+	vlc->DestoryPlay();
+	if (!vlc->PlayStream(play_hwnd_, url)) {
+		vlc->DestoryPlay();
+		return false;
+	}
+	m_pm.FindControl(_T("point_label"))->SetText(point_text);
+	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+	show_wnd_ = true;
+	SetTimer(m_hWnd, 3, 3000, nullptr);
+	return true;
+}
+
+void MainWnd::StopStream()
+{
+	//::ShowWindow(m_hWnd, SW_HIDE);
+	App::GetInstance()->GetVLCTool()->DestoryPlay();
+	show_wnd_ = false;
+	m_pm.FindControl(_T("video_body"))->SetVisible(false);
+	m_pm.FindControl(_T("point_body"))->SetVisible(true);
 }

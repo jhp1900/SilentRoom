@@ -42,7 +42,6 @@ int App::Run()
 	if (main_wnd_->GetHWND() == nullptr)
 		return -1;
 	main_wnd_->CenterWindow();
-	::ShowWindow(*main_wnd_, SW_HIDE);		// 程序启动时，窗体隐藏
 
 	CPaintManagerUI::MessageLoop();
 

@@ -54,6 +54,8 @@ void MenuWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgTemp1, 0);
 	else if (name == _T("test2"))
 		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgTemp2, 0);
+	else if (name == _T("stop"))
+		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgStop, 0);
 	else if (name == _T("closebtn"))
 		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgClose, 0);
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+  <Container name="play_body" bkimage="res/bk.png">
+  </Container>
+</Window>

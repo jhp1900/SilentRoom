@@ -7,6 +7,7 @@ enum MenuMsg
 	MenuMsgClose,		// ÍË³öÏûÏ¢
 	MenuMsgTemp1,
 	MenuMsgTemp2,
+	MenuMsgStop,
 };
 
 class MenuWnd : public WindowImplBase

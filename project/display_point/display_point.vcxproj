@@ -160,6 +160,7 @@
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="main_wnd.cpp" />
     <ClCompile Include="menu_wnd.cpp" />
+    <ClCompile Include="native_control_ui.cpp" />
     <ClCompile Include="rpc_server.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -175,6 +176,7 @@
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="menu_wnd.h" />
     <ClInclude Include="msg_head.h" />
+    <ClInclude Include="native_control_ui.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="rpc_server.h" />
     <ClInclude Include="stdafx.h" />
