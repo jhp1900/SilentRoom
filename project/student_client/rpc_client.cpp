@@ -20,6 +20,8 @@ RpcClient::RpcClient()
 
 RpcClient::~RpcClient()
 {
+	RpcStringFreeA(&pszStringBinding_);
+	RpcBindingFree(&Handup_Binding);
 }
 
 void RpcClient::BindRpcServer(const char *ip, const char *port)
@@ -70,9 +72,6 @@ bool RpcClient::HandupOperat(const char* student_data)
 		printf("RPC Exception %d\n", RpcExceptionCode());
 	}
 	RpcEndExcept
-
-	RpcStringFreeA(&pszStringBinding_);
-	RpcBindingFree(&Handup_Binding);
 
 	return true;
 }
