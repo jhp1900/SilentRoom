@@ -61,11 +61,11 @@ bool RpcClient::HandupOperat(const char* student_data)
 
 		Handup(&async, (unsigned char*)student_data);
 
-		while (RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING)
-		{
-			//printf("call hello() pending, wait 1s...\n");
-			Sleep(50);
-		}
+		//while (RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING)
+		//{
+		//	//printf("call hello() pending, wait 1s...\n");
+		//	Sleep(50);
+		//}
 
 		RpcAsyncCompleteCall(&async, NULL);
 	} RpcExcept(1) {
