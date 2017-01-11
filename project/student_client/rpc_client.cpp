@@ -1,6 +1,14 @@
 #include "rpc_client.h"
 
+void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)
+{
+	return(malloc(len));
+}
 
+void __RPC_USER midl_user_free(void __RPC_FAR *ptr)
+{
+	free(ptr);
+}
 
 RpcClient::RpcClient()
 	:pszStringBinding_(NULL)
@@ -45,25 +53,22 @@ bool RpcClient::HandupOperat(const char* student_data)
 {
 	RPC_ASYNC_STATE async;
 	RpcTryExcept{
+		RpcAsyncInitializeHandle(&async, sizeof(async));
+		async.UserInfo = NULL;
+		async.NotificationType = RpcNotificationTypeNone;
 
-	RpcAsyncInitializeHandle(&async, sizeof(async));
-	async.UserInfo = NULL;
-	async.NotificationType = RpcNotificationTypeNone;
+		Handup(&async, (unsigned char*)student_data);
 
-	Handup(&async, (unsigned char*)student_data);
+		while (RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING)
+		{
+			//printf("call hello() pending, wait 1s...\n");
+			Sleep(50);
+		}
 
-	while (RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING)
-	{
-		//printf("call hello() pending, wait 1s...\n");
-		Sleep(50);
-	}
-
-	RpcAsyncCompleteCall(&async, NULL);
-	}
-		RpcExcept(1) {
+		RpcAsyncCompleteCall(&async, NULL);
+	} RpcExcept(1) {
 		printf("RPC Exception %d\n", RpcExceptionCode());
 	}
-
 	RpcEndExcept
 
 	RpcStringFreeA(&pszStringBinding_);

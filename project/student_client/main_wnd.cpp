@@ -13,6 +13,7 @@
 MainWnd::MainWnd()
 	: tray_data_({0})
 	, ip_info_("")
+	, rpc_client_(nullptr)
 {
 }
 
@@ -63,6 +64,8 @@ bool MainWnd::Login()
 
 		// TODO... 
 		// ³õÊ¼»¯¡¢Æô¶¯ rpc client
+		rpc_client_.reset(new RpcClient);
+		rpc_client_->BindRpcServer("10.18.3.62", "12322");
 	} else {
 		MessageBox(m_hWnd, _T("µÇÂ¼Ê§°Ü£¡"), _T("Message"), MB_OK);
 	}
@@ -122,6 +125,7 @@ void MainWnd::Speak()
 {
 	// TODO... 
 	// ÇëÇó·¢ÑÔ£»
+	rpc_client_->HandupOperat("kkkkk");
 }
 
 void MainWnd::AddTray()
