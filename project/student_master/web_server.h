@@ -14,8 +14,8 @@ public:
 	WebServer();
 	~WebServer();
 
-	//void HttpResponse(evhttp_request* req, void* arg);
-	int HttpDisposal(evhttp_request* req, void* arg);
+	static void HttpResponse(evhttp_request* req, void* arg);
+	void HttpDisposal(evhttp_request* req, void* arg);
 
 	int Initial(int time_out, char* http_addr, short http_port);
 
@@ -24,5 +24,6 @@ public:
 private:
 	event_base* base_;
 	evhttp* http_server_;
+
 };
 #endif //__WEB_SERVER__

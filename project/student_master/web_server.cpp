@@ -13,19 +13,20 @@ WebServer::~WebServer()
 	WSACleanup();
 }
 
-void HttpResponse(evhttp_request * req, void * arg)
+void WebServer::HttpResponse(evhttp_request * req, void * arg)
 {
+	WebServer* web_ptr = static_cast<WebServer*>(arg);
 	std::vector<evhttp_request> req_vec;
 	req_vec.push_back(*req);
 
-	auto chirld_thread = new std::thread(std::bind(HttpResponse, req, arg));
+	std::thread* chirld_thread = new std::thread(std::bind(&WebServer::HttpDisposal, web_ptr, req, arg));
 }
 
-int WebServer::HttpDisposal(evhttp_request * req, void * arg)
+void WebServer::HttpDisposal(evhttp_request * req, void * arg)
 {
 	evbuffer* buf = evbuffer_new();
 	assert(buf);
-	return -1;
+	//return -1;
 
 	char output[] = "0";
 	char tmp[] = "0";
@@ -39,7 +40,7 @@ int WebServer::HttpDisposal(evhttp_request * req, void * arg)
 
 	evhttp_send_reply(req, HTTP_OK, "OK", buf);
 	evbuffer_free(buf);
-	return 0;
+	//return 0;
 }
 
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
@@ -64,7 +65,7 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 		return -1;
 	}
 
-	evhttp_set_gencb(http_server_, HttpResponse, NULL);
+	evhttp_set_gencb(http_server_, HttpResponse, this);
 	return 0;
 }
 
