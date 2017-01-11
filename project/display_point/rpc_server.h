@@ -13,7 +13,7 @@ public:
 	RpcServer();
 	~RpcServer();
 
-	bool Initial();
+	bool Initial(std::string port = "12322");
 	bool RpcListen();
 
 	bool SetRpcServerPort(const char* port);
@@ -21,23 +21,3 @@ public:
 private:
 	std::string listen_port_;
 };
-
-void Handup(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* start) {
-	printf("recieve");
-	printf("%s\n", start);
-	RpcAsyncCompleteCall(rpcasynhandle, NULL);
-}
-
-void HandupEnd(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* end) {
-	printf("recieve");
-	printf("%s\n", end);
-	RpcAsyncCompleteCall(rpcasynhandle, NULL);
-}
-
-void* __RPC_USER midl_user_allocate(size_t len) {
-	return(malloc(len));
-}
-
-void __RPC_USER midl_user_free(void __RPC_FAR* ptr) {
-	free(ptr);
-}

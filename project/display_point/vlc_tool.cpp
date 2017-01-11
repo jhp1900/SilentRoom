@@ -1,4 +1,4 @@
-#include "vlc_tool.h"
+﻿#include "vlc_tool.h"
 
 VLCTool::VLCTool()
 	: broadcast_vlc_(nullptr)
@@ -19,10 +19,10 @@ bool VLCTool::BeginBroadcast(string ipaddr)
 	const char * const vlc_argv[] = {
 		"--screen-fps=15",
 		"--screen-follow-mouse",
-		"--live-caching=300",
+		"--live-caching=100",
 	};
 	const char* url = "Screen://";
-	string first_part = "#transcode{vcodec=mp4v,acodec=none,vb=16,threads=2,scale=0.70}:duplicate{dst=rtp{sdp=rtsp://";
+	string first_part = "#transcode{vcodec=mp4v,acodec=none,vb=16,threads=10,scale=0.90}:duplicate{dst=rtp{sdp=rtsp://";
 	string second_part = ":554/live}}";
 
 	first_part += ipaddr + second_part;

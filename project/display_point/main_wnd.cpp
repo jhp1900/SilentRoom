@@ -31,6 +31,7 @@ MainWnd::MainWnd()
 	, show_wnd_(false)
 	, tray_menu_(nullptr)
 	, Video_wnd_(nullptr)
+	, rpc_server_(nullptr)
 	, alpha_(255)
 	, play_hwnd_(NULL)
 {
@@ -47,11 +48,20 @@ void MainWnd::InitWindow()
 	GetLocalIP();	// 获取本机IP
 	Animation();	// 启动动效
 
+	// 创建流播放窗口
 	Video_wnd_.reset(new VideoWnd);
 	play_hwnd_ = Video_wnd_->Init(m_hWnd);
 
-	// TODO ...
-	// 启动 RPC 服务器
+	// 初始化 RPC 服务器、启动 RPC 监听
+	rpc_server_.reset(new RpcServer);
+	if (!rpc_server_->Initial()) {
+		int a = 0;
+		return;
+	}
+	if (!rpc_server_->RpcListen()) {
+		int a = 0;
+		return;
+	}
 
 	// 初始化、启动 ivga 广播
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(ip_info_))
@@ -96,7 +106,7 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 			PlayStream("rtsp://10.18.3.92:554/live123", _T("Stream 1"));
 			break;
 		case MenuMsgTemp2:
-			PlayStream("rtsp://10.18.3.62:554/live", _T("Stream 2"));
+			PlayStream("rtsp://10.18.3.67:8554/live123", _T("Stream 2"));
 			break;
 		case MenuMsgStop:
 			StopStream();
@@ -115,8 +125,8 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 	};
 
 	auto alpha_timer = [&]() {
-		SetLayeredWindowAttributes(m_hWnd, 0, alpha_--, LWA_ALPHA);
-		if (alpha_ == 0) {
+		SetLayeredWindowAttributes(m_hWnd, 0, alpha_-=3, LWA_ALPHA);
+		if (alpha_ <= 3) {
 			KillTimer(m_hWnd, 2);
 			alpha_ = 255;
 			::ShowWindow(m_hWnd, SW_HIDE);
@@ -214,7 +224,7 @@ void MainWnd::Animation()
 	// 设置透明色  		
 	COLORREF cr_key = RGB(0, 0, 0);
 	SetLayeredWindowAttributes(m_hWnd, cr_key, 0, LWA_COLORKEY);
-	SetTimer(m_hWnd, 1, 2000, nullptr);
+	SetTimer(m_hWnd, 1, 4000, nullptr);
 }
 
 bool MainWnd::PlayStream(string url, LPCTSTR point_text)
@@ -228,13 +238,13 @@ bool MainWnd::PlayStream(string url, LPCTSTR point_text)
 	m_pm.FindControl(_T("point_label"))->SetText(point_text);
 	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
 	show_wnd_ = true;
-	SetTimer(m_hWnd, 3, 3000, nullptr);
+	SetTimer(m_hWnd, 3, 6300, nullptr);
 	return true;
 }
 
 void MainWnd::StopStream()
 {
-	//::ShowWindow(m_hWnd, SW_HIDE);
+	::ShowWindow(m_hWnd, SW_HIDE);
 	App::GetInstance()->GetVLCTool()->DestoryPlay();
 	show_wnd_ = false;
 	m_pm.FindControl(_T("video_body"))->SetVisible(false);

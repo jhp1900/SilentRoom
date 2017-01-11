@@ -4,6 +4,7 @@
 #include "menu_wnd.h"
 #include <memory>
 #include "native_control_ui.h"
+#include "rpc_server.h"
 
 class VideoWnd :public WindowImplBase
 {
@@ -57,6 +58,7 @@ private:
 
 	std::shared_ptr<MenuWnd> tray_menu_;
 	std::shared_ptr<VideoWnd> Video_wnd_;
+	std::shared_ptr<RpcServer> rpc_server_;
 
 	int alpha_;
 	HWND play_hwnd_;

@@ -1,6 +1,8 @@
 #pragma once
 #include "stdafx.h"
 #include "msg_head.h"
+#include <memory>
+#include "rpc_client.h"
 
 class MainWnd : public WindowImplBase
 {
@@ -40,4 +42,5 @@ private:
 private:
 	NOTIFYICONDATA tray_data_;
 	string ip_info_;
+	std::shared_ptr<RpcClient> rpc_client_;
 };
