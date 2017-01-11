@@ -17,7 +17,7 @@ public:
 
 	static void HttpResponse(evhttp_request* req, void* arg);
 
-	int HttpDisposal(evhttp_request* req, void* arg);
+	void HttpDisposal(evhttp_request* req, void* arg);
 
 	int Initial(int time_out, char* http_addr, short http_port);
 
