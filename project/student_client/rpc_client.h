@@ -22,6 +22,7 @@ public:
 	bool HandupOperat(const char* student_data);
 
 private:
+	RPC_ASYNC_STATE async_;
 	std::string test_ip_, test_port_;
 	unsigned char* pszStringBinding_;
 };
