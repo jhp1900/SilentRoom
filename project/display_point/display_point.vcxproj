@@ -169,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vlc_tool.cpp" />
+    <ClCompile Include="web_student_client.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="student_hand_h.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="vlc_tool.h" />
+    <ClInclude Include="web_student_client.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="display_point.rc" />
