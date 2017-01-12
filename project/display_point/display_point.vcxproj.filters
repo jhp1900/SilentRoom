@@ -42,7 +42,11 @@
     <ClCompile Include="native_control_ui.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="json_operate.cpp">
+=======
+    <ClCompile Include="web_student_client.cpp">
+>>>>>>> ad8b1e10341c8c5f34c3f40acd73cb881895a9a3
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,7 +87,11 @@
     <ClInclude Include="native_control_ui.h">
       <Filter>头文件</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="json_operate.h">
+=======
+    <ClInclude Include="web_student_client.h">
+>>>>>>> ad8b1e10341c8c5f34c3f40acd73cb881895a9a3
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

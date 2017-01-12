@@ -22,11 +22,11 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	auto chirld_thread = new std::thread(std::bind(&WebServer::HttpDisposal, pThis, req, arg));
 }
 
-int WebServer::HttpDisposal(evhttp_request * req, void * arg)
+void WebServer::HttpDisposal(evhttp_request * req, void * arg)
 {
 	evbuffer* buf = evbuffer_new();
 	assert(buf);
-	return -1;
+	//return -1;
 
 	char output[] = "0";
 	char tmp[] = "0";
@@ -40,7 +40,7 @@ int WebServer::HttpDisposal(evhttp_request * req, void * arg)
 
 	evhttp_send_reply(req, HTTP_OK, "OK", buf);
 	evbuffer_free(buf);
-	return 0;
+	//return 0;
 }
 
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
@@ -64,6 +64,7 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 	if (ret != 0) {
 		return -1;
 	}
+
 	//this_func_ = reinterpret_cast<pFunc>(std::bind(&WebServer::HttpResponse, this, std::placeholders::_1, std::placeholders::_2));
 	//this_func_ = (pFunc)&WebServer::HttpResponse;
 	evhttp_set_gencb(http_server_, &WebServer::HttpResponse, this);
