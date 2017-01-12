@@ -6,6 +6,7 @@
 #include <NetCon.h>
 #include "application.h"
 #include "vlc_tool.h"
+#include "json_operate.h"
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -32,6 +33,7 @@ MainWnd::MainWnd()
 	, tray_menu_(nullptr)
 	, Video_wnd_(nullptr)
 	, rpc_server_(nullptr)
+	, rpc_listen_thread_(nullptr)
 	, alpha_(255)
 	, play_hwnd_(NULL)
 {
@@ -52,16 +54,8 @@ void MainWnd::InitWindow()
 	Video_wnd_.reset(new VideoWnd);
 	play_hwnd_ = Video_wnd_->Init(m_hWnd);
 
-	// 初始化 RPC 服务器、启动 RPC 监听
-	rpc_server_.reset(new RpcServer);
-	if (!rpc_server_->Initial()) {
-		int a = 0;
-		return;
-	}
-	if (!rpc_server_->RpcListen()) {
-		int a = 0;
-		return;
-	}
+	// 初始化 RPC 服务器、启动 RPC 监听线程
+	StartRpcThread();
 
 	// 初始化、启动 ivga 广播
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(ip_info_))
@@ -172,6 +166,17 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	std::string json_str = (char*)wparam;
+
+	JsonOperate json_operate;
+	StudentData student_data = json_operate.JsonAnalysis(json_str.c_str());
+	int a = 0;
+
+	return LRESULT();
+}
+
 void MainWnd::AddTray()
 {
 	// 创建、初始化 托盘菜单窗体
@@ -225,6 +230,22 @@ void MainWnd::Animation()
 	COLORREF cr_key = RGB(0, 0, 0);
 	SetLayeredWindowAttributes(m_hWnd, cr_key, 0, LWA_COLORKEY);
 	SetTimer(m_hWnd, 1, 4000, nullptr);
+}
+
+void MainWnd::StartRpcThread()
+{
+	rpc_server_.reset(new RpcServer);
+	if (!rpc_server_->Initial()) {
+		int a = 0;
+		return;
+	}
+
+	auto start_rpc_listen = [&]() {
+		rpc_server_->RpcListen();
+	};
+
+	rpc_listen_thread_.reset(new std::thread(start_rpc_listen));
+	rpc_listen_thread_->detach();
 }
 
 bool MainWnd::PlayStream(string url, LPCTSTR point_text)

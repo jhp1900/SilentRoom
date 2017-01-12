@@ -5,6 +5,7 @@
 #include <memory>
 #include "native_control_ui.h"
 #include "rpc_server.h"
+#include <thread>
 
 class VideoWnd :public WindowImplBase
 {
@@ -30,6 +31,7 @@ public:
 		DUIMSG_HANDLER(kAM_TrayCallbackMsg, OnTray)
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
 		DUIMSG_HANDLER(WM_TIMER, OnTimer)
+		DUIMSG_HANDLER(kAM_RpcHandupMsg, OnRpcHandupMsg)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUICONTROL_CREATE(Manager)
@@ -44,10 +46,12 @@ private:
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	void AddTray();			// 添加托盘
 	void GetLocalIP();		// 获取本机IP
 	void Animation();
+	void StartRpcThread();
 	bool PlayStream(string url, LPCTSTR point_text);	// 播放url指定视频流
 	void StopStream();
 
@@ -59,6 +63,7 @@ private:
 	std::shared_ptr<MenuWnd> tray_menu_;
 	std::shared_ptr<VideoWnd> Video_wnd_;
 	std::shared_ptr<RpcServer> rpc_server_;
+	std::shared_ptr<std::thread> rpc_listen_thread_;
 
 	int alpha_;
 	HWND play_hwnd_;

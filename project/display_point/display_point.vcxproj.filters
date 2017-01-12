@@ -42,6 +42,9 @@
     <ClCompile Include="native_control_ui.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="json_operate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -78,6 +81,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="native_control_ui.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="json_operate.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,7 @@
 #include <IPHlpApi.h>
 #include <sstream>
 #include <NetCon.h>
+#include "json_operate.h"
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -125,7 +126,15 @@ void MainWnd::Speak()
 {
 	// TODO... 
 	// ÇëÇó·¢ÑÔ£»
-	rpc_client_->HandupOperat("kkkkk");
+	StudentData student_data;
+	student_data.group_info_ = "Grup1";
+	student_data.handup_ = false;
+	student_data.stream_ip_ = "10.18.3.62";
+	student_data.student_id_ = "2011101056";
+	student_data.student_name_ = "Xjhp";
+	JsonOperate json_operate;
+	std::string data = json_operate.AssembleJson(student_data);
+	rpc_client_->HandupOperat(data.c_str());
 }
 
 void MainWnd::AddTray()

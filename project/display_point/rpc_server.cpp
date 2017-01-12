@@ -1,8 +1,10 @@
 #include "rpc_server.h"
+#include "application.h"
+#include "main_wnd.h"
 
 void Handup(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* start) {
-	printf("recieve");
-	printf("%s\n", start);
+	
+	::SendMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_RpcHandupMsg, (WPARAM)start, 0);
 	RpcAsyncCompleteCall(rpcasynhandle, NULL);
 }
 

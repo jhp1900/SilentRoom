@@ -8,5 +8,5 @@ struct StudentData
 	std::string group_info_;
 	std::string student_name_;
 	std::string student_id_;
-	std::string handup_;
+	bool handup_;
 };

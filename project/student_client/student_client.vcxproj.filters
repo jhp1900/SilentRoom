@@ -33,9 +33,6 @@
     <ClInclude Include="json_operate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="common_define.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="student_hand_h.h">
       <Filter>头文件</Filter>
     </ClInclude>
