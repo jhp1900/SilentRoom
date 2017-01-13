@@ -16,6 +16,9 @@ MainWnd::MainWnd()
 	: tray_data_({0})
 	, student_info_()
 	, rpc_client_(nullptr)
+	, old_point_({0})
+	, cursor_point_({0})
+	, move_now_(false)
 {
 }
 
@@ -28,6 +31,10 @@ void MainWnd::InitWindow()
 {
 	AddTray();		// 添加托盘
 	GetLocalIP();	// 获取本机ip
+
+	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
+	track_mouse_event_.dwFlags = TME_LEAVE;
+	track_mouse_event_.hwndTrack = m_hWnd;
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
@@ -74,6 +81,32 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 		case MenuMsgStop:
 			StopSpeak();
 			break;
+	}
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	if (uMsg == WM_RBUTTONDOWN) {
+		::GetCursorPos(&old_point_);
+		move_now_ = true;
+		TrackMouseEvent(&track_mouse_event_);
+	} else if (uMsg == WM_RBUTTONUP || uMsg == WM_MOUSELEAVE) {
+		move_now_ = false;
+	} else if (uMsg == WM_MOUSEMOVE) {
+		if (move_now_) {
+			::GetCursorPos(&cursor_point_);
+			RECT rect = { 0 };
+			GetWindowRect(m_hWnd, &rect);
+			int w = rect.right - rect.left;
+			int h = rect.bottom - rect.top;
+			rect.left += (cursor_point_.x - old_point_.x);
+			rect.top += (cursor_point_.y - old_point_.y);
+			old_point_.x = cursor_point_.x;
+			old_point_.y = cursor_point_.y;
+
+			MoveWindow(m_hWnd, rect.left, rect.top, w, h, true);
+		}
 	}
 	return LRESULT();
 }

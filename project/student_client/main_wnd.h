@@ -17,6 +17,10 @@ public:
 	BEGIN_DUIMSG_MAP(MainWnd)
 		DUIMSG_HANDLER(kAM_TrayCallbackMsg, OnTray)
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
+		DUIMSG_HANDLER(WM_RBUTTONDOWN, OnMouseMoveWnd)
+		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
+		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
+		DUIMSG_HANDLER(WM_MOUSEMOVE, OnMouseMoveWnd)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUINOTIFY_MAP(MainWnd)
@@ -32,6 +36,7 @@ private:
 	virtual LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) override;
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	bool Login();			// 响应登录事件
 	void LoginAnimation();	// 登录动效
@@ -45,6 +50,10 @@ private:
 private:
 	NOTIFYICONDATA tray_data_;
 	StudentData student_info_;
+	POINT old_point_;
+	POINT cursor_point_;
+	bool move_now_;
+	TRACKMOUSEEVENT track_mouse_event_;
 
 	std::shared_ptr<MenuWnd> tray_menu_;
 	std::shared_ptr<RpcClient> rpc_client_;
