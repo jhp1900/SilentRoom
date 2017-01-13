@@ -48,7 +48,7 @@ JsonOperate::~JsonOperate()
 
 const char * JsonOperate::AssembleJson(StudentData student_data)
 {
-	//assert(student_data);
+	//assert(student_info_);
 	using namespace rapidjson;
 	assemble_json_str_ = "";
 

@@ -5,8 +5,8 @@
 enum MenuMsg
 {
 	MenuMsgClose,		// ÍË³öÏûÏ¢
-	MenuMsgTemp1,
-	MenuMsgTemp2,
+	MenuMsgSpeak,
+	MenuMsgHandup,
 	MenuMsgStop,
 };
 
@@ -16,7 +16,7 @@ public:
 	MenuWnd(HWND pa_hwnd);
 	~MenuWnd();
 
-	DECLARE_DUIWND_INFO(_T("MenuWnd"), CS_DBLCLKS, _T("point_menu_wnd.xml"))
+	DECLARE_DUIWND_INFO(_T("MenuWnd"), CS_DBLCLKS, _T("sc_menu_wnd.xml"))
 
 	BEGIN_DUIMSG_MAP(MenuWnd)
 		DUIMSG_HANDLER(WM_SHOWWINDOW, OnShowWindow)

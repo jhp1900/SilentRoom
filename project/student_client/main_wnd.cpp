@@ -7,13 +7,14 @@
 #include <IPHlpApi.h>
 #include <sstream>
 #include <NetCon.h>
-#include "json_operate.h"
+#include <atlbase.h>
+//#include "atlstr.h"
 
 #pragma comment(lib,"Iphlpapi.lib")
 
 MainWnd::MainWnd()
 	: tray_data_({0})
-	, ip_info_("")
+	, student_info_()
 	, rpc_client_(nullptr)
 {
 }
@@ -47,11 +48,48 @@ LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
 
 LRESULT MainWnd::OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
+	if (wparam != 1)
+		return 0;
+	if (lparam == WM_RBUTTONUP)
+	{
+		LPPOINT lpoint = new tagPOINT;
+		::GetCursorPos(lpoint);
+		tray_menu_->PopupWnd(lpoint);
+	}
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
+{
+	switch (wparam) {
+		case MenuMsgClose:
+			Close();
+			break;
+		case MenuMsgSpeak:
+			Speak();
+			break;
+		case MenuMsgHandup:
+			HandUp();
+			break;
+		case MenuMsgStop:
+			StopSpeak();
+			break;
+	}
 	return LRESULT();
 }
 
 bool MainWnd::Login()
 {
+	CDuiString sno = m_pm.FindControl(_T("Sno"))->GetText();
+	CDuiString name = m_pm.FindControl(_T("name"))->GetText();
+	if (sno == _T("学号") || sno == _T("") || name == _T("姓名") || name == _T("")) {
+		MessageBox(m_hWnd, _T("请确认登录信息！"), _T("Message"), MB_OK);
+		return false;
+	}
+
+	student_info_.student_id_ = CW2A(sno.GetData());
+	student_info_.student_name_ = CW2A(name.GetData());
+
 	// TODO....
 	// 发送一个登录消息，并接收返回值
 
@@ -60,7 +98,7 @@ bool MainWnd::Login()
 		LoginAnimation();
 
 		// 初始化、启动 ivga
-		if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(ip_info_))
+		if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(student_info_.stream_ip_))
 			MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
 
 		// TODO... 
@@ -120,25 +158,32 @@ void MainWnd::LoginAnimation()
 		MoveWindow(m_hWnd, top.x, top.y, 60, 60, true);
 		Sleep(2);
 	}
+	::SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
 void MainWnd::Speak()
 {
-	// TODO... 
 	// 请求发言；
-	StudentData student_data;
-	student_data.group_info_ = "Grup1";
-	student_data.handup_ = false;
-	student_data.stream_ip_ = "10.18.3.62";
-	student_data.student_id_ = "2011101056";
-	student_data.student_name_ = "Xjhp";
-	JsonOperate json_operate;
-	std::string data = json_operate.AssembleJson(student_data);
-	rpc_client_->HandupOperat(data.c_str());
+	student_info_.handup_ = true;
+	rpc_client_->HandupOperat(json_operate_->AssembleJson(student_info_));
+}
+
+void MainWnd::StopSpeak()
+{
+	student_info_.handup_ = false;
+}
+
+bool MainWnd::HandUp()
+{
+	return false;
 }
 
 void MainWnd::AddTray()
 {
+	// 创建、初始化 托盘菜单窗体
+	tray_menu_.reset(new MenuWnd(m_hWnd));
+	tray_menu_->CreateWithDefaltStyle();
+
 	tray_data_.cbSize = (DWORD)sizeof(NOTIFYICONDATA);
 	tray_data_.hWnd = this->m_hWnd;
 	tray_data_.uID = 1;
@@ -170,7 +215,7 @@ void MainWnd::GetLocalIP()
 				oss.str("");
 				oss << iter->IpAddress.String;
 				//MessageBoxA(m_hWnd, oss.str().c_str(), "Message", MB_OK);
-				ip_info_ = oss.str();
+				student_info_.stream_ip_ = oss.str();
 				iter = iter->Next;
 			}
 			pIpAdapterInfo = pIpAdapterInfo->Next;
@@ -223,6 +268,5 @@ void MainWnd::AutoGetIp()
 		net_conn->GetProperties(&net_proper);
 		set_ip(_T("address"), net_proper->pszwName);
 		set_ip(_T("dnsservers"), net_proper->pszwName);
-		//MessageBox(m_hWnd, net_proper->pszwName, _T("Message"), MB_OK);
 	}
 }

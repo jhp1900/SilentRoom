@@ -74,7 +74,7 @@ LRESULT MainWnd::OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
 		return 0;
 	switch (lparam)
 	{
-		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
 			if (show_wnd_)
 				::ShowWindow(m_hWnd, SW_HIDE);
 			else 
