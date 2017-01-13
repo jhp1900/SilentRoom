@@ -16,10 +16,35 @@ WebServer::~WebServer()
 void WebServer::HttpResponse(evhttp_request * req, void * arg)
 {
 	WebServer* pThis = static_cast<WebServer*>(arg);
-	std::vector<evhttp_request> req_vec;
-	req_vec.push_back(*req);
+	request_data tmp;
+	tmp.first = req;
+	tmp.second = false;
 
-	auto chirld_thread = new std::thread(std::bind(&WebServer::HttpDisposal, pThis, req, arg));
+	pThis->req_vec_.push_back(tmp);
+}
+
+void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
+{
+	try {
+		WebServer* pThis = static_cast<WebServer*>(arg);
+		if (pThis->req_vec_.empty())
+			return;
+		if (pThis->req_vec_.front().second) {
+			evbuffer* buf = evbuffer_new();
+			if (!buf) {
+				return;
+			}
+			evbuffer_add_printf(buf, "Server Responsed OK \n", evhttp_request_get_uri(pThis->req_vec_.front().first));
+			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
+
+			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
+			evbuffer_free(buf);
+			pThis->req_vec_.pop_front();
+		}
+	}
+	catch (std::exception& e) {
+		OutputDebugStringA(e.what());
+	}
 }
 
 void WebServer::HttpDisposal(evhttp_request * req, void * arg)
@@ -45,10 +70,8 @@ void WebServer::HttpDisposal(evhttp_request * req, void * arg)
 
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
 {
-	//int http_option_timeout = time_out;
-	//short http_port = http_port;
-
 	WSADATA ws_data;
+
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
 	}
@@ -65,8 +88,11 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 		return -1;
 	}
 
-	//this_func_ = reinterpret_cast<pFunc>(std::bind(&WebServer::HttpResponse, this, std::placeholders::_1, std::placeholders::_2));
-	//this_func_ = (pFunc)&WebServer::HttpResponse;
+	event_assign(&timeout_, base_, -1, EV_PERSIST, TimeOutCallback, this);
+	evutil_timerclear(&timevalue_);
+	timevalue_.tv_sec = 2;
+	event_add(&timeout_, &timevalue_);
+
 	evhttp_set_gencb(http_server_, &WebServer::HttpResponse, this);
 	return 0;
 }
