@@ -8,10 +8,10 @@
       </Container>
       <VerticalLayout height="135" bkcolor="#FFffffff">
         <HorizontalLayout height="40" inset="60,5,60,5">
-          <Edit name="" text="学号" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          <Edit name="Sno" text="学号" align="center" numberonly="true" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
         </HorizontalLayout>
         <HorizontalLayout height="40" inset="60,5,60,5">
-          <Edit name="" text="姓名" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          <Edit name="name" text="姓名" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
         </HorizontalLayout>
         <HorizontalLayout height="45" inset="60,5,60,5">
           <Button name="login_btn" text="登录" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />

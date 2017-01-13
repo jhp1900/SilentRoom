@@ -162,6 +162,7 @@
     <ClInclude Include="json_operate.h" />
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="debug_tools.h" />
+    <ClInclude Include="menu_wnd.h" />
     <ClInclude Include="msg_head.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="rpc_client.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="json_operate.cpp" />
     <ClCompile Include="main_wnd.cpp" />
     <ClCompile Include="inlet.cpp" />
+    <ClCompile Include="menu_wnd.cpp" />
     <ClCompile Include="rpc_client.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="student_hand_c.c">

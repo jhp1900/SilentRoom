@@ -74,7 +74,7 @@ LRESULT MainWnd::OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
 		return 0;
 	switch (lparam)
 	{
-		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
 			if (show_wnd_)
 				::ShowWindow(m_hWnd, SW_HIDE);
 			else 
@@ -172,6 +172,7 @@ LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 
 	JsonOperate json_operate;
 	StudentData student_data = json_operate.JsonAnalysis(json_str.c_str());
+	MessageBoxA(m_hWnd, student_data.student_name_.c_str(), "Message", MB_OK);
 	int a = 0;
 
 	return LRESULT();
@@ -234,13 +235,11 @@ void MainWnd::Animation()
 
 void MainWnd::StartRpcThread()
 {
-	rpc_server_.reset(new RpcServer);
-	if (!rpc_server_->Initial()) {
-		int a = 0;
-		return;
-	}
-
 	auto start_rpc_listen = [&]() {
+		rpc_server_.reset(new RpcServer);
+		if (!rpc_server_->Initial()) 
+			return;
+
 		rpc_server_->RpcListen();
 	};
 
