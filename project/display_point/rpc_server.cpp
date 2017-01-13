@@ -4,8 +4,13 @@
 
 void Handup(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* start) {
 	
-	::SendMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_RpcHandupMsg, (WPARAM)start, 0);
-	RpcAsyncCompleteCall(rpcasynhandle, NULL);
+	::PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_RpcHandupMsg, (WPARAM)start, 0);
+	RpcAsyncCompleteCall(rpcasynhandle, "ok");
+	//if (hand_flag)
+	//	return false;
+	//hand_flag = true;
+	//::PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_RpcHandupMsg, (WPARAM)start, 0);
+	//return true;
 }
 
 void HandupEnd(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* end) {
