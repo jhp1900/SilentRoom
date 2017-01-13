@@ -53,21 +53,19 @@ void RpcClient::SetDisplayPointPort(const char * port)
 
 bool RpcClient::HandupOperat(const char* student_data)
 {
-	RPC_ASYNC_STATE async;
 	RpcTryExcept{
-		RpcAsyncInitializeHandle(&async, sizeof(async));
-		async.UserInfo = NULL;
-		async.NotificationType = RpcNotificationTypeNone;
+		RpcAsyncInitializeHandle(&async_, sizeof(async_));
+		async_.UserInfo = NULL;
+		async_.NotificationType = RpcNotificationTypeNone;
 
-		Handup(&async, (unsigned char*)student_data);
-
-		//while (RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING)
+		Handup(&async_, (unsigned char*)student_data);
+		//if (RpcAsyncGetCallStatus(&async_) == ERROR_IO_PENDING)
 		//{
-		//	//printf("call hello() pending, wait 1s...\n");
-		//	Sleep(50);
+		//	printf("call hello() pending, wait 1s...\n");
+		//	return false;
+		//	//Sleep(50);RPC_S_ASYNC_CALL_PENDING
 		//}
-
-		RpcAsyncCompleteCall(&async, NULL);
+		RpcAsyncCompleteCall(&async_, NULL);
 	} RpcExcept(1) {
 		printf("RPC Exception %d\n", RpcExceptionCode());
 	}
