@@ -7,6 +7,7 @@
 #include "application.h"
 #include "vlc_tool.h"
 #include "json_operate.h"
+#include <atlbase.h>
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -34,6 +35,7 @@ MainWnd::MainWnd()
 	, Video_wnd_(nullptr)
 	, rpc_server_(nullptr)
 	, rpc_listen_thread_(nullptr)
+	, web_client_(nullptr)
 	, alpha_(255)
 	, play_hwnd_(NULL)
 {
@@ -60,6 +62,9 @@ void MainWnd::InitWindow()
 	// 初始化、启动 ivga 广播
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(ip_info_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
+
+	// 启动 curl 客户端
+	StartCurlClient();
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -172,8 +177,10 @@ LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 
 	JsonOperate json_operate;
 	StudentData student_data = json_operate.JsonAnalysis(json_str.c_str());
-	MessageBoxA(m_hWnd, student_data.student_name_.c_str(), "Message", MB_OK);
-	int a = 0;
+	std::string url = "rtsp://" + student_data.stream_ip_ + ":554/live";
+	if (PlayStream(url, CA2W(student_data.student_name_.c_str()))) {
+		web_client_->SendWebMessage(json_str);
+	}
 
 	return LRESULT();
 }
@@ -245,6 +252,16 @@ void MainWnd::StartRpcThread()
 
 	rpc_listen_thread_.reset(new std::thread(start_rpc_listen));
 	rpc_listen_thread_->detach();
+}
+
+void MainWnd::StartCurlClient()
+{
+	// TODO ....
+	// 读取配置文件，获得 服务器IP信息
+	string server_ip = "http://10.18.3.67:8081";
+
+	web_client_.reset(new WebStudentClient);
+	web_client_->Initial(server_ip);
 }
 
 bool MainWnd::PlayStream(string url, LPCTSTR point_text)

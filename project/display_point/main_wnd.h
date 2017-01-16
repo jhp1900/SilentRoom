@@ -6,6 +6,7 @@
 #include "native_control_ui.h"
 #include "rpc_server.h"
 #include <thread>
+#include "web_student_client.h"
 
 class VideoWnd :public WindowImplBase
 {
@@ -52,6 +53,7 @@ private:
 	void GetLocalIP();		// 获取本机IP
 	void Animation();
 	void StartRpcThread();
+	void StartCurlClient();
 	bool PlayStream(string url, LPCTSTR point_text);	// 播放url指定视频流
 	void StopStream();
 
@@ -64,6 +66,7 @@ private:
 	std::shared_ptr<VideoWnd> Video_wnd_;
 	std::shared_ptr<RpcServer> rpc_server_;
 	std::shared_ptr<std::thread> rpc_listen_thread_;
+	std::shared_ptr<WebStudentClient> web_client_;
 
 	int alpha_;
 	HWND play_hwnd_;

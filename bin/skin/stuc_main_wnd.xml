@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window bktrans="true" shadowimage="" size="325,325" caption="0,0,0,150">
+<Window bktrans="true" shadowimage="" size="325,325" caption="0,0,0,325">
   <AnimationTabLayout name="anima_tab">
     <VerticalLayout inset="0,25,25,0">
       <Container bkcolor="#FFffffff">
         <GifAnim bkimage="res/test.gif" />
-        <Label float="true" pos="0,0,300,300" bkcolor="" />
+        <Label float="true" pos="0,0,300,300" text="4455465" bkcolor="#01000000" />
       </Container>
       <VerticalLayout height="135" bkcolor="#FFffffff">
         <HorizontalLayout height="40" inset="60,5,60,5">
@@ -19,8 +19,8 @@
       </VerticalLayout>
       <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
     </VerticalLayout>
-    <Container bkcolor="#ff846123">
-      <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" />
+    <Container borderround="5,5">
+      <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
     </Container>
   </AnimationTabLayout>
 </Window>

@@ -161,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="setup_wnd.h" />
     <ClInclude Include="json_operate.h" />
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="debug_tools.h" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="setup_wnd.cpp" />
     <ClCompile Include="json_operate.cpp" />
     <ClCompile Include="main_wnd.cpp" />
     <ClCompile Include="inlet.cpp" />
