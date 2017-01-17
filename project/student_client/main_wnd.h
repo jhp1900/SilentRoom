@@ -43,6 +43,7 @@ private:
 	void Speak();			// 响应发言事件
 	void StopSpeak();
 	bool HandUp();
+	//void SetupWnd();
 	void AddTray();			// 添加托盘
 	void GetLocalIP();		// 获取本机IP
 	void AutoGetIp();		// 设置为自动获取IP
@@ -53,6 +54,7 @@ private:
 	POINT old_point_;
 	POINT cursor_point_;
 	bool move_now_;
+	std::string local_ip_;
 	TRACKMOUSEEVENT track_mouse_event_;
 
 	std::shared_ptr<MenuWnd> tray_menu_;

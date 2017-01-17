@@ -3,6 +3,7 @@
 
 #include <curl\curl.h>
 #include <exception>
+#include <string>
 
 class WebStudentClient
 {
@@ -10,8 +11,8 @@ public:
 	WebStudentClient();
 	~WebStudentClient();
 
-	void Initial();
-	void SendWebMessage();
+	void Initial(std::string url);
+	void SendWebMessage(std::string msg);
 
 private:
 	CURL* curl_;

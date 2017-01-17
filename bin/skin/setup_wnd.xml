@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window bktrans="true" roundcorner="4,4" size="225,170" caption="0,0,0,170">
+  <Font id="0" name="微软雅黑" size="18" bold="false" italic="false" default="true" />
+  <VerticalLayout inset="0,25,25,0">
+    <VerticalLayout bkcolor="#FFffffff" borderround="4,4" inset="30,5,30,5">
+      <Control />
+      <IPAddress name="ipaddr" height="35" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+      <Control height="15" />
+      <Button name="ok_btn" height="35" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+      <Control />
+    </VerticalLayout>
+    <Button name="close_btn" float="true" pos="175,0,225,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
+  </VerticalLayout>
+</Window>

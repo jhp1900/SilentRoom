@@ -12,7 +12,7 @@ WebStudentClient::~WebStudentClient()
 	curl_global_cleanup();
 }
 
-void WebStudentClient::Initial()
+void WebStudentClient::Initial(std::string url)
 {
 	try {
 		curl_global_init(CURL_GLOBAL_ALL);
@@ -20,7 +20,7 @@ void WebStudentClient::Initial()
 		curl_ = curl_easy_init();
 
 		if (curl_) {
-			curl_easy_setopt(curl_, CURLOPT_URL, "http://10.18.3.67:8081");
+			curl_easy_setopt(curl_, CURLOPT_URL, url);		// url = "http://10.18.3.67:8081"
 		}
 	}
 	catch (const std::exception& exc) {
@@ -28,7 +28,7 @@ void WebStudentClient::Initial()
 	}
 }
 
-void WebStudentClient::SendWebMessage()
+void WebStudentClient::SendWebMessage(std::string msg)
 {
 	try {
 		curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "i need XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");

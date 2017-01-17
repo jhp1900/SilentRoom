@@ -8,12 +8,13 @@
 #include <sstream>
 #include <NetCon.h>
 #include <atlbase.h>
-//#include "atlstr.h"
+#include "setup_wnd.h"
 
 #pragma comment(lib,"Iphlpapi.lib")
 
 MainWnd::MainWnd()
 	: tray_data_({0})
+	, local_ip_("")
 	, student_info_()
 	, rpc_client_(nullptr)
 	, old_point_({0})
@@ -31,6 +32,8 @@ void MainWnd::InitWindow()
 {
 	AddTray();		// 添加托盘
 	GetLocalIP();	// 获取本机ip
+
+	json_operate_.reset(new JsonOperate);
 
 	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
 	track_mouse_event_.dwFlags = TME_LEAVE;
@@ -81,6 +84,10 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 		case MenuMsgStop:
 			StopSpeak();
 			break;
+		case MenuMsgSetup:
+			SetupWnd setup_wnd(m_hWnd);
+			setup_wnd.DoModal();
+			break;
 	}
 	return LRESULT();
 }
@@ -105,7 +112,7 @@ LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 			old_point_.x = cursor_point_.x;
 			old_point_.y = cursor_point_.y;
 
-			MoveWindow(m_hWnd, rect.left, rect.top, w, h, true);
+			MoveWindow(m_hWnd, rect.left, rect.top, w, h, false);
 		}
 	}
 	return LRESULT();
@@ -125,13 +132,16 @@ bool MainWnd::Login()
 
 	// TODO....
 	// 发送一个登录消息，并接收返回值
+	student_info_.group_info_ = "Grup1";
+	student_info_.stream_ip_ = "127.0.0.1";
+
 
 	if (true) {			// 如果登录成功
 		// 登录动效
 		LoginAnimation();
 
 		// 初始化、启动 ivga
-		if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(student_info_.stream_ip_))
+		if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 			MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
 
 		// TODO... 
@@ -248,7 +258,7 @@ void MainWnd::GetLocalIP()
 				oss.str("");
 				oss << iter->IpAddress.String;
 				//MessageBoxA(m_hWnd, oss.str().c_str(), "Message", MB_OK);
-				student_info_.stream_ip_ = oss.str();
+				local_ip_ = oss.str();
 				iter = iter->Next;
 			}
 			pIpAdapterInfo = pIpAdapterInfo->Next;
