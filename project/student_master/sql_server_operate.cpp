@@ -142,11 +142,11 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 
 	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA)
 	{
-		SQLGetData(hstmt_, 1, SQL_C_WCHAR, &student_id, 0, &Cbstudent_id);
+		SQLGetData(hstmt_, 1, SQL_C_LONG, &student_id, 0, &Cbstudent_id);
 		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 22, &Cbstudent_name);
-		SQLGetData(hstmt_, 3, SQL_C_WCHAR, &group_info, 0, &Cbgroup_info);
+		SQLGetData(hstmt_, 3, SQL_C_LONG, &group_info, 0, &Cbgroup_info);
 		SQLGetData(hstmt_, 4, SQL_C_WCHAR, stream_ip, 256, &Cbstream_ip);
-		SQLGetData(hstmt_, 5, SQL_C_WCHAR, &handup, 0, &Cbhandup);
+		SQLGetData(hstmt_, 5, SQL_C_LONG, &handup, 0, &Cbhandup);
 
 		char char_student_id[MAX_PATH];
 		char char_group_info[6];
