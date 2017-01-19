@@ -385,7 +385,7 @@ protected: \
     if ( ! strClass.CompareNoCase(XmlTagName) ) \
     { \
         DuiLib::CDialogBuilder builder; \
-        DuiLib::CControlUI *pControl = builder.Create(XmlFile, NULL, this, &GetPaintManager()); \
+        DuiLib::CControlUI *pControl = builder.Create(XmlFile, NULL, this, CPaintManagerUI::GetPaintManager(XmlTagName)); \
         ASSERT(pControl != NULL && "DUICONTROL_CREATE_FROM_XML"); \
         return pControl; \
     }

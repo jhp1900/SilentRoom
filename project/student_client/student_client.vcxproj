@@ -74,7 +74,7 @@
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\third_party\duilib;..\..\third_party\libvlc_lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;..\..\third_party\pugixml;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,7 +84,7 @@
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\third_party\duilib;..\..\third_party\libvlc_lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;..\..\third_party\pugixml;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -161,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="ip_control_ui.h" />
     <ClInclude Include="setup_wnd.h" />
     <ClInclude Include="json_operate.h" />
     <ClInclude Include="main_wnd.h" />
@@ -173,9 +174,11 @@
     <ClInclude Include="student_hand_h.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="vlc_tool.h" />
+    <ClInclude Include="xml_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="ip_control_ui.cpp" />
     <ClCompile Include="setup_wnd.cpp" />
     <ClCompile Include="json_operate.cpp" />
     <ClCompile Include="main_wnd.cpp" />
@@ -187,6 +190,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vlc_tool.cpp" />
+    <ClCompile Include="xml_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="student_hand.idl" />

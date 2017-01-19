@@ -4,6 +4,7 @@
 
 class MainWnd;
 class VLCTool;
+class XmlManager;
 
 class App
 {
@@ -20,6 +21,7 @@ public:
 
 	MainWnd *GetMainWnd() { return main_wnd_.get(); }
 	VLCTool *GetVLCTool() { return vlc_tool_.get(); }
+	XmlManager *GetXmlMnge() { return xml_mnge_.get(); }
 
 private:
 	void InitResource(HINSTANCE inst);
@@ -28,5 +30,6 @@ private:
 	static App *instance_;
 	std::unique_ptr<MainWnd> main_wnd_;
 	std::unique_ptr<VLCTool> vlc_tool_;
+	std::unique_ptr<XmlManager> xml_mnge_;
 };
 

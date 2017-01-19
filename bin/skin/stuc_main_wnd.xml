@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window bktrans="true" shadowimage="" size="325,325" caption="0,0,0,325">
-  <AnimationTabLayout name="anima_tab">
-    <VerticalLayout inset="0,25,25,0">
-      <Container bkcolor="#FFffffff">
-        <GifAnim bkimage="res/test.gif" />
-        <Label float="true" pos="0,0,300,300" text="4455465" bkcolor="#01000000" />
-      </Container>
-      <VerticalLayout height="135" bkcolor="#FFffffff">
-        <HorizontalLayout height="40" inset="60,5,60,5">
-          <Edit name="Sno" text="学号" align="center" numberonly="true" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
-        </HorizontalLayout>
-        <HorizontalLayout height="40" inset="60,5,60,5">
-          <Edit name="name" text="姓名" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
-        </HorizontalLayout>
-        <HorizontalLayout height="45" inset="60,5,60,5">
-          <Button name="login_btn" text="登录" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-        </HorizontalLayout>
+<Window bktrans="true" shadowimage="" size="325,325" maxinfo="325,325" caption="0,0,0,325">
+  <Container>
+    <AnimationTabLayout name="anima_tab">
+      <VerticalLayout inset="0,25,25,0">
+        <Container bkcolor="#FFffffff">
+          <GifAnim bkimage="res/test.gif" />
+        </Container>
+        <VerticalLayout height="135" bkcolor="#FFffffff">
+          <HorizontalLayout height="40" inset="60,5,60,5">
+            <Edit name="Sno" text="学号" align="center" numberonly="true" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          </HorizontalLayout>
+          <HorizontalLayout height="40" inset="60,5,60,5">
+            <Edit name="name" text="姓名" align="center" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          </HorizontalLayout>
+          <HorizontalLayout height="45" inset="60,5,60,5">
+            <Button name="login_btn" text="登录" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+          </HorizontalLayout>
+        </VerticalLayout>
       </VerticalLayout>
-      <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
-    </VerticalLayout>
-    <Container borderround="5,5">
-      <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-    </Container>
-  </AnimationTabLayout>
+      <Container borderround="5,5">
+        <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+      </Container>
+    </AnimationTabLayout>
+    <Label name="mask_label" float="true" pos="0,0,300,190" bkcolor="#01000000" />
+    <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
+  </Container>
 </Window>

@@ -1,12 +1,14 @@
 #include "application.h"
 #include "main_wnd.h"
 #include "vlc_tool.h"
+#include "xml_manager.h"
 
 App *App::instance_ = nullptr;
 
 App::App()
 {
 	vlc_tool_.reset(new VLCTool());
+	xml_mnge_.reset(new XmlManager());
 }
 
 App::~App()
@@ -29,6 +31,7 @@ void App::DestroyInstance()
 bool App::Initialize(HINSTANCE inst)
 {
 	InitResource(inst);
+	xml_mnge_->LoadFile(CPaintManagerUI::GetResourcePath(), _T("configp.xml"));
 	return true;
 }
 
