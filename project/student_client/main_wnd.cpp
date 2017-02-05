@@ -9,6 +9,7 @@
 #include <NetCon.h>
 #include <atlbase.h>
 #include "setup_wnd.h"
+#include "xml_manager.h"
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -20,6 +21,7 @@ MainWnd::MainWnd()
 	, old_point_({0})
 	, cursor_point_({0})
 	, move_now_(false)
+	, login_hwnd_(nullptr)
 {
 }
 
@@ -38,6 +40,8 @@ void MainWnd::InitWindow()
 	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
 	track_mouse_event_.dwFlags = TME_LEAVE;
 	track_mouse_event_.hwndTrack = m_hWnd;
+
+	login_hwnd_ = m_hWnd;
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
@@ -86,7 +90,7 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 			break;
 		case MenuMsgSetup:
 			SetupWnd setup_wnd(m_hWnd);
-			setup_wnd.DoModal();
+			setup_wnd.DoModal(login_hwnd_);
 			break;
 	}
 	return LRESULT();
@@ -96,8 +100,12 @@ LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 {
 	if (uMsg == WM_RBUTTONDOWN) {
 		::GetCursorPos(&old_point_);
-		move_now_ = true;
-		TrackMouseEvent(&track_mouse_event_);
+		RECT rect = m_pm.FindControl(_T("speak_btn"))->GetPos();
+
+		if (rect.right > 0 && rect.bottom > 0) {
+			move_now_ = true;
+			TrackMouseEvent(&track_mouse_event_);
+		}
 	} else if (uMsg == WM_RBUTTONUP || uMsg == WM_MOUSELEAVE) {
 		move_now_ = false;
 	} else if (uMsg == WM_MOUSEMOVE) {
@@ -118,13 +126,28 @@ LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	return LRESULT();
+}
+
 bool MainWnd::Login()
 {
+	login_hwnd_ = m_hWnd;
 	CDuiString sno = m_pm.FindControl(_T("Sno"))->GetText();
 	CDuiString name = m_pm.FindControl(_T("name"))->GetText();
 	if (sno == _T("学号") || sno == _T("") || name == _T("姓名") || name == _T("")) {
 		MessageBox(m_hWnd, _T("请确认登录信息！"), _T("Message"), MB_OK);
 		return false;
+	}
+
+	if (App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")) == _T("")) {
+		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
+			SetupWnd setup_wnd(m_hWnd);
+			setup_wnd.DoModal(login_hwnd_);
+		} else {
+			return false;
+		}
 	}
 
 	student_info_.student_id_ = CW2A(sno.GetData());
@@ -137,6 +160,8 @@ bool MainWnd::Login()
 
 
 	if (true) {			// 如果登录成功
+		login_hwnd_ = NULL;		// 登录成功后，设置窗口不再以本窗口为父窗口！
+
 		// 登录动效
 		LoginAnimation();
 
@@ -147,7 +172,7 @@ bool MainWnd::Login()
 		// TODO... 
 		// 初始化、启动 rpc client
 		rpc_client_.reset(new RpcClient);
-		rpc_client_->BindRpcServer("10.18.3.62", "12322");
+		rpc_client_->BindRpcServer(student_info_.stream_ip_.c_str(), "12322");
 	} else {
 		MessageBox(m_hWnd, _T("登录失败！"), _T("Message"), MB_OK);
 	}
@@ -157,6 +182,7 @@ bool MainWnd::Login()
 
 void MainWnd::LoginAnimation()
 {
+	m_pm.FindControl(_T("mask_label"))->SetVisible(false);
 	static_cast<CAnimationTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
 
 	RECT rect = { 0 };

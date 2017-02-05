@@ -21,6 +21,7 @@ public:
 		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_MOUSEMOVE, OnMouseMoveWnd)
+		DUIMSG_HANDLER(WM_NCLBUTTONDBLCLK, OnMouseMoveWnd)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUINOTIFY_MAP(MainWnd)
@@ -37,6 +38,7 @@ private:
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	bool Login();			// 响应登录事件
 	void LoginAnimation();	// 登录动效
@@ -60,4 +62,6 @@ private:
 	std::shared_ptr<MenuWnd> tray_menu_;
 	std::shared_ptr<RpcClient> rpc_client_;
 	std::shared_ptr<JsonOperate> json_operate_;
+
+	HWND login_hwnd_;
 };

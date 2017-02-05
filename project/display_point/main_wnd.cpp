@@ -8,6 +8,8 @@
 #include "vlc_tool.h"
 #include "json_operate.h"
 #include <atlbase.h>
+#include "setup_wnd.h"
+#include "xml_manager.h"
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -65,6 +67,15 @@ void MainWnd::InitWindow()
 
 	// 启动 curl 客户端
 	StartCurlClient();
+
+	if (App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")) == _T("")) {
+		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
+			SetupWnd setup_wnd(m_hWnd);
+			setup_wnd.DoModal(m_hWnd);
+		} else {
+			return;
+		}
+	}
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -110,7 +121,9 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 		case MenuMsgStop:
 			StopStream();
 			break;
-		default:
+		case MenuMsgSetup:
+			SetupWnd setup_wnd(m_hWnd);
+			setup_wnd.DoModal(m_hWnd);
 			break;
 	}
 	return LRESULT();
