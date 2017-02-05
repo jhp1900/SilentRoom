@@ -17,6 +17,7 @@ public:
 private:
 	CURL* curl_;
 	CURLcode res_;
+	char buf_[MAX_PATH];
 };
 
 #endif // !__WEB_STUDENT_CLIENT__

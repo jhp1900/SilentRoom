@@ -1,6 +1,10 @@
 #include "web_student_client.h"
 
-
+static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
+	std::string* tt = static_cast<std::string*>(userdata);
+	tt->append((char*)ptr, size* nmemb);
+	return (size* nmemb);
+}
 
 WebStudentClient::WebStudentClient()
 {
@@ -21,6 +25,8 @@ void WebStudentClient::Initial(std::string url)
 
 		if (curl_) {
 			curl_easy_setopt(curl_, CURLOPT_URL, url);		// url = "http://10.18.3.67:8081"
+			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, GetData);
+			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &buf_);
 		}
 	}
 	catch (const std::exception& exc) {
