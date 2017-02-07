@@ -8,6 +8,7 @@
 #include <thread>
 #include <assert.h>
 #include <list>
+#include "json_operate.h"
 
 typedef void(*pFunc)(struct evhttp_request *, void *);
 typedef std::pair<evhttp_request*, bool> request_data;

@@ -36,6 +36,8 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			}
 			evbuffer_add_printf(buf, "Server Responsed OK \n", evhttp_request_get_uri(pThis->req_vec_.front().first));
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
+			JsonOperate json_operate;
+			StudentData student_data = json_operate.JsonAnalysis(post_data);
 
 			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
 			evbuffer_free(buf);

@@ -1,8 +1,10 @@
 #include "web_student_client.h"
 
+//获取WEB服务器返回数据方法
 static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
-	std::string* tt = static_cast<std::string*>(userdata);
-	tt->append((char*)ptr, size* nmemb);
+	std::string* server_data = static_cast<std::string*>(userdata);
+	server_data->append((char*)ptr, size* nmemb);
+
 	return (size* nmemb);
 }
 
@@ -37,7 +39,7 @@ void WebStudentClient::Initial(std::string url)
 void WebStudentClient::SendWebMessage(std::string msg)
 {
 	try {
-		curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "i need XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg.c_str());
 
 		res_ = curl_easy_perform(curl_);
 		if (res_ != CURLE_OK) {
