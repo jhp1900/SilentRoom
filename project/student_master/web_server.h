@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <list>
 #include "json_operate.h"
+#include "sql_server_operate.h"
 
 typedef void(*pFunc)(struct evhttp_request *, void *);
 typedef std::pair<evhttp_request*, bool> request_data;
@@ -21,6 +22,8 @@ public:
 	static void HttpResponse(evhttp_request* req, void* arg);
 	static void TimeOutCallback(evutil_socket_t fd, short event, void *arg);
 
+	//char* Logon();
+
 	void HttpDisposal(evhttp_request* req, void* arg);
 	
 	int Initial(int time_out, char* http_addr, short http_port);
@@ -28,6 +31,7 @@ public:
 	void ServerStart();
 
 private:
+	std::shared_ptr<MsSqlDbOperate> mssqlo_;
 	std::list<request_data> req_vec_;
 	event_base* base_;
 	evhttp* http_server_;

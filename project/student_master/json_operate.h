@@ -7,6 +7,11 @@
 #include <rapidjson\document.h>
 //#include "common_define.h"
 
+enum OperateType {
+	logon = 1,
+	handup = 2
+};
+
 struct StudentData
 {
 	std::string stream_ip_;
@@ -14,12 +19,14 @@ struct StudentData
 	std::string student_name_;
 	std::string student_id_;
 	bool handup_;
+	int operateType_;
 	StudentData() {
 		stream_ip_ = nullptr;
 		group_info_ = nullptr;
 		student_name_ = nullptr;
 		student_id_ = nullptr;
 		handup_ = false;
+		operateType_ = 0;
 	}
 };
 

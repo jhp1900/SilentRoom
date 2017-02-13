@@ -1,54 +1,16 @@
 #include "json_operate.h"
 
-
-
 JsonOperate::JsonOperate()
 {
 }
-
 
 JsonOperate::~JsonOperate()
 {
 }
 
-//bool JsonOperate::SetStudentName(const char * student_name)
-//{
-//	assert(student_name);
-//	student_data_.student_name_ = student_name;
-//	return true;
-//}
-//
-//bool JsonOperate::SetStudentId(const char * student_id)
-//{
-//	assert(student_id);
-//	student_data_.student_id_ = student_id;
-//	return true;
-//}
-//
-//bool JsonOperate::SetStudentIp(const char * student_ip)
-//{
-//	assert(student_ip);
-//	student_data_.stream_ip_ = student_ip;
-//	return true;
-//}
-//
-//bool JsonOperate::SetStudentGroupInfo(const char * student_groupinfo)
-//{
-//	assert(student_groupinfo);
-//	student_data_.group_info_ = student_groupinfo;
-//	return true;
-//}
-//
-//bool JsonOperate::SetStudentHandupFlag(const char * student_handup_flag)
-//{
-//	assert(student_handup_flag);
-//	student_data_.handup_ = student_handup_flag;
-//	return true;
-//}
-
 const char * JsonOperate::AssembleJson(StudentData student_data)
 {
-	//assert(student_data);
+	//assert(student_info_);
 	using namespace rapidjson;
 	assemble_json_str_ = "";
 
@@ -76,6 +38,10 @@ const char * JsonOperate::AssembleJson(StudentData student_data)
 	Value handup(kTrueType);
 	handup.SetBool(student_data.handup_);
 	root.AddMember("handup", handup, allocator);
+
+	Value operatetype(kNumberType);
+	handup.SetInt(student_data.OperateType_);
+	root.AddMember("operatetype", operatetype, allocator);
 
 	StringBuffer buffer;
 	Writer<StringBuffer> wtr(buffer);

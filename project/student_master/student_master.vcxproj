@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
+    <ClCompile Include="json_operate.cpp" />
     <ClCompile Include="main_wnd.cpp" />
     <ClCompile Include="sql_server_operate.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="debug_tools.h" />
+    <ClInclude Include="json_operate.h" />
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="sql_server_operate.h" />
     <ClInclude Include="stdafx.h" />

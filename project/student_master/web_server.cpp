@@ -4,6 +4,7 @@
 
 WebServer::WebServer()
 {
+	mssqlo_->Connect(L"SQS", L"sa", L"123");
 }
 
 
@@ -34,10 +35,30 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			if (!buf) {
 				return;
 			}
-			evbuffer_add_printf(buf, "Server Responsed OK \n", evhttp_request_get_uri(pThis->req_vec_.front().first));
+
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
 			JsonOperate json_operate;
 			StudentData student_data = json_operate.JsonAnalysis(post_data);
+
+			switch (student_data.operateType_){
+			case logon:{
+				StudentData tmp;
+				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
+				evbuffer_add_printf(buf, tmp.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+			}
+				break;
+			case handup:{
+				StudentData tmp_handup;
+				tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
+				evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+			}
+				break;
+			default:
+				break;
+				evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
+			}
+
+			//evbuffer_add_printf(buf, "Server Responsed OK \n", evhttp_request_get_uri(pThis->req_vec_.front().first)); //ÏìÓ¦ÇëÇó
 
 			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
 			evbuffer_free(buf);

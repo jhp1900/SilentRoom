@@ -14,6 +14,15 @@ struct StudentData
 	std::string student_name_;
 	std::string student_id_;
 	bool handup_;
+	int OperateType_;
+	StudentData() {
+		stream_ip_ = nullptr;
+		group_info_ = nullptr;
+		student_name_ = nullptr;
+		student_id_ = nullptr;
+		handup_ = false;
+		OperateType_ = 0;
+	}
 };
 
 class JsonOperate

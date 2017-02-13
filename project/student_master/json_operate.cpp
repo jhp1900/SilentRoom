@@ -39,6 +39,10 @@ const char * JsonOperate::AssembleJson(StudentData student_data)
 	handup.SetBool(student_data.handup_);
 	root.AddMember("handup", handup, allocator);
 
+	Value operatetype(kNumberType);
+	handup.SetInt(student_data.operateType_);
+	root.AddMember("operatetype", operatetype, allocator);
+
 	StringBuffer buffer;
 	Writer<StringBuffer> wtr(buffer);
 	root.Accept(wtr);
