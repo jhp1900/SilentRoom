@@ -1,5 +1,6 @@
 #include "web_server.h"
-
+#include "main_wnd.h"
+#include "application.h"
 
 
 WebServer::WebServer()
@@ -50,7 +51,19 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			case handup:{
 				StudentData tmp_handup;
 				tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
-				evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				//发送消息给主界面弹出提示
+				bool* boolptr = nullptr;
+				*boolptr = false;
+				//SendMessage((HWND)App::GetInstance()->GetMainWnd(), );
+				if (*boolptr) {
+					evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				}
+
+				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
+			}
+				break;
+			case keepalive: {
+
 			}
 				break;
 			default:

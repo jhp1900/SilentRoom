@@ -9,7 +9,8 @@
 
 enum OperateType {
 	logon = 1,
-	handup = 2
+	handup = 2,
+	keepalive = 3
 };
 
 struct StudentData
