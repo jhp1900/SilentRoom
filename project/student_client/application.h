@@ -6,6 +6,8 @@ class MainWnd;
 class VLCTool;
 class XmlManager;
 
+const string appid_str = "01";
+
 class App
 {
 private:
@@ -31,5 +33,6 @@ private:
 	std::unique_ptr<MainWnd> main_wnd_;
 	std::unique_ptr<VLCTool> vlc_tool_;
 	std::unique_ptr<XmlManager> xml_mnge_;
+	//int app_id_;
 };
 

@@ -32,6 +32,7 @@ bool App::Initialize(HINSTANCE inst)
 {
 	InitResource(inst);
 	xml_mnge_->LoadFile(CPaintManagerUI::GetResourcePath(), _T("configc.xml"));
+	//app_id_ = atoi(appid_str.c_str());
 	return true;
 }
 

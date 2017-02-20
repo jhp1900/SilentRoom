@@ -36,7 +36,9 @@ void MainWnd::InitWindow()
 	GetLocalIP();	// 获取本机ip
 
 	json_operate_.reset(new JsonOperate);
+	web_client_.reset(new WebStudentClient);
 
+	/* 鼠标事件初始化 */
 	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
 	track_mouse_event_.dwFlags = TME_LEAVE;
 	track_mouse_event_.hwndTrack = m_hWnd;
@@ -133,6 +135,7 @@ LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 
 bool MainWnd::Login()
 {
+	/* 判断登录信息是否合理 */
 	login_hwnd_ = m_hWnd;
 	CDuiString sno = m_pm.FindControl(_T("Sno"))->GetText();
 	CDuiString name = m_pm.FindControl(_T("name"))->GetText();
@@ -141,26 +144,32 @@ bool MainWnd::Login()
 		return false;
 	}
 
-	if (App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")) == _T("")) {
+	/* 获取服务器IP，判断是否需要设置IP信息 */
+	std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
+	if (server_ip == "") {
 		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
 			SetupWnd setup_wnd(m_hWnd);
 			setup_wnd.DoModal(login_hwnd_);
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	student_info_.student_id_ = CW2A(sno.GetData());
 	student_info_.student_name_ = CW2A(name.GetData());
 
+	/* 组装登录信息,登录服务器 */
+	LOGINFO log_info = { appid_str, 
+		student_info_.student_id_, 
+		student_info_.student_name_ 
+	};
+	web_client_->Initial(server_ip);	// 初始化 web 客户端 
+	web_client_->SendWebMessage(json_operate_->AssembleJson(log_info));
+	
 	// TODO....
-	// 发送一个登录消息，并接收返回值
-	student_info_.group_info_ = "Grup1";
-	student_info_.stream_ip_ = "127.0.0.1";
-
+	// 接收登录操作返回值
 
 	if (true) {			// 如果登录成功
-		login_hwnd_ = NULL;		// 登录成功后，设置窗口不再以本窗口为父窗口！
+		login_hwnd_ = NULL;		// 登录成功后，"设置界面的窗口"不再以本窗口为父窗口！
 
 		// 登录动效
 		LoginAnimation();
@@ -313,7 +322,7 @@ void MainWnd::AutoGetIp()
 		shell_info.lpParameters = comline;
 		shell_info.hInstApp = nullptr;
 
-		DWORD exitcode;
+		//DWORD exitcode;
 		ShellExecuteEx(&shell_info);
 	};
 
