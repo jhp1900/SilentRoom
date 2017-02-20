@@ -8,9 +8,9 @@ JsonOperate::~JsonOperate()
 {
 }
 
-const char * JsonOperate::AssembleJson(StudentData student_data)
+const char * JsonOperate::AssembleJson(const StudentData &stu_data)
 {
-	//assert(student_info_);
+	//assert(stu_info_);
 	using namespace rapidjson;
 	assemble_json_str_ = "";
 
@@ -20,27 +20,23 @@ const char * JsonOperate::AssembleJson(StudentData student_data)
 	Value root(kObjectType);
 
 	Value studentname(kStringType);
-	studentname.SetString(student_data.student_name_.c_str(), allocator);
-	root.AddMember("name", studentname, allocator);
+	studentname.SetString(stu_data.appid_.c_str(), allocator);
+	root.AddMember("appid", studentname, allocator);
 
 	Value streamsource(kStringType);
-	streamsource.SetString(student_data.stream_ip_.c_str(), allocator);
-	root.AddMember("ip", streamsource, allocator);
+	streamsource.SetString(stu_data.sno_.c_str(), allocator);
+	root.AddMember("sno", streamsource, allocator);
 
 	Value studentid(kStringType);
-	studentid.SetString(student_data.student_id_.c_str(), allocator);
-	root.AddMember("id", studentid, allocator);
-
-	Value groupinfo(kStringType);
-	groupinfo.SetString(student_data.group_info_.c_str(), allocator);
-	root.AddMember("group", groupinfo, allocator);
+	studentid.SetString(stu_data.naem_.c_str(), allocator);
+	root.AddMember("name", studentid, allocator);
 
 	Value handup(kTrueType);
-	handup.SetBool(student_data.handup_);
+	handup.SetBool(stu_data.handup_);
 	root.AddMember("handup", handup, allocator);
 
 	Value operatetype(kNumberType);
-	handup.SetInt(student_data.operateType_);
+	handup.SetInt(stu_data.operate_type_);
 	root.AddMember("operatetype", operatetype, allocator);
 
 	StringBuffer buffer;
@@ -51,20 +47,16 @@ const char * JsonOperate::AssembleJson(StudentData student_data)
 	return assemble_json_str_.c_str();
 }
 
-StudentData JsonOperate::JsonAnalysis(const char * student_data)
+void JsonOperate::JsonAnalysis(const char * stu_data, StudentData & log_info)
 {
-	assert(student_data);
+	assert(stu_data);
 	using namespace rapidjson;
 	Document doc;
-	doc.Parse<0>(student_data);
+	doc.Parse<0>(stu_data);
 
-	memset(&analysis_json_struct_, 0, sizeof(StudentData));
-
-	analysis_json_struct_.student_name_ = doc["name"].GetString();
-	analysis_json_struct_.student_id_ = doc["id"].GetString();
-	analysis_json_struct_.stream_ip_ = doc["ip"].GetString();
-	analysis_json_struct_.group_info_ = doc["group"].GetString();
-	analysis_json_struct_.handup_ = doc["handup"].GetBool();
-
-	return analysis_json_struct_;
+	log_info.appid_ = doc["name"].GetString();
+	log_info.sno_ = doc["id"].GetString();
+	log_info.naem_ = doc["ip"].GetString();
+	log_info.handup_ = doc["handup"].GetBool();
+	log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
 }

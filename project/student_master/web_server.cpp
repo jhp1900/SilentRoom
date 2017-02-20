@@ -21,7 +21,7 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	WebServer* pThis = static_cast<WebServer*>(arg);
 	request_data tmp;
 	tmp.first = req;
-	tmp.second = false;
+	tmp.second = true;
 
 	pThis->req_vec_.push_back(tmp);
 }
@@ -40,25 +40,26 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
 			JsonOperate json_operate;
-			StudentData student_data = json_operate.JsonAnalysis(post_data);
+			StudentData student_data;
+			json_operate.JsonAnalysis(post_data, student_data);
 
-			switch (student_data.operateType_){
+			switch (student_data.operate_type_){
 			case logon:{
 				StudentData tmp;
-				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
-				tmp.operateType_ = 1;
+				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.naem_.c_str()));
+				tmp.operate_type_ = OperateType(1);
 				evbuffer_add_printf(buf, json_operate.AssembleJson(tmp), evhttp_request_get_uri(pThis->req_vec_.front().first));
 			}
 				break;
 			case handup:{
 				StudentData tmp_handup;
-				tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
+				tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.naem_.c_str()));
 				//发送消息给主界面弹出提示
 				bool* boolptr = nullptr;
 				*boolptr = false;
 				//SendMessage((HWND)App::GetInstance()->GetMainWnd(), );
 				if (*boolptr) {
-					evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+					//evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
 				}
 
 				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
