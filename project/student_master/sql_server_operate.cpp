@@ -129,8 +129,8 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 	wchar_t student_name[MAX_PATH];
 	wchar_t stream_ip[MAX_PATH];
 
-	SQLINTEGER student_id, handup, group_info;
-	SQLINTEGER Cbstudent_id, Cbstudent_name, Cbgroup_info, Cbstream_ip, Cbhandup;
+	SQLINTEGER student_id, handup, group_info,operate_type;
+	SQLINTEGER Cbstudent_id, Cbstudent_name, Cbgroup_info, Cbstream_ip, Cbhandup, Cboperate_type;
 
 	wsprintfW(strsql, L"SELECT * FROM silentroom WHERE student_name='%s'", studentname);
 
@@ -147,10 +147,12 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 		SQLGetData(hstmt_, 3, SQL_C_LONG, &group_info, 0, &Cbgroup_info);
 		SQLGetData(hstmt_, 4, SQL_C_WCHAR, stream_ip, 256, &Cbstream_ip);
 		SQLGetData(hstmt_, 5, SQL_C_LONG, &handup, 0, &Cbhandup);
+		SQLGetData(hstmt_, 6, SQL_C_LONG, &operate_type, 0, &Cboperate_type);
 
 		char char_student_id[MAX_PATH];
 		char char_group_info[6];
 		char char_handup[6];
+		char char_operate_type[2];
 		_itoa_s(student_id, char_student_id, 10);
 		_itoa_s(group_info, char_group_info, 10);
 		_itoa_s(handup, char_handup, 10);
@@ -160,6 +162,7 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 		student_data_.group_info_ = char_group_info;
 		student_data_.stream_ip_ = ATL::CW2A(stream_ip);
 		student_data_.handup_ = char_handup;
+		student_data_.operateType_ = operate_type;
 	}
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);

@@ -45,6 +45,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			case logon:{
 				StudentData tmp;
 				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
+				tmp.operateType_ = 1;
 				evbuffer_add_printf(buf, json_operate.AssembleJson(tmp), evhttp_request_get_uri(pThis->req_vec_.front().first));
 			}
 				break;
@@ -105,7 +106,7 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 
 	event_assign(&timeout_, base_, -1, EV_PERSIST, TimeOutCallback, this);
 	evutil_timerclear(&timevalue_);
-	timevalue_.tv_sec = 2;
+	timevalue_.tv_usec = 500;
 	event_add(&timeout_, &timevalue_);
 
 	evhttp_set_gencb(http_server_, &WebServer::HttpResponse, this);
