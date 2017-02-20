@@ -168,3 +168,15 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 
 	return &student_data_;
 }
+
+//void MsSqlDbOperate::Query(wchar_t* studentname) {
+//	int ret = 0;
+//	wchar_t strsql[MAX_PATH];
+//	wsprintfW(strsql, L"SELECT * FROM group_info WHERE appid='%s'", studentname);
+//
+//	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+//	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+//
+//	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+//		return;
+//}
