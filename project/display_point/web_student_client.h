@@ -4,6 +4,7 @@
 #include <curl\curl.h>
 #include <exception>
 #include <string>
+#include "json_operate.h"
 
 class WebStudentClient
 {

@@ -11,6 +11,7 @@
 #include "json_operate.h"
 #include "sql_server_operate.h"
 
+
 typedef void(*pFunc)(struct evhttp_request *, void *);
 typedef std::pair<evhttp_request*, bool> request_data;
 class WebServer

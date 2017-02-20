@@ -2,6 +2,7 @@
 
 //获取WEB服务器返回数据方法
 static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
+	JsonOperate json_operate;
 	std::string* server_data = static_cast<std::string*>(userdata);
 	server_data->append((char*)ptr, size* nmemb);
 
@@ -10,8 +11,8 @@ static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
 
 WebStudentClient::WebStudentClient()
 {
-}
 
+}
 
 WebStudentClient::~WebStudentClient()
 {
