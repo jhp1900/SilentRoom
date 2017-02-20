@@ -45,7 +45,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			case logon:{
 				StudentData tmp;
 				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.student_name_.c_str()));
-				evbuffer_add_printf(buf, tmp.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				evbuffer_add_printf(buf, json_operate.AssembleJson(tmp), evhttp_request_get_uri(pThis->req_vec_.front().first));
 			}
 				break;
 			case handup:{
@@ -83,27 +83,6 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 	}
 }
 
-void WebServer::HttpDisposal(evhttp_request * req, void * arg)
-{
-	evbuffer* buf = evbuffer_new();
-	assert(buf);
-	//return -1;
-
-	char output[] = "0";
-	char tmp[] = "0";
-	char dest[] = "0";
-	evbuffer_add_printf(buf, "Responed Ok", evhttp_request_get_uri(req));
-
-	memcpy(dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
-	char* post_data = (char*)(EVBUFFER_DATA(req->input_buffer));
-	post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
-
-
-	evhttp_send_reply(req, HTTP_OK, "OK", buf);
-	evbuffer_free(buf);
-	//return 0;
-}
-
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
 {
 	WSADATA ws_data;
@@ -136,4 +115,25 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 void WebServer::ServerStart()
 {
 	event_base_dispatch(base_);
+}
+
+void WebServer::HttpDisposal(evhttp_request * req, void * arg)
+{
+	evbuffer* buf = evbuffer_new();
+	assert(buf);
+	//return -1;
+
+	char output[] = "0";
+	char tmp[] = "0";
+	char dest[] = "0";
+	evbuffer_add_printf(buf, "Responed Ok", evhttp_request_get_uri(req));
+
+	memcpy(dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
+	char* post_data = (char*)(EVBUFFER_DATA(req->input_buffer));
+	post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+
+
+	evhttp_send_reply(req, HTTP_OK, "OK", buf);
+	evbuffer_free(buf);
+	//return 0;
 }
