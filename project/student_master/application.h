@@ -3,6 +3,7 @@
 #include <memory>
 
 class MainWnd;
+class WebServer;
 
 class App
 {
@@ -18,6 +19,7 @@ public:
 	int Run();
 
 	MainWnd *GetMainWnd() { return main_wnd_.get(); }
+	WebServer *GetWebServer() { return web_server_.get(); }
 
 private:
 	void InitResource(HINSTANCE inst);
@@ -25,5 +27,6 @@ private:
 private:
 	static App *instance_;
 	std::unique_ptr<MainWnd> main_wnd_;
+	std::unique_ptr<WebServer> web_server_;
 };
 

@@ -4,6 +4,7 @@
 
 WebServer::WebServer()
 {
+	mssqlo_.reset(new MsSqlDbOperate);
 	mssqlo_->Connect(L"SQS", L"sa", L"123");
 }
 
@@ -113,7 +114,7 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 
 	event_assign(&timeout_, base_, -1, EV_PERSIST, TimeOutCallback, this);
 	evutil_timerclear(&timevalue_);
-	timevalue_.tv_sec = 2;
+	timevalue_.tv_sec = time_out;
 	event_add(&timeout_, &timevalue_);
 
 	evhttp_set_gencb(http_server_, &WebServer::HttpResponse, this);

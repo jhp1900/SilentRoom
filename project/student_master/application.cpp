@@ -1,5 +1,6 @@
 #include "application.h"
 #include "main_wnd.h"
+#include "web_server.h"
 
 App *App::instance_ = nullptr;
 
@@ -27,6 +28,11 @@ void App::DestroyInstance()
 bool App::Initialize(HINSTANCE inst)
 {
 	InitResource(inst);
+
+	/* Æô¶¯WEB·şÎñÆ÷ */
+	web_server_.reset(new WebServer());
+	web_server_->Initial(2, "127.0.0.1", 8081);
+	web_server_->ServerStart();
 	return true;
 }
 

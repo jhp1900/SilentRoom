@@ -60,6 +60,9 @@
     <ClInclude Include="xml_manager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="web_student_client.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -96,6 +99,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="xml_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="web_student_client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

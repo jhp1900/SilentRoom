@@ -5,6 +5,7 @@
 #include "menu_wnd.h"
 #include "rpc_client.h"
 #include "json_operate.h"
+#include "web_student_client.h"
 
 class MainWnd : public WindowImplBase
 {
@@ -62,6 +63,7 @@ private:
 	std::shared_ptr<MenuWnd> tray_menu_;
 	std::shared_ptr<RpcClient> rpc_client_;
 	std::shared_ptr<JsonOperate> json_operate_;
+	std::shared_ptr<WebStudentClient> web_client_;
 
 	HWND login_hwnd_;
 };

@@ -21,10 +21,10 @@ struct StudentData
 	bool handup_;
 	int operateType_;
 	StudentData() {
-		stream_ip_ = nullptr;
-		group_info_ = nullptr;
-		student_name_ = nullptr;
-		student_id_ = nullptr;
+		stream_ip_ = "";
+		group_info_ = "";
+		student_name_ = "";
+		student_id_ = "";
 		handup_ = false;
 		operateType_ = 0;
 	}
