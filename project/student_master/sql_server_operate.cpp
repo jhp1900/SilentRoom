@@ -152,7 +152,6 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 		char char_student_id[MAX_PATH];
 		char char_group_info[6];
 		char char_handup[6];
-		char char_operate_type[2];
 		_itoa_s(student_id, char_student_id, 10);
 		_itoa_s(group_info, char_group_info, 10);
 		_itoa_s(handup, char_handup, 10);
