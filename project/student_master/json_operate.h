@@ -15,20 +15,11 @@ enum OperateType {
 
 struct StudentData
 {
-	std::string stream_ip_;
-	std::string group_info_;
-	std::string student_name_;
-	std::string student_id_;
-	bool handup_;
-	int operateType_;
-	StudentData() {
-		stream_ip_ = "";
-		group_info_ = "";
-		student_name_ = "";
-		student_id_ = "";
-		handup_ = false;
-		operateType_ = 0;
-	}
+	std::string appid_;				// 程序编号，程序的唯一标识
+	std::string sno_;				// 学生学号
+	std::string naem_;				// 学生姓名
+	bool handup_;					// 举手状态
+	OperateType operate_type_;		// 信息类型
 };
 
 class JsonOperate
@@ -37,10 +28,9 @@ public:
 	JsonOperate();
 	~JsonOperate();
 
-	const char* AssembleJson(StudentData student_data);
-	StudentData JsonAnalysis(const char* student_data);
+	const char* AssembleJson(const StudentData &stu_data);
+	void JsonAnalysis(const char* json_data, StudentData &stu_data);
 private:
-	StudentData analysis_json_struct_;
 	std::string assemble_json_str_;
 };
 

@@ -27,7 +27,7 @@ void WebStudentClient::Initial(std::string url)
 		curl_ = curl_easy_init();
 
 		if (curl_) {
-			curl_easy_setopt(curl_, CURLOPT_URL, url);		// url = "http://10.18.3.67:8081"
+			curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());		// url = "http://10.18.3.67:8081"
 			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, GetData);
 			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &buf_);
 		}

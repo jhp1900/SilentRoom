@@ -31,7 +31,7 @@ bool App::Initialize(HINSTANCE inst)
 
 	/* Æô¶¯WEB·şÎñÆ÷ */
 	web_server_.reset(new WebServer());
-	web_server_->Initial(2, "127.0.0.1", 8081);
+	web_server_->Initial(2, "10.18.3.62", 8081);
 	web_server_->ServerStart();
 	return true;
 }

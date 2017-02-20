@@ -16,13 +16,14 @@
 MainWnd::MainWnd()
 	: tray_data_({0})
 	, local_ip_("")
-	, student_info_()
+	, stu_info_()
 	, rpc_client_(nullptr)
 	, old_point_({0})
 	, cursor_point_({0})
 	, move_now_(false)
 	, login_hwnd_(nullptr)
 {
+	stu_info_.appid_ = appid_str;
 }
 
 MainWnd::~MainWnd()
@@ -154,16 +155,12 @@ bool MainWnd::Login()
 		return false;
 	}
 
-	student_info_.student_id_ = CW2A(sno.GetData());
-	student_info_.student_name_ = CW2A(name.GetData());
+	stu_info_.sno_ = CW2A(sno.GetData());
+	stu_info_.naem_ = CW2A(name.GetData());
 
 	/* 组装登录信息,登录服务器 */
-	LOGINFO log_info = { appid_str, 
-		student_info_.student_id_, 
-		student_info_.student_name_ 
-	};
-	web_client_->Initial(server_ip);	// 初始化 web 客户端 
-	web_client_->SendWebMessage(json_operate_->AssembleJson(log_info));
+	web_client_->Initial("http://10.18.3.62:8081");	// 初始化 web 客户端 
+	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
 	
 	// TODO....
 	// 接收登录操作返回值
@@ -181,7 +178,7 @@ bool MainWnd::Login()
 		// TODO... 
 		// 初始化、启动 rpc client
 		rpc_client_.reset(new RpcClient);
-		rpc_client_->BindRpcServer(student_info_.stream_ip_.c_str(), "12322");
+		rpc_client_->BindRpcServer("10.18.3.62", "12322");
 	} else {
 		MessageBox(m_hWnd, _T("登录失败！"), _T("Message"), MB_OK);
 	}
@@ -242,13 +239,13 @@ void MainWnd::LoginAnimation()
 void MainWnd::Speak()
 {
 	// 请求发言；
-	student_info_.handup_ = true;
-	rpc_client_->HandupOperat(json_operate_->AssembleJson(student_info_));
+	stu_info_.handup_ = true;
+	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
 }
 
 void MainWnd::StopSpeak()
 {
-	student_info_.handup_ = false;
+	stu_info_.handup_ = false;
 }
 
 bool MainWnd::HandUp()

@@ -53,7 +53,7 @@ private:
 
 private:
 	NOTIFYICONDATA tray_data_;
-	StudentData student_info_;
+	StudentData stu_info_;
 	POINT old_point_;
 	POINT cursor_point_;
 	bool move_now_;
