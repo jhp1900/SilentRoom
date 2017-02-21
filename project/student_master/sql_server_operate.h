@@ -26,8 +26,9 @@ public:
 	int AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup);
 	int DeleteRecord(wchar_t* student_name);
 
-	StudentData* Query(wchar_t* student_name);
+	LogonInfo* Query(wchar_t* in_appid);
 private:
+	LogonInfo longon_info_;
 	StudentData student_data_;
 	SQLHENV henv_;
 	SQLHDBC hdbc_;

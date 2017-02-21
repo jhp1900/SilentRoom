@@ -5,8 +5,6 @@
 
 WebServer::WebServer()
 {
-	mssqlo_.reset(new MsSqlDbOperate);
-	mssqlo_->Connect(L"SQS", L"sa", L"123");
 }
 
 
@@ -30,6 +28,10 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 {
 	try {
 		WebServer* pThis = static_cast<WebServer*>(arg);
+#ifdef _DEBUG
+		OutputDebugStringA("time out callback \n");
+#endif // _DEBUG
+
 		if (pThis->req_vec_.empty())
 			return;
 		if (pThis->req_vec_.front().second) {
@@ -45,15 +47,42 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 
 			switch (student_data.operate_type_){
 			case logon:{
-				StudentData tmp;
-				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.naem_.c_str()));
-				tmp.operate_type_ = OperateType(1);
-				evbuffer_add_printf(buf, json_operate.AssembleJson(tmp), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				LogonInfo tmp;
+				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
+				using namespace rapidjson;
+
+				Document doc;
+				Document::AllocatorType& allocator = doc.GetAllocator();
+
+				Value root(kObjectType);
+
+				Value appid(kStringType);
+				appid.SetString(tmp.appid.c_str(), allocator);
+				root.AddMember("appid", appid, allocator);
+
+				Value group_info(kStringType);
+				group_info.SetString(tmp.group_info.c_str(), allocator);
+				root.AddMember("group_info", group_info, allocator);
+
+				Value group_ip(kStringType);
+				group_ip.SetString(tmp.group_ip.c_str(), allocator);
+				root.AddMember("group_ip", group_ip, allocator);
+
+				StringBuffer buffer;
+				Writer<StringBuffer> wtr(buffer);
+				root.Accept(wtr);
+				std::string assemble_json_str = buffer.GetString();
+
+				evbuffer_add_printf(buf, assemble_json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+#ifdef _DEBUG
+				OutputDebugStringA("logon respons succeed \n");
+#endif // _DEBUG
+
 			}
 				break;
 			case handup:{
 				StudentData tmp_handup;
-				tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.naem_.c_str()));
+				//tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.naem_.c_str()));
 				//发送消息给主界面弹出提示
 				bool* boolptr = nullptr;
 				*boolptr = false;
@@ -89,6 +118,9 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
 {
 	WSADATA ws_data;
+
+	mssqlo_.reset(new MsSqlDbOperate);
+	mssqlo_->Connect(L"SQS", L"sa", L"123");
 
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;

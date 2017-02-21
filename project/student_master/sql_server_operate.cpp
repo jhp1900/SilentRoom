@@ -16,19 +16,25 @@ int MsSqlDbOperate::Connect(wchar_t * servername, wchar_t * username, wchar_t * 
 		retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv_);
 
 		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
-			std::cout << "initial sql enviroment handle failed" << std::endl;
+#ifdef DEBUG
+			OutputDebugStringA("initial sql enviroment handle failed \n");
+#endif // DEBUG
 			return -1;
 		}
 
 		retcode = SQLSetEnvAttr(henv_, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
 		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
-			std::cout << "set sql enviroment faild" << std::endl;
+#ifdef DEBUG
+			OutputDebugStringA("set sql enviroment faild \n");
+#endif // DEBUG
 			return -1;
 		}
 
 		retcode = SQLAllocHandle(SQL_HANDLE_DBC, henv_, &hdbc_);
 		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
-			std::cout << "initial sql handle faild" << std::endl;
+#ifdef DEBUG
+			OutputDebugStringA("initial sql handle faild \n");
+#endif // DEBUG
 			return -1;
 		}
 
@@ -41,10 +47,14 @@ int MsSqlDbOperate::Connect(wchar_t * servername, wchar_t * username, wchar_t * 
 			SQL_NTS);
 
 		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
-			std::cout << "connect database faild" << std::endl;
+#ifdef DEBUG
+			OutputDebugStringA("connect database faild \n");
+#endif // DEBUG
 			return -1;
 		}
-		std::cout << "connect database succeed" << std::endl;
+#ifdef DEBUG
+		OutputDebugStringA("connect database succeed \n");
+#endif // DEBUG
 		return 0;
 
 	}
@@ -71,19 +81,25 @@ int MsSqlDbOperate::ExecDirect(wchar_t * strsql)
 
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
-		std::cout << "intial SQL_HANDLE_STMT faild" << std::endl;
+#ifdef DEBUG
+		OutputDebugStringA("intial SQL_HANDLE_STMT faild \n");
+#endif // DEBUG
 
 		return -1;
 	}
 
 	retcode = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 	if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
-		std::cout << "exec sql faild" << std::endl;
+#ifdef DEBUG
+		OutputDebugStringA("exec sql faild \n");
+#endif // DEBUG
 		SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
 
 		return -1;
 	}
-	std::cout << "exec sql succeed" << std::endl;
+#ifdef DEBUG
+	OutputDebugStringA("exec sql succeed \n");
+#endif // DEBUG
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
 
 	return 0;
@@ -122,17 +138,18 @@ int MsSqlDbOperate::DeleteRecord(wchar_t * student_name)
 	return 0;
 }
 
-StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
+LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 {
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
-	wchar_t student_name[MAX_PATH];
-	wchar_t stream_ip[MAX_PATH];
+	wchar_t appid[MAX_PATH];
+	wchar_t group_info[MAX_PATH];
+	wchar_t group_ip[MAX_PATH];
 
-	SQLINTEGER student_id, handup, group_info,operate_type;
-	SQLINTEGER Cbstudent_id, Cbstudent_name, Cbgroup_info, Cbstream_ip, Cbhandup, Cboperate_type;
+	//SQLINTEGER student_id, handup, group_info,operate_type;
+	SQLINTEGER Cbappid, Cbgroup_info, Cbgroup_ip;
 
-	wsprintfW(strsql, L"SELECT * FROM silentroom WHERE student_name='%s'", studentname);
+	wsprintfW(strsql, L"SELECT * FROM group_info WHERE appid='%s'", in_appid);
 
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
@@ -142,41 +159,16 @@ StudentData* MsSqlDbOperate::Query(wchar_t* studentname)
 
 	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA)
 	{
-		SQLGetData(hstmt_, 1, SQL_C_LONG, &student_id, 0, &Cbstudent_id);
-		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 22, &Cbstudent_name);
-		SQLGetData(hstmt_, 3, SQL_C_LONG, &group_info, 0, &Cbgroup_info);
-		SQLGetData(hstmt_, 4, SQL_C_WCHAR, stream_ip, 256, &Cbstream_ip);
-		SQLGetData(hstmt_, 5, SQL_C_LONG, &handup, 0, &Cbhandup);
-		SQLGetData(hstmt_, 6, SQL_C_LONG, &operate_type, 0, &Cboperate_type);
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, appid, 128, &Cbappid);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, group_info, 128, &Cbgroup_info);
+		SQLGetData(hstmt_, 3, SQL_C_WCHAR, group_ip, 256, &Cbgroup_ip);
+		longon_info_.appid = ATL::CW2A(appid);
+		longon_info_.group_info = ATL::CW2A(group_info);
+		longon_info_.group_ip = ATL::CW2A(group_ip);
 
-		char char_student_id[MAX_PATH];
-		char char_group_info[6];
-		char char_handup[6];
-		_itoa_s(student_id, char_student_id, 10);
-		_itoa_s(group_info, char_group_info, 10);
-		_itoa_s(handup, char_handup, 10);
-
-		student_data_.student_id_ = char_student_id;
-		student_data_.student_name_ = ATL::CW2A(student_name);
-		student_data_.group_info_ = char_group_info;
-		student_data_.stream_ip_ = ATL::CW2A(stream_ip);
-		student_data_.handup_ = char_handup;
-		student_data_.operateType_ = operate_type;
 	}
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
 
-	return &student_data_;
+	return &longon_info_;
 }
-
-//void MsSqlDbOperate::Query(wchar_t* studentname) {
-//	int ret = 0;
-//	wchar_t strsql[MAX_PATH];
-//	wsprintfW(strsql, L"SELECT * FROM group_info WHERE appid='%s'", studentname);
-//
-//	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
-//	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
-//
-//	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
-//		return;
-//}
