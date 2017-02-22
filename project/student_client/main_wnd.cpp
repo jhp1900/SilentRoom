@@ -159,7 +159,7 @@ bool MainWnd::Login()
 	stu_info_.naem_ = CW2A(name.GetData());
 
 	/* 组装登录信息,登录服务器 */
-	web_client_->Initial("http://10.18.3.62:8081");	// 初始化 web 客户端 
+	web_client_->Initial("http://10.18.3.67:8083");	// 初始化 web 客户端 
 	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
 	
 	// TODO....

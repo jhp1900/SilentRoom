@@ -41,6 +41,10 @@ const char * JsonOperate::AssembleJson(const StudentData &stu_data)
 	handup.SetInt(stu_data.operate_type_);
 	root.AddMember("operatetype", operatetype, allocator);
 
+	Value stream_ip(kStringType);
+	stream_ip.SetString(stu_data.stream_ip_.c_str(), allocator);
+	root.AddMember("stream_ip", stream_ip, allocator);
+
 	StringBuffer buffer;
 	Writer<StringBuffer> wtr(buffer);
 	root.Accept(wtr);
@@ -56,10 +60,11 @@ void JsonOperate::JsonAnalysis(const char * stu_data, StudentData & log_info)
 	Document doc;
 	doc.Parse<0>(stu_data);
 
-	log_info.appid_ = doc["name"].GetString();
-	log_info.sno_ = doc["id"].GetString();
-	log_info.naem_ = doc["ip"].GetString();
+	log_info.appid_ = doc["appid"].GetString();
+	log_info.sno_ = doc["sno"].GetString();
+	log_info.naem_ = doc["name"].GetString();
 	log_info.handup_ = doc["handup"].GetBool();
 	log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
+	log_info.stream_ip_ = doc["stream_ip"].GetString();
 }
 
