@@ -8,6 +8,8 @@
 #include <thread>
 #include <assert.h>
 #include <list>
+#include <memory>
+#include <io.h>
 #include "sql_server_operate.h"
 
 
@@ -38,5 +40,6 @@ private:
 	event timeout_;
 	timeval timevalue_;
 	pFunc this_func_;
+	bool handup_;
 };
 #endif //__WEB_SERVER__

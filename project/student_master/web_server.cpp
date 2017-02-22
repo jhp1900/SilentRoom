@@ -27,6 +27,9 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 {
 	try {
+		char output[2048] = "\0";
+		char tmp[1024] = "\0";
+		char dest[100] = "\0";
 		WebServer* pThis = static_cast<WebServer*>(arg);
 #ifdef _DEBUG
 		OutputDebugStringA("time out callback \n");
@@ -41,12 +44,15 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			}
 
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
+			memcpy(dest, (char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer), EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer));
+			post_data[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)] = '\0';
+
 			JsonOperate json_operate;
 			StudentData student_data;
 			json_operate.JsonAnalysis(post_data, student_data);
 
-			switch (student_data.operate_type_){
-			case logon:{
+			switch (student_data.operate_type_) {
+			case logon: {
 				LogonInfo tmp;
 				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
 				using namespace rapidjson;
@@ -79,11 +85,15 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 #endif // _DEBUG
 
 			}
-				break;
-			case handup:{
+						break;
+			case handup: {
 				StudentData tmp_handup;
-				//tmp_handup = *pThis->mssqlo_->Query(ATL::CA2W(student_data.naem_.c_str()));
 				//发送消息给主界面弹出提示
+				SendMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
+				//if (pThis->handup_ || ) {
+					//保存发言标志
+			//}
+				student_data.sno_;
 				bool* boolptr = nullptr;
 				*boolptr = false;
 				//SendMessage((HWND)App::GetInstance()->GetMainWnd(), );
@@ -91,13 +101,12 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 					//evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
 				}
 
-				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
-			}
-				break;
+				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first)); }
+						 break;
 			case keepalive: {
 
 			}
-				break;
+							break;
 			default:
 				break;
 				evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
@@ -110,9 +119,9 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			pThis->req_vec_.pop_front();
 		}
 	}
-	catch (std::exception& e) {
-		OutputDebugStringA(e.what());
-	}
+		catch (std::exception& e) {
+			OutputDebugStringA(e.what());
+		}
 }
 
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
