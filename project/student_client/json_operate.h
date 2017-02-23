@@ -15,9 +15,11 @@ struct LogonInfo
 };
 
 enum OperateType {
-	logon = 1,
-	handup = 2,
-	keepalive = 3
+	LOGON = 1,			// 登录
+	HANDUP = 2,			// 举手发言，在老师广播的情况使用
+	SPEAK = 3,			// 发言，小组讨论使用
+	STOP_SPEAK = 4,		// 结束发言
+	KEEPA_LIVE = 5,		// 
 };
 
 /* 学生发言信息结构体 */

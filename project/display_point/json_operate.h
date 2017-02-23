@@ -7,22 +7,30 @@
 #include <rapidjson\document.h>
 //#include "common_define.h"
 
+struct LogonInfo
+{
+	std::string appid;
+	std::string group_info;
+	std::string group_ip;
+};
+
+enum OperateType {
+	LOGON = 1,			// 登录
+	HANDUP = 2,			// 举手发言，在老师广播的情况使用
+	SPEAK = 3,			// 发言，小组讨论使用
+	STOP_SPEAK = 4,		// 结束发言
+	KEEPA_LIVE = 5,		// 
+};
+
+/* 学生发言信息结构体 */
 struct StudentData
 {
+	std::string appid_;				// 程序编号，程序的唯一标识
+	std::string sno_;				// 学生学号
+	std::string naem_;				// 学生姓名
+	bool handup_;					// 举手状态
+	OperateType operate_type_;		// 信息类型
 	std::string stream_ip_;
-	std::string group_info_;
-	std::string student_name_;
-	std::string student_id_;
-	bool handup_;
-	int OperateType_;
-	StudentData() {
-		stream_ip_ = nullptr;
-		group_info_ = nullptr;
-		student_name_ = nullptr;
-		student_id_ = nullptr;
-		handup_ = false;
-		OperateType_ = 0;
-	}
 };
 
 class JsonOperate
@@ -31,16 +39,12 @@ public:
 	JsonOperate();
 	~JsonOperate();
 
-	//bool SetStudentName(const char* student_name);
-	//bool SetStudentId(const char* student_id);
-	//bool SetStudentIp(const char* student_ip);
-	//bool SetStudentGroupInfo(const char* student_groupinfo);
-	//bool SetStudentHandupFlag(const char* student_handup_flag);
+	const char* AssembleJson(const StudentData &stu_data);
+	const char* AssembleJson(const LogonInfo &logon_info);
+	void JsonAnalysis(const char* json_data, StudentData &stu_data);
+	void JsonAnalysis(const char* json_data, LogonInfo &logon_info);
 
-	const char* AssembleJson(StudentData student_data);
-	StudentData JsonAnalysis(const char* student_data);
 private:
-	//StudentData student_data_;
 	StudentData analysis_json_struct_;
 	std::string assemble_json_str_;
 };

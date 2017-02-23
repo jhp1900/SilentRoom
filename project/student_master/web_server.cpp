@@ -52,7 +52,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			json_operate.JsonAnalysis(post_data, student_data);
 
 			switch (student_data.operate_type_) {
-			case logon: {
+			case OperateType::LOGON: {
 				LogonInfo ret_logon;
 				ret_logon = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
 				std::string json_str = json_operate.AssembleJson(ret_logon);
@@ -63,8 +63,9 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 #endif // _DEBUG
 
 			}
-						break;
-			case handup: {
+			break;
+
+			case OperateType::HANDUP: {
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
 				SendMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
@@ -79,12 +80,15 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 					//evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
 				}
 
-				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first)); }
-						 break;
-			case keepalive: {
+				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first)); 
+			}
+			break;
+
+			case OperateType::KEEPA_LIVE: {
 
 			}
-							break;
+			break;
+
 			default:
 				break;
 				evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));

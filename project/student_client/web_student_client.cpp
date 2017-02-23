@@ -2,6 +2,10 @@
 #include "application.h"
 #include "main_wnd.h"
 #include "msg_head.h"
+#include <thread>
+#include <mutex>
+
+std::mutex g_lock;
 
 //获取WEB服务器返回数据方法
 static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
@@ -32,7 +36,7 @@ void WebStudentClient::Initial(std::string url)
 			curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());		// url = "http://10.18.3.67:8081"
 			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, GetData);
 			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &buf_);
-			curl_easy_setopt(curl_, CURLOPT_TIMEOUT, 2);			// 设置10S超时返回
+			curl_easy_setopt(curl_, CURLOPT_TIMEOUT, 2);			// 设置2S超时返回
 		}
 	}
 	catch (const std::exception& exc) {
@@ -42,17 +46,21 @@ void WebStudentClient::Initial(std::string url)
 
 void WebStudentClient::SendWebMessage(std::string msg)
 {
-	try {
-		curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg.c_str());
+	auto SendMsgThread = [&](std::string msg) {
+		try {
+			g_lock.lock();
+			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg.c_str());
+			CURLcode res = curl_easy_perform(curl_);
+			g_lock.unlock();
 
-		res_ = curl_easy_perform(curl_);
-		if (res_ != CURLE_OK) {
-			fprintf(stderr, "curl_easy_perform() faild: %s\n", curl_easy_strerror(res_));
+			if (res != CURLE_OK) {
+				fprintf(stderr, "curl_easy_perform() faild: %s\n", curl_easy_strerror(res));
+			}
+		} catch (const std::exception& exc) {
+			printf("%s\n", exc.what());
 		}
-		//curl_easy_cleanup(curl_);
-		//curl_global_cleanup();
-	}
-	catch (const std::exception& exc) {
-		printf("%s\n", exc.what());
-	}
+	};
+
+	std::thread send_thread(SendMsgThread, msg);
+	send_thread.detach();
 }

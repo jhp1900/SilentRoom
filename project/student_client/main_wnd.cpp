@@ -10,7 +10,6 @@
 #include <atlbase.h>
 #include "setup_wnd.h"
 #include "xml_manager.h"
-#include <thread>
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -196,15 +195,9 @@ bool MainWnd::Login()
 	stu_info_.naem_ = CW2A(name.GetData());
 
 	/* 组装登录信息,登录服务器 */
-	stu_info_.operate_type_ = logon;
+	stu_info_.operate_type_ = LOGON;
+	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
 
-	auto SendMsgThread = [&]() {
-		web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
-	};
-
-	std::thread send_thread(SendMsgThread);
-	send_thread.detach();
-	
 	return true;
 }
 
@@ -261,18 +254,23 @@ void MainWnd::LoginAnimation()
 void MainWnd::Speak()
 {
 	// 请求发言；
-	stu_info_.handup_ = true;
-	stu_info_.operate_type_ = OperateType::handup;
+	stu_info_.handup_ = false;
+	stu_info_.operate_type_ = OperateType::SPEAK;
 	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
 }
 
 void MainWnd::StopSpeak()
 {
 	stu_info_.handup_ = false;
+	stu_info_.operate_type_ = OperateType::STOP_SPEAK;
+	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
 }
 
 bool MainWnd::HandUp()
 {
+	stu_info_.handup_ = true;
+	stu_info_.operate_type_ = OperateType::HANDUP;
+	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
 	return false;
 }
 
