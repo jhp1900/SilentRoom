@@ -42,12 +42,6 @@
     <ClCompile Include="native_control_ui.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="json_operate.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="web_student_client.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ip_control_ui.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -55,6 +49,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="xml_manager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\json_operate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\web_student_client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,9 +80,6 @@
     <ClInclude Include="rpc_server.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="msg_head.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="vlc_tool.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -95,12 +92,6 @@
     <ClInclude Include="native_control_ui.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="json_operate.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="web_student_client.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ip_control_ui.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -108,6 +99,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="xml_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\json_operate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\web_student_client.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\msg_head.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

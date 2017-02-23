@@ -156,10 +156,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\utils\json_operate.cpp" />
+    <ClCompile Include="..\utils\web_student_client.cpp" />
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="ip_control_ui.cpp" />
-    <ClCompile Include="json_operate.cpp" />
     <ClCompile Include="main_wnd.cpp" />
     <ClCompile Include="menu_wnd.cpp" />
     <ClCompile Include="native_control_ui.cpp" />
@@ -172,17 +173,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vlc_tool.cpp" />
-    <ClCompile Include="web_student_client.cpp" />
     <ClCompile Include="xml_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\utils\json_operate.h" />
+    <ClInclude Include="..\utils\msg_head.h" />
+    <ClInclude Include="..\utils\web_student_client.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="ip_control_ui.h" />
-    <ClInclude Include="json_operate.h" />
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="menu_wnd.h" />
-    <ClInclude Include="msg_head.h" />
     <ClInclude Include="native_control_ui.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="rpc_server.h" />
@@ -191,7 +192,6 @@
     <ClInclude Include="student_hand_h.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="vlc_tool.h" />
-    <ClInclude Include="web_student_client.h" />
     <ClInclude Include="xml_manager.h" />
   </ItemGroup>
   <ItemGroup>

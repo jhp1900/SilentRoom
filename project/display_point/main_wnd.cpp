@@ -6,7 +6,7 @@
 #include <NetCon.h>
 #include "application.h"
 #include "vlc_tool.h"
-#include "json_operate.h"
+#include "..\utils\json_operate.h"
 #include <atlbase.h>
 #include "setup_wnd.h"
 #include "xml_manager.h"

@@ -30,16 +30,10 @@
     <ClInclude Include="application.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="json_operate.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="student_hand_h.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="rpc_client.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="msg_head.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -60,7 +54,13 @@
     <ClInclude Include="xml_manager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="web_student_client.h">
+    <ClInclude Include="..\utils\json_operate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\web_student_client.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\msg_head.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -75,9 +75,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="json_operate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="student_hand_c.c">
@@ -101,7 +98,10 @@
     <ClCompile Include="xml_manager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="web_student_client.cpp">
+    <ClCompile Include="..\utils\json_operate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\web_student_client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

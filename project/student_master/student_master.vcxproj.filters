@@ -33,7 +33,7 @@
     <ClCompile Include="sql_server_operate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="json_operate.cpp">
+    <ClCompile Include="..\utils\json_operate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClInclude Include="sql_server_operate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="json_operate.h">
+    <ClInclude Include="..\utils\json_operate.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
