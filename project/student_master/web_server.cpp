@@ -53,33 +53,11 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 
 			switch (student_data.operate_type_) {
 			case logon: {
-				LogonInfo tmp;
-				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
-				using namespace rapidjson;
+				LogonInfo ret_logon;
+				ret_logon = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
+				std::string json_str = json_operate.AssembleJson(ret_logon);
 
-				Document doc;
-				Document::AllocatorType& allocator = doc.GetAllocator();
-
-				Value root(kObjectType);
-
-				Value appid(kStringType);
-				appid.SetString(tmp.appid.c_str(), allocator);
-				root.AddMember("appid", appid, allocator);
-
-				Value group_info(kStringType);
-				group_info.SetString(tmp.group_info.c_str(), allocator);
-				root.AddMember("group_info", group_info, allocator);
-
-				Value group_ip(kStringType);
-				group_ip.SetString(tmp.group_ip.c_str(), allocator);
-				root.AddMember("group_ip", group_ip, allocator);
-
-				StringBuffer buffer;
-				Writer<StringBuffer> wtr(buffer);
-				root.Accept(wtr);
-				std::string assemble_json_str = buffer.GetString();
-
-				evbuffer_add_printf(buf, assemble_json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
 #ifdef _DEBUG
 				OutputDebugStringA("logon respons succeed \n");
 #endif // _DEBUG

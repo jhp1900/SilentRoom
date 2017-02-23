@@ -10,6 +10,7 @@
 #include <atlbase.h>
 #include "setup_wnd.h"
 #include "xml_manager.h"
+#include <thread>
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -22,6 +23,7 @@ MainWnd::MainWnd()
 	, cursor_point_({0})
 	, move_now_(false)
 	, login_hwnd_(nullptr)
+	, have_server_ip_(false)
 {
 	stu_info_.appid_ = appid_str;
 }
@@ -45,6 +47,7 @@ void MainWnd::InitWindow()
 	track_mouse_event_.hwndTrack = m_hWnd;
 
 	login_hwnd_ = m_hWnd;
+	WebClientInit();
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
@@ -67,8 +70,7 @@ LRESULT MainWnd::OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled
 {
 	if (wparam != 1)
 		return 0;
-	if (lparam == WM_RBUTTONUP)
-	{
+	if (lparam == WM_RBUTTONUP) {
 		LPPOINT lpoint = new tagPOINT;
 		::GetCursorPos(lpoint);
 		tray_menu_->PopupWnd(lpoint);
@@ -96,6 +98,28 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 			setup_wnd.DoModal(login_hwnd_);
 			break;
 	}
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	/* 解析从服务器返回的 json 数据 */
+	std::string ret_data = *(std::string*)(wparam);
+	LogonInfo logon_info;
+	json_operate_->JsonAnalysis(ret_data.c_str(), logon_info);
+
+	login_hwnd_ = NULL;		// 登录成功后，"设置界面的窗口"不再以本窗口为父窗口！
+	LoginAnimation();		// 登录动效
+
+	// 初始化、启动 ivga
+	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
+		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
+
+	// TODO... 
+	// 初始化、启动 rpc client
+	rpc_client_.reset(new RpcClient);
+	rpc_client_->BindRpcServer(logon_info.group_ip.c_str(), "12322");
+
 	return LRESULT();
 }
 
@@ -134,8 +158,31 @@ LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 	return LRESULT();
 }
 
+void MainWnd::WebClientInit()
+{
+	/* 获取服务器IP，判断是否需要设置IP信息 */
+	std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
+	if (server_ip == "") {
+		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
+			SetupWnd setup_wnd(m_hWnd);
+			setup_wnd.DoModal(login_hwnd_);
+		}
+		have_server_ip_ = false;
+	} else {
+		have_server_ip_ = true;
+		web_client_->Initial(server_ip + ":8081");	// 初始化 web 客户端 
+	}
+}
+
 bool MainWnd::Login()
 {
+	/* 如果服务器 IP 未设置好，则重新设置并初始化 Web 客户端 */
+	if (!have_server_ip_) {
+		WebClientInit();
+		if (!have_server_ip_)
+			return false;
+	}
+
 	/* 判断登录信息是否合理 */
 	login_hwnd_ = m_hWnd;
 	CDuiString sno = m_pm.FindControl(_T("Sno"))->GetText();
@@ -145,43 +192,18 @@ bool MainWnd::Login()
 		return false;
 	}
 
-	/* 获取服务器IP，判断是否需要设置IP信息 */
-	std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
-	if (server_ip == "") {
-		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
-			SetupWnd setup_wnd(m_hWnd);
-			setup_wnd.DoModal(login_hwnd_);
-		}
-		return false;
-	}
-
 	stu_info_.sno_ = CW2A(sno.GetData());
 	stu_info_.naem_ = CW2A(name.GetData());
 
 	/* 组装登录信息,登录服务器 */
-	web_client_->Initial("http://10.18.3.67:8083");	// 初始化 web 客户端 
-	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
-	
-	// TODO....
-	// 接收登录操作返回值
+	stu_info_.operate_type_ = logon;
 
-	if (true) {			// 如果登录成功
-		login_hwnd_ = NULL;		// 登录成功后，"设置界面的窗口"不再以本窗口为父窗口！
+	auto SendMsgThread = [&]() {
+		web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
+	};
 
-		// 登录动效
-		LoginAnimation();
-
-		// 初始化、启动 ivga
-		if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
-			MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
-
-		// TODO... 
-		// 初始化、启动 rpc client
-		rpc_client_.reset(new RpcClient);
-		rpc_client_->BindRpcServer("10.18.3.62", "12322");
-	} else {
-		MessageBox(m_hWnd, _T("登录失败！"), _T("Message"), MB_OK);
-	}
+	std::thread send_thread(SendMsgThread);
+	send_thread.detach();
 	
 	return true;
 }
@@ -240,6 +262,7 @@ void MainWnd::Speak()
 {
 	// 请求发言；
 	stu_info_.handup_ = true;
+	stu_info_.operate_type_ = OperateType::handup;
 	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
 }
 
@@ -338,8 +361,7 @@ void MainWnd::AutoGetIp()
 
 	net_manager->EnumConnections(NCME_DEFAULT, &net_enum);
 	NETCON_PROPERTIES *net_proper;
-	while (net_enum->Next(1, &net_conn, &celt_fetched) == S_OK)
-	{
+	while (net_enum->Next(1, &net_conn, &celt_fetched) == S_OK) {
 		net_conn->GetProperties(&net_proper);
 		set_ip(_T("address"), net_proper->pszwName);
 		set_ip(_T("dnsservers"), net_proper->pszwName);

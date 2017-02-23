@@ -13,6 +13,7 @@ struct LogonInfo
 	std::string group_info;
 	std::string group_ip;
 };
+
 enum OperateType {
 	logon = 1,
 	handup = 2,
@@ -37,7 +38,9 @@ public:
 	~JsonOperate();
 
 	const char* AssembleJson(const StudentData &stu_data);
+	const char* AssembleJson(const LogonInfo &logon_info);
 	void JsonAnalysis(const char* json_data, StudentData &stu_data);
+	void JsonAnalysis(const char* json_data, LogonInfo &logon_info);
 
 private:
 	StudentData analysis_json_struct_;

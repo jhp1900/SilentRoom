@@ -1,18 +1,20 @@
 #include "web_student_client.h"
 #include "application.h"
+#include "main_wnd.h"
+#include "msg_head.h"
 
 //获取WEB服务器返回数据方法
 static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
 	std::string* server_data = static_cast<std::string*>(userdata);
 	server_data->append((char*)ptr, size* nmemb);
-	App::GetInstance()->GetMainWnd();
+	HWND hwnd = App::GetInstance()->GetMainWnd()->GetHWND();
+	PostMessage(hwnd, kAM_WebRetMsg, WPARAM(server_data), 0);
 	return (size* nmemb);
 }
 
 WebStudentClient::WebStudentClient()
 {
 }
-
 
 WebStudentClient::~WebStudentClient()
 {
@@ -30,6 +32,7 @@ void WebStudentClient::Initial(std::string url)
 			curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());		// url = "http://10.18.3.67:8081"
 			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, GetData);
 			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &buf_);
+			curl_easy_setopt(curl_, CURLOPT_TIMEOUT, 2);			// 设置10S超时返回
 		}
 	}
 	catch (const std::exception& exc) {
