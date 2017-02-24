@@ -33,8 +33,11 @@ void SetupWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 		if (ip_ctrl->IsReasonable()) {
 			LPCTSTR ip = ip_ctrl->GetText();
 			App::GetInstance()->GetXmlMnge()->SetNodeAttr(_T("ServerIp"), _T("value"), ip);
+			// TODO 发送消息，通知 服务器IP 以设置完成
+			// ...
+			::PostMessage(pa_hwnd_, kAM_IPSetupMsg, 0, 0);
 		} else {
-			MessageBox(nullptr, _T("IP信息不合理!"), _T("Message"), MB_OK);
+			MessageBox(m_hWnd, _T("IP信息不合理!"), _T("Message"), MB_OK);
 			return;
 		}
 	}

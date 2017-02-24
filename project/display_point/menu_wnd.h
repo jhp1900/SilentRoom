@@ -5,9 +5,9 @@
 enum MenuMsg
 {
 	MenuMsgClose,		// ÍË³öÏûÏ¢
-	MenuMsgTemp1,
-	MenuMsgTemp2,
-	MenuMsgStop,
+	//MenuMsgTemp1,
+	//MenuMsgTemp2,
+	//MenuMsgStop,
 	MenuMsgSetup,
 };
 
