@@ -138,6 +138,16 @@ int MsSqlDbOperate::DeleteRecord(wchar_t * student_name)
 	return 0;
 }
 
+int MsSqlDbOperate::Update(wchar_t * sno, int handup)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"UPDATE student_info SET handup='%d' WHERE sno='%s'", handup, sno);
+	if (ret = ExecDirect(strsql) == -1)
+		return -1;
+	return 0;
+}
+
 LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 {
 	int ret = 0;

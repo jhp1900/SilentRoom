@@ -40,6 +40,9 @@ private:
 	event timeout_;
 	timeval timevalue_;
 	pFunc this_func_;
+	std::string broadcast_ip_;
 	bool handup_;
+	bool teacher_;
+	bool already_handup_;
 };
 #endif //__WEB_SERVER__

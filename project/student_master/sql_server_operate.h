@@ -25,6 +25,7 @@ public:
 
 	int AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup);
 	int DeleteRecord(wchar_t* student_name);
+	int Update(wchar_t* sno, int handup);
 
 	LogonInfo* Query(wchar_t* in_appid);
 private:
