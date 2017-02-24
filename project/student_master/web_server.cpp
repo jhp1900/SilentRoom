@@ -89,27 +89,10 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
 				SendMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
-				//if (pThis->handup_ || ) {
-					//保存发言标志
-			//}
-				student_data.sno_;
-				bool* boolptr = nullptr;
-				*boolptr = false;
-				//SendMessage((HWND)App::GetInstance()->GetMainWnd(), );
-				if (*boolptr) {
-					//evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
-				}
 
 				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first)); 
 			}
-			break;
-
-			case OperateType::KEEPA_LIVE: {
-
-				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
-			}
-			break;
-
+				break;
 			default:
 					evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
 				break;
