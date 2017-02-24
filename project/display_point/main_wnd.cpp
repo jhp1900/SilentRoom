@@ -6,7 +6,7 @@
 #include <NetCon.h>
 #include "application.h"
 #include "vlc_tool.h"
-#include "json_operate.h"
+#include "..\utils\json_operate.h"
 #include <atlbase.h>
 #include "setup_wnd.h"
 #include "xml_manager.h"
@@ -189,9 +189,10 @@ LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 	std::string json_str = (char*)wparam;
 
 	JsonOperate json_operate;
-	StudentData student_data = json_operate.JsonAnalysis(json_str.c_str());
+	StudentData student_data;
+	json_operate.JsonAnalysis(json_str.c_str(), student_data);
 	std::string url = "rtsp://" + student_data.stream_ip_ + ":554/live";
-	if (PlayStream(url, CA2W(student_data.student_name_.c_str()))) {
+	if (PlayStream(url, CA2W(student_data.naem_.c_str()))) {
 		web_client_->SendWebMessage(json_str);
 	}
 
@@ -288,7 +289,7 @@ bool MainWnd::PlayStream(string url, LPCTSTR point_text)
 	m_pm.FindControl(_T("point_label"))->SetText(point_text);
 	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
 	show_wnd_ = true;
-	SetTimer(m_hWnd, 3, 6300, nullptr);
+	SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
 	return true;
 }
 

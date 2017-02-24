@@ -27,6 +27,12 @@
     <ClInclude Include="json_operate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="web_student_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="msg_head.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="json_operate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="web_student_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

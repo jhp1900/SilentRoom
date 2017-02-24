@@ -1,12 +1,12 @@
 #pragma once
 #include "stdafx.h"
-#include "msg_head.h"
+#include "..\utils\msg_head.h"
 #include "menu_wnd.h"
 #include <memory>
 #include "native_control_ui.h"
 #include "rpc_server.h"
 #include <thread>
-#include "web_student_client.h"
+#include "..\utils\web_student_client.h"
 
 class VideoWnd :public WindowImplBase
 {

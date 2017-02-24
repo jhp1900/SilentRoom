@@ -29,9 +29,9 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 
 		JsonOperate json_operator;
 		StudentData student_data;
-		//json_operator.JsonAnalysis(post_data, student_data);
+		json_operator.JsonAnalysis(post_data, student_data);
 
-		if (student_data.operate_type_ == keepalive)
+		if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
 		{
 			evbuffer* buf = evbuffer_new();
 			evbuffer_add_printf(buf, pThis->broadcast_ip_.c_str(), evhttp_request_get_uri(req));
@@ -73,47 +73,43 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			json_operate.JsonAnalysis(post_data, student_data);
 
 			switch (student_data.operate_type_) {
-			case logon: {
-				LogonInfo tmp;
-				tmp = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
-				using namespace rapidjson;
+			case OperateType::LOGON: {
+				LogonInfo ret_logon;
+				ret_logon = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
+				std::string json_str = json_operate.AssembleJson(ret_logon);
 
-				Document doc;
-				Document::AllocatorType& allocator = doc.GetAllocator();
-
-				Value root(kObjectType);
-
-				Value appid(kStringType);
-				appid.SetString(tmp.appid.c_str(), allocator);
-				root.AddMember("appid", appid, allocator);
-
-				Value group_info(kStringType);
-				group_info.SetString(tmp.group_info.c_str(), allocator);
-				root.AddMember("group_info", group_info, allocator);
-
-				Value group_ip(kStringType);
-				group_ip.SetString(tmp.group_ip.c_str(), allocator);
-				root.AddMember("group_ip", group_ip, allocator);
-
-				StringBuffer buffer;
-				Writer<StringBuffer> wtr(buffer);
-				root.Accept(wtr);
-				std::string assemble_json_str = buffer.GetString();
-				evbuffer_add_printf(buf, assemble_json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
 #ifdef _DEBUG
 				OutputDebugStringA("logon respons succeed \n");
 #endif // _DEBUG
 			}
-				break;
-			case handup: {
-				PostMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
-				pThis->broadcast_ip_ = student_data.stream_ip_;
-				pThis->already_handup_ = true;
+			break;
+
+			case OperateType::HANDUP: {
 				StudentData tmp_handup;
+				//发送消息给主界面弹出提示
+				SendMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
+				//if (pThis->handup_ || ) {
+					//保存发言标志
+			//}
+				student_data.sno_;
+				bool* boolptr = nullptr;
+				*boolptr = false;
+				//SendMessage((HWND)App::GetInstance()->GetMainWnd(), );
+				if (*boolptr) {
+					//evbuffer_add_printf(buf, tmp_handup.group_info_.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				}
+
+				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first)); 
+			}
+			break;
+
+			case OperateType::KEEPA_LIVE: {
 
 				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
 			}
-				break;
+			break;
+
 			default:
 					evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
 				break;

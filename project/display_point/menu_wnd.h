@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "msg_head.h"
+#include "..\utils\msg_head.h"
 
 enum MenuMsg
 {

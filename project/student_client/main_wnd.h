@@ -18,6 +18,7 @@ public:
 	BEGIN_DUIMSG_MAP(MainWnd)
 		DUIMSG_HANDLER(kAM_TrayCallbackMsg, OnTray)
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
+		DUIMSG_HANDLER(kAM_WebRetMsg, OnWebRetMsg)
 		DUIMSG_HANDLER(WM_RBUTTONDOWN, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
@@ -38,9 +39,11 @@ private:
 	virtual LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) override;
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
+	void WebClientInit();
 	bool Login();			// 响应登录事件
 	void LoginAnimation();	// 登录动效
 	void Speak();			// 响应发言事件
@@ -66,4 +69,5 @@ private:
 	std::shared_ptr<WebStudentClient> web_client_;
 
 	HWND login_hwnd_;
+	bool have_server_ip_;
 };
