@@ -323,11 +323,11 @@ void MainWnd::GetLocalIP()
 void MainWnd::AutoGetIp()
 {
 	auto set_ip = [](LPCTSTR type, LPCTSTR net_name) {
-		CDuiString comline = _T("/c netsh interface ip set name=\"");
+		CDuiString comline = _T("/c netsh interface ip set ");
 		comline += type;
-		comline += _T("\" ");
+		comline += _T(" name=\"");
 		comline += net_name;
-		comline += _T(" dhcp");
+		comline += _T("\" dhcp");
 
 		SHELLEXECUTEINFO shell_info = { 0 };
 		shell_info.cbSize = sizeof(SHELLEXECUTEINFO);

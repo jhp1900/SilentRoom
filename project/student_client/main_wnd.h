@@ -1,11 +1,11 @@
 #pragma once
 #include "stdafx.h"
-#include "msg_head.h"
+#include "..\utils\msg_head.h"
 #include <memory>
 #include "menu_wnd.h"
 #include "rpc_client.h"
-#include "json_operate.h"
-#include "web_student_client.h"
+#include "..\utils\json_operate.h"
+#include "..\utils\web_student_client.h"
 
 class MainWnd : public WindowImplBase
 {

@@ -1,5 +1,5 @@
 #include "setup_wnd.h"
-#include "msg_head.h"
+#include "..\utils\msg_head.h"
 #include "application.h"
 #include "xml_manager.h"
 
