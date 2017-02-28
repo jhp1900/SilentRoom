@@ -4,6 +4,7 @@
 #include <curl\curl.h>
 #include <exception>
 #include <string>
+#include <thread>
 
 class WebStudentClient
 {
@@ -13,6 +14,7 @@ public:
 
 	void Initial(std::string url);
 	void SendWebMessage(std::string msg);
+	void KeepAlive(std::string);
 
 private:
 	CURL* curl_;

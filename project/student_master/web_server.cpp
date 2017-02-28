@@ -83,18 +83,18 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				OutputDebugStringA("logon respons succeed \n");
 #endif // _DEBUG
 			}
-			break;
+									 break;
 
 			case OperateType::HANDUP: {
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
 				SendMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
 
-				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first)); 
+				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
 			}
-				break;
+									  break;
 			default:
-					evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
+				evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
 				break;
 			}
 			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
@@ -102,9 +102,9 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			pThis->req_vec_.pop_front();
 		}
 	}
-		catch (std::exception& e) {
-			OutputDebugStringA(e.what());
-		}
+	catch (std::exception& e) {
+		OutputDebugStringA(e.what());
+	}
 }
 
 int WebServer::Initial(int time_out, char* http_addr, short http_port)
@@ -124,7 +124,7 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
 	}
-	
+
 	base_ = event_base_new();
 	http_server_ = evhttp_new(base_);
 

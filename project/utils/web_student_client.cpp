@@ -17,6 +17,8 @@ static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
 	std::string* server_data = static_cast<std::string*>(userdata);
 	server_data->append((char*)ptr, size* nmemb);
 	HWND hwnd = App::GetInstance()->GetMainWnd()->GetHWND();
+	if (server_data->find("rtmp://") && server_data->find("hanup")) //心跳返回数据
+		PostMessage(hwnd, NULL, WPARAM(server_data), 0);
 	PostMessage(hwnd, kAM_WebRetMsg, WPARAM(server_data), 0);
 	return (size* nmemb);
 }
@@ -62,6 +64,33 @@ void WebStudentClient::SendWebMessage(std::string msg)
 				fprintf(stderr, "curl_easy_perform() faild: %s\n", curl_easy_strerror(res));
 			}
 		} catch (const std::exception& exc) {
+			printf("%s\n", exc.what());
+		}
+	};
+
+	std::thread send_thread(SendMsgThread, msg);
+	send_thread.detach();
+}
+
+void WebStudentClient::KeepAlive(std::string msg)
+{
+	auto SendMsgThread = [&](std::string msg) {
+		try {
+			while (true)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				g_lock.lock();
+				curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg.c_str());
+				CURLcode res = curl_easy_perform(curl_);
+				g_lock.unlock();
+
+				if (res != CURLE_OK) {
+					fprintf(stderr, "curl_easy_perform() faild: %s\n", curl_easy_strerror(res));
+					OutputDebugStringA("server not response! \n");
+				}
+			}
+		}
+		catch (const std::exception& exc) {
 			printf("%s\n", exc.what());
 		}
 	};
