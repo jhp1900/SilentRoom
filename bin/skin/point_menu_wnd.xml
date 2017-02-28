@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Window roundcorner="5,5" size="100,227">
+<Window roundcorner="5,5" size="100,101">
   <Font id="0" name="微软雅黑" size="18" bold="false" italic="false" default="true" />
   <VerticalLayout bkcolor="#88555555" inset="5,5,5,5" childpadding="2">
-    <Button name="test1" text="stream1" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
-    <Button name="test2" text="stream2" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
-    <Button name="stop" text="stop" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
+    <VerticalLayout visible="false">
+      <Button name="test1" text="stream1" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
+      <Button name="test2" text="stream2" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
+      <Button name="stop" text="stop" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
+    </VerticalLayout>
     <Button name="setup_item" text="设置" height="40" align="left" textcolor="#ff000000" textpadding="10,0,0,0" borderround="5,5" bkcolor="#55e0e0e0" hotbkcolor="#ff5ccc5c" hottextcolor="#ff0000aa" />
     <Control height="1" />
     <Control height="1" bkcolor="#ff999999" />

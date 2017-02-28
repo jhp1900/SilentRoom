@@ -33,6 +33,7 @@ public:
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
 		DUIMSG_HANDLER(WM_TIMER, OnTimer)
 		DUIMSG_HANDLER(kAM_RpcHandupMsg, OnRpcHandupMsg)
+		DUIMSG_HANDLER(kAM_IPSetupMsg, OnIpSetupMsg)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUICONTROL_CREATE(Manager)
@@ -48,18 +49,18 @@ private:
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	void AddTray();			// 添加托盘
 	void GetLocalIP();		// 获取本机IP
 	void Animation();
 	void StartRpcThread();
-	void StartCurlClient();
 	bool PlayStream(string url, LPCTSTR point_text);	// 播放url指定视频流
 	void StopStream();
 
 private:
 	NOTIFYICONDATA tray_data_;
-	string ip_info_;
+	string local_ip_;
 	bool show_wnd_;
 
 	std::shared_ptr<MenuWnd> tray_menu_;

@@ -10,6 +10,7 @@
 #include <atlbase.h>
 #include "setup_wnd.h"
 #include "xml_manager.h"
+#include <math.h>
 
 #pragma comment(lib,"Iphlpapi.lib")
 
@@ -31,7 +32,7 @@ void VideoWnd::SetWndShow(bool show)
 
 MainWnd::MainWnd()
 	: tray_data_({0})
-	, ip_info_("")
+	, local_ip_("")
 	, show_wnd_(false)
 	, tray_menu_(nullptr)
 	, Video_wnd_(nullptr)
@@ -51,8 +52,10 @@ MainWnd::~MainWnd()
 void MainWnd::InitWindow()
 {
 	AddTray();		// 添加托盘
-	GetLocalIP();	// 获取本机IP
+	GetLocalIP();	// 获取本机IP, 用于 ivga 广播
 	Animation();	// 启动动效
+
+	web_client_.reset(new WebStudentClient);
 
 	// 创建流播放窗口
 	Video_wnd_.reset(new VideoWnd);
@@ -62,20 +65,8 @@ void MainWnd::InitWindow()
 	StartRpcThread();
 
 	// 初始化、启动 ivga 广播
-	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(ip_info_))
+	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
-
-	// 启动 curl 客户端
-	StartCurlClient();
-
-	if (App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")) == _T("")) {
-		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
-			SetupWnd setup_wnd(m_hWnd);
-			setup_wnd.DoModal(m_hWnd);
-		} else {
-			return;
-		}
-	}
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -112,15 +103,15 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 		case MenuMsgClose:
 			Close();
 			break;
-		case MenuMsgTemp1:
-			PlayStream("rtsp://10.18.3.92:554/live123", _T("Stream 1"));
-			break;
-		case MenuMsgTemp2:
-			PlayStream("rtsp://10.18.3.67:8554/live123", _T("Stream 2"));
-			break;
-		case MenuMsgStop:
-			StopStream();
-			break;
+		//case MenuMsgTemp1:
+		//	PlayStream("rtsp://10.18.3.92:554/live123", _T("Stream 1"));
+		//	break;
+		//case MenuMsgTemp2:
+		//	PlayStream("rtsp://10.18.3.67:8554/live123", _T("Stream 2"));
+		//	break;
+		//case MenuMsgStop:
+		//	StopStream();
+		//	break;
 		case MenuMsgSetup:
 			SetupWnd setup_wnd(m_hWnd);
 			setup_wnd.DoModal(m_hWnd);
@@ -143,6 +134,7 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 			alpha_ = 255;
 			::ShowWindow(m_hWnd, SW_HIDE);
 			SetLayeredWindowAttributes(m_hWnd, 0, alpha_, LWA_ALPHA);
+			SetTimer(m_hWnd, 5, 5, nullptr);
 		}
 	};
 
@@ -166,6 +158,26 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 			KillTimer(m_hWnd, 4);
 	};
 
+	auto ip_check = [&]() {
+		KillTimer(m_hWnd, 5);
+
+		std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")));
+		if (server_ip == "") {
+			if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
+				SetupWnd setup_wnd(m_hWnd);
+				setup_wnd.DoModal(m_hWnd);
+			} else {
+				m_pm.FindControl(_T("point_label"))->SetText(_T("请先设置 服务器IP！"));
+				SetLayeredWindowAttributes(m_hWnd, 0, 255, LWA_ALPHA);
+				::ShowWindow(m_hWnd, SW_SHOW);
+				return;
+			}
+		} else {
+			// 启动 Web 客户端
+			web_client_->Initial(server_ip);
+		}
+	};
+
 	switch (wparam) {
 		case 1: 
 			point_timer();
@@ -178,6 +190,9 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 			break;
 		case 4:
 			play_anima();
+			break;
+		case 5:
+			ip_check();
 			break;
 	}
 	
@@ -196,6 +211,15 @@ LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 		web_client_->SendWebMessage(json_str);
 	}
 
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")));
+	web_client_->Initial(server_ip);
+	m_pm.FindControl(_T("point_label"))->SetText(_T("欢迎使用***!"));
+	Animation();	// 启动动效
 	return LRESULT();
 }
 
@@ -235,7 +259,7 @@ void MainWnd::GetLocalIP()
 			while (iter) {
 				oss.str("");
 				oss << iter->IpAddress.String;
-				ip_info_ = oss.str();
+				local_ip_ = oss.str();
 				iter = iter->Next;
 			}
 			pIpAdapterInfo = pIpAdapterInfo->Next;
@@ -251,7 +275,7 @@ void MainWnd::Animation()
 	// 设置透明色  		
 	COLORREF cr_key = RGB(0, 0, 0);
 	SetLayeredWindowAttributes(m_hWnd, cr_key, 0, LWA_COLORKEY);
-	SetTimer(m_hWnd, 1, 4000, nullptr);
+	SetTimer(m_hWnd, 1, 3000, nullptr);
 }
 
 void MainWnd::StartRpcThread()
@@ -266,16 +290,6 @@ void MainWnd::StartRpcThread()
 
 	rpc_listen_thread_.reset(new std::thread(start_rpc_listen));
 	rpc_listen_thread_->detach();
-}
-
-void MainWnd::StartCurlClient()
-{
-	// TODO ....
-	// 读取配置文件，获得 服务器IP信息
-	string server_ip = "http://10.18.3.67:8081";
-
-	web_client_.reset(new WebStudentClient);
-	web_client_->Initial(server_ip);
 }
 
 bool MainWnd::PlayStream(string url, LPCTSTR point_text)

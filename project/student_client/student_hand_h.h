@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Feb 23 09:38:46 2017
+/* at Mon Feb 27 15:58:17 2017
  */
 /* Compiler settings for student_hand.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
