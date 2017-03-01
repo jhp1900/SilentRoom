@@ -113,8 +113,8 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	// 初始化、启动 ivga
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
+	stu_info_.stream_ip_ = local_ip_;
 
-	// TODO... 
 	// 初始化、启动 rpc client
 	rpc_client_.reset(new RpcClient);
 	rpc_client_->BindRpcServer(logon_info.group_ip.c_str(), "12322");

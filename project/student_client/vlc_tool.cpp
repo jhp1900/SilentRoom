@@ -18,7 +18,7 @@ bool VLCTool::BeginBroadcast(string ipaddr)
 		"--live-caching=300",
 	};
 	const char* url = "Screen://";
-	string first_part = "#transcode{vcodec=mp4v,acodec=none,vb=16,threads=2,scale=0.80}:duplicate{dst=rtp{sdp=rtsp://";
+	string first_part = "#transcode{vcodec=mp4v,acodec=none,vb=16,threads=2,scale=1.00}:duplicate{dst=rtp{sdp=rtsp://";
 	string second_part = ":554/live}}";
 
 	first_part += ipaddr + second_part;
