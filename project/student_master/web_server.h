@@ -31,6 +31,7 @@ public:
 	int Initial(int time_out, char* http_addr, short http_port);
 
 	void ServerStart();
+	void SetStreamIp(char* stream_ip);
 
 private:
 	std::shared_ptr<MsSqlDbOperate> mssqlo_;

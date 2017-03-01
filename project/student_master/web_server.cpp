@@ -88,7 +88,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			case OperateType::HANDUP: {
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
-				SendMessage((HWND)App::GetInstance()->GetMainWnd(), 0, 0, 0);
+				PostMessage((HWND)App::GetInstance()->GetMainWnd(), Silent_Handup, (WPARAM)(tmp_handup.stream_ip_.c_str()), 0);
 
 				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
 			}
@@ -113,14 +113,7 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 
 	mssqlo_.reset(new MsSqlDbOperate);
 	mssqlo_->Connect(L"SQS", L"sa", L"123");
-	int start = GetTickCount();
-	for (int x = 0; x <= 10; x++)
-	{
-		mssqlo_->Update(L"2011101001", x);
-	}
 
-	int last = GetTickCount();
-	int total = last - start;
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
 	}
@@ -153,6 +146,12 @@ int WebServer::Initial(int time_out, char* http_addr, short http_port)
 void WebServer::ServerStart()
 {
 	event_base_dispatch(base_);
+}
+
+void WebServer::SetStreamIp(char * stream_ip)
+{
+	assert(stream_ip);
+	broadcast_ip_ = stream_ip;
 }
 
 void WebServer::HttpDisposal(evhttp_request * req, void * arg)

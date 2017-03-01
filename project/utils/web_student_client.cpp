@@ -17,7 +17,7 @@ static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
 	std::string* server_data = static_cast<std::string*>(userdata);
 	server_data->append((char*)ptr, size* nmemb);
 	HWND hwnd = App::GetInstance()->GetMainWnd()->GetHWND();
-	if (server_data->find("rtmp://") && server_data->find("hanup")) //心跳返回数据
+	if (server_data->find("rtmp://")) //心跳返回数据
 		PostMessage(hwnd, NULL, WPARAM(server_data), 0);
 	PostMessage(hwnd, kAM_WebRetMsg, WPARAM(server_data), 0);
 	return (size* nmemb);
@@ -72,7 +72,7 @@ void WebStudentClient::SendWebMessage(std::string msg)
 	send_thread.detach();
 }
 
-void WebStudentClient::KeepAlive(std::string msg)
+void WebStudentClient::SendWebMessage(std::string msg, int sleep_time)
 {
 	auto SendMsgThread = [&](std::string msg) {
 		try {
