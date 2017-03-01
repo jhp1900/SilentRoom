@@ -169,7 +169,7 @@ void MainWnd::WebClientInit()
 		have_server_ip_ = false;
 	} else {
 		have_server_ip_ = true;
-		web_client_->Initial(server_ip + ":8081");	// 初始化 web 客户端 
+		web_client_->Initial(server_ip + ":8082");	// 初始化 web 客户端 
 	}
 }
 

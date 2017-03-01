@@ -92,7 +92,7 @@ void JsonOperate::JsonAnalysis(const char * stu_data, StudentData & log_info)
 	log_info.appid_ = doc["appid"].GetString();
 	log_info.sno_ = doc["sno"].GetString();
 	log_info.naem_ = doc["name"].GetString();
-	log_info.handup_ = doc["HANDUP"].GetBool();
+	log_info.handup_ = doc["handup"].GetBool();
 	log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
 	log_info.stream_ip_ = doc["stream_ip"].GetString();
 }
