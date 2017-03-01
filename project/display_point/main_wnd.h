@@ -34,6 +34,7 @@ public:
 		DUIMSG_HANDLER(WM_TIMER, OnTimer)
 		DUIMSG_HANDLER(kAM_RpcHandupMsg, OnRpcHandupMsg)
 		DUIMSG_HANDLER(kAM_IPSetupMsg, OnIpSetupMsg)
+		DUIMSG_HANDLER(kAM_BroadcastTeacher, OnPlayStream)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUICONTROL_CREATE(Manager)
@@ -50,6 +51,7 @@ private:
 	LRESULT OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	void AddTray();			// 添加托盘
 	void GetLocalIP();		// 获取本机IP

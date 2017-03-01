@@ -223,6 +223,22 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	VLCTool *vlc = App::GetInstance()->GetVLCTool();
+	vlc->DestoryPlay();
+	if (!vlc->PlayStream(play_hwnd_, ((std::string*)wparam)->c_str())) {
+		vlc->DestoryPlay();
+		return false;
+	}
+	m_pm.FindControl(_T("point_label"))->SetText(_T("teacher"));
+	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+	show_wnd_ = true;
+	SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
+
+	return LRESULT();
+}
+
 void MainWnd::AddTray()
 {
 	// 创建、初始化 托盘菜单窗体
