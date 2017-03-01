@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "application.h"
+#include "web_server.h"
 
 enum Msg {
 	Silent_Handup = WM_APP + 20
