@@ -30,7 +30,7 @@ struct StudentData
 	std::string naem_;				// 学生姓名
 	bool handup_;					// 举手状态
 	OperateType operate_type_;		// 信息类型
-	std::string stream_ip_;
+	std::string stream_ip_;			// 切换用的流地址
 };
 
 class JsonOperate

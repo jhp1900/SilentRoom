@@ -174,7 +174,7 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 			}
 		} else {
 			// Æô¶¯ Web ¿Í»§¶Ë
-			web_client_->Initial(server_ip);
+			web_client_->Initial(server_ip + ":8082");
 		}
 	};
 
