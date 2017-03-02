@@ -122,7 +122,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 	}
 }
 
-int WebServer::Initial(int time_out, char* http_addr, short http_port)
+int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 {
 	WSADATA ws_data;
 

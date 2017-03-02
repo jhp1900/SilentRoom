@@ -63,6 +63,9 @@
     <ClInclude Include="..\utils\msg_head.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\utils\utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -102,6 +105,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\utils\web_student_client.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

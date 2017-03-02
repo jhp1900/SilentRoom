@@ -163,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="..\utils\json_operate.h" />
     <ClInclude Include="..\utils\msg_head.h" />
+    <ClInclude Include="..\utils\utils.h" />
     <ClInclude Include="..\utils\web_student_client.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="ip_control_ui.h" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\utils\json_operate.cpp" />
+    <ClCompile Include="..\utils\utils.cpp" />
     <ClCompile Include="..\utils\web_student_client.cpp" />
     <ClCompile Include="application.cpp" />
     <ClCompile Include="ip_control_ui.cpp" />

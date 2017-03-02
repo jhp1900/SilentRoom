@@ -51,7 +51,7 @@ private:
 	bool HandUp();
 	//void SetupWnd();
 	void AddTray();			// 添加托盘
-	void GetLocalIP();		// 获取本机IP
+//	void GetLocalIP();		// 获取本机IP
 	void AutoGetIp();		// 设置为自动获取IP
 
 private:

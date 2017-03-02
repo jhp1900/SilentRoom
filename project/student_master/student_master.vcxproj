@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\utils\json_operate.cpp" />
+    <ClCompile Include="..\utils\utils.cpp" />
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="main_wnd.cpp" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\utils\json_operate.h" />
+    <ClInclude Include="..\utils\utils.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="main_wnd.h" />

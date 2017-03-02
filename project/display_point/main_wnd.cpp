@@ -1,9 +1,5 @@
 #include "main_wnd.h"
 #include "resource.h"
-#include <WinSock2.h>
-#include <IPHlpApi.h>
-#include <sstream>
-#include <NetCon.h>
 #include "application.h"
 #include "vlc_tool.h"
 #include "..\utils\json_operate.h"
@@ -11,8 +7,8 @@
 #include "setup_wnd.h"
 #include "xml_manager.h"
 #include <math.h>
+#include "..\utils\utils.h"
 
-#pragma comment(lib,"Iphlpapi.lib")
 
 HWND VideoWnd::Init(HWND pa_hwnd)
 {
@@ -53,7 +49,7 @@ MainWnd::~MainWnd()
 void MainWnd::InitWindow()
 {
 	AddTray();		// 添加托盘
-	GetLocalIP();	// 获取本机IP, 用于 ivga 广播
+	GetLocalIP(local_ip_);	// 获取本机IP, 用于 ivga 广播
 	Animation();	// 启动动效
 
 	web_client_.reset(new WebStudentClient);
@@ -279,33 +275,6 @@ void MainWnd::AddTray()
 	wcscpy_s(tray_data_.szTip, L"iVGA");
 
 	Shell_NotifyIcon(NIM_ADD, &tray_data_);		// 添加托盘
-}
-
-void MainWnd::GetLocalIP()
-{
-	PIP_ADAPTER_INFO pIpAdapterInfo = new IP_ADAPTER_INFO();
-	unsigned long stSize = sizeof(IP_ADAPTER_INFO);
-	int nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);	// 这里，stSize 既是输入量也是输出量；
-	if (ERROR_BUFFER_OVERFLOW == nRel) {
-		// ERROR_BUFFER_OVERFLOW 表示 传递给 GetAdaptersInfo 的内存空间不够，同时传出的 stSize 表示所需的空间大小
-		delete pIpAdapterInfo;	// 释放掉，重新分配！
-		pIpAdapterInfo = (PIP_ADAPTER_INFO) new BYTE[stSize];
-		nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);	// 利用传出的新空间大小值，重新填充 pIpAdapterInfo
-	}
-	if (ERROR_SUCCESS == nRel) {
-		std::ostringstream oss;
-		while (pIpAdapterInfo) {
-			auto iter = &pIpAdapterInfo->IpAddressList;
-			while (iter) {
-				oss.str("");
-				oss << iter->IpAddress.String;
-				local_ip_ = oss.str();
-				iter = iter->Next;
-			}
-			pIpAdapterInfo = pIpAdapterInfo->Next;
-		}
-		delete pIpAdapterInfo;	// 释放掉
-	}
 }
 
 void MainWnd::Animation()

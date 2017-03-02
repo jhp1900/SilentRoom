@@ -56,7 +56,6 @@ private:
 	LRESULT OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	void AddTray();			// 添加托盘
-	void GetLocalIP();		// 获取本机IP
 	void Animation();
 	void StartRpcThread();
 	bool PlayStream(const string &stream_ip, const string &msg_str);	// 播放stream_ip地址的视频流

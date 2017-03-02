@@ -28,7 +28,7 @@ public:
 
 	void HttpDisposal(evhttp_request* req, void* arg);
 	
-	int Initial(int time_out, char* http_addr, short http_port);
+	int Initial(int time_out, const char* http_addr, short http_port);
 
 	void ServerStart();
 	void SetStreamIp(char* stream_ip);

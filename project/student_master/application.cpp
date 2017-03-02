@@ -1,6 +1,7 @@
 #include "application.h"
 #include "main_wnd.h"
 #include "web_server.h"
+#include "..\utils\utils.h"
 
 App *App::instance_ = nullptr;
 
@@ -29,9 +30,12 @@ bool App::Initialize(HINSTANCE inst)
 {
 	InitResource(inst);
 
+	std::string loc_ip("");
+	GetLocalIP(loc_ip);
+
 	/* Æô¶¯WEB·şÎñÆ÷ */
 	web_server_.reset(new WebServer());
-	web_server_->Initial(1, "10.18.3.62", 8082);
+	web_server_->Initial(1, loc_ip.c_str(), 8082);
 	web_server_->ServerStart();
 	return true;
 }
