@@ -227,7 +227,7 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	return LRESULT();
 }
 
-LRESULT MainWnd::OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	std::string ret_data = *(std::string*)(wparam);
 	JsonOperate json_operate;
@@ -243,6 +243,12 @@ LRESULT MainWnd::OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	} else if (student_data.operate_type_ == OperateType::HEARTBEATS) {
 
 	}
+
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
 	//VLCTool *vlc = App::GetInstance()->GetVLCTool();
 	//vlc->DestoryPlay();
 	//if (!vlc->PlayStream(play_hwnd_, ((std::string*)wparam)->c_str())) {

@@ -72,30 +72,45 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			StudentData student_data;
 			json_operate.JsonAnalysis(post_data, student_data);
 
-			switch (student_data.operate_type_) {
-			case OperateType::LOGON: {
+			/* 登录消息处理 */
+			auto on_logon = [&]() {
 				LogonInfo ret_logon;
 				ret_logon = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
 				std::string json_str = json_operate.AssembleJson(ret_logon);
-
 				evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
-#ifdef _DEBUG
-				OutputDebugStringA("logon respons succeed \n");
-#endif // _DEBUG
-			}
-									 break;
+			};
 
-			case OperateType::HANDUP: {
+			/* 举手消息处理 */
+			auto on_handup = [&]() {
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
 				PostMessage((HWND)App::GetInstance()->GetMainWnd(), Silent_Handup, (WPARAM)(tmp_handup.stream_ip_.c_str()), 0);
+				/* 返回一个非 json 的字符串，会导致程序崩溃 */
+				//evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
+			};
 
-				evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
-			}
-									  break;
-			default:
-				evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
-				break;
+			/* 学生小组内发言或停止发言 */
+			auto on_speak_or_stop = [&]() {
+				// TODO ......
+				// 更新数据库状态（注：无需 evbuffer_add_printf 返回数据）
+			};
+
+			/* 心跳包处理 */
+			auto on_heartbeats = [&]() {
+				// TODO ......
+			};
+
+			switch (student_data.operate_type_) {
+				case OperateType::LOGON: on_logon(); break;
+				case OperateType::HANDUP: on_handup(); break;
+				case OperateType::SPEAK:					// 处理函数同下
+				case OperateType::STOP_SPEAK: on_speak_or_stop();  break;
+				case OperateType::HEARTBEATS: on_heartbeats();  break;
+				case OperateType::KEEPA_LIVE:  break;		// TODO ......
+				default:
+					/* 返回一个非 json 的字符串，会导致程序崩溃 */
+					//evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
+					break;
 			}
 			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
 			evbuffer_free(buf);
