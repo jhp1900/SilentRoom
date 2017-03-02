@@ -57,7 +57,7 @@ private:
 	void GetLocalIP();		// 获取本机IP
 	void Animation();
 	void StartRpcThread();
-	bool PlayStream(string url, LPCTSTR point_text);	// 播放url指定视频流
+	bool PlayStream(const string &stream_ip, const string &msg_str);	// 播放stream_ip地址的视频流
 	void StopStream();
 
 private:
@@ -73,5 +73,6 @@ private:
 
 	int alpha_;
 	HWND play_hwnd_;
+	std::string speaker_;		// 发言者，但没有人在发言是给字符串为 空
 };
 

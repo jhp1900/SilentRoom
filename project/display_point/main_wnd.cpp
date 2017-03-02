@@ -41,6 +41,7 @@ MainWnd::MainWnd()
 	, web_client_(nullptr)
 	, alpha_(255)
 	, play_hwnd_(NULL)
+	, speaker_("")
 {
 }
 
@@ -103,15 +104,6 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 		case MenuMsgClose:
 			Close();
 			break;
-		//case MenuMsgTemp1:
-		//	PlayStream("rtsp://10.18.3.92:554/live123", _T("Stream 1"));
-		//	break;
-		//case MenuMsgTemp2:
-		//	PlayStream("rtsp://10.18.3.67:8554/live123", _T("Stream 2"));
-		//	break;
-		//case MenuMsgStop:
-		//	StopStream();
-		//	break;
 		case MenuMsgSetup:
 			SetupWnd setup_wnd(m_hWnd);
 			setup_wnd.DoModal(m_hWnd);
@@ -206,9 +198,21 @@ LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 	JsonOperate json_operate;
 	StudentData student_data;
 	json_operate.JsonAnalysis(json_str.c_str(), student_data);
-	std::string url = "rtsp://" + student_data.stream_ip_ + ":554/live";
-	if (PlayStream(url, CA2W(student_data.naem_.c_str()))) {
-		web_client_->SendWebMessage(json_str);
+	
+	if (student_data.operate_type_ == OperateType::SPEAK) {
+		if (speaker_ != "") 						// 当已有人在发言时，对新的发言消息不做处理 
+			return 0;
+		if (PlayStream(student_data.stream_ip_, student_data.naem_)) {
+			web_client_->SendWebMessage(json_str);	// 通知服务器改变状态
+		}
+	} else if (student_data.operate_type_ == OperateType::STOP_SPEAK) {
+		if (speaker_ == student_data.naem_) {		// 结束人和当前发言人必须相同才能生效； 即：必须是发言者自己结束发言 
+			StopStream();
+			speaker_ = "";							// 结束发言后，发言者设置空
+			web_client_->SendWebMessage(json_str);
+		}
+	} else if (student_data.operate_type_ == OperateType::HANDUP) {
+		web_client_->SendWebMessage(json_str);		// 如果是举手发言（表示要经过老师同意），则不论是否有人发言，都向服务器转发信息，因为老师有操作权
 	}
 
 	return LRESULT();
@@ -225,16 +229,30 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 
 LRESULT MainWnd::OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	VLCTool *vlc = App::GetInstance()->GetVLCTool();
-	vlc->DestoryPlay();
-	if (!vlc->PlayStream(play_hwnd_, ((std::string*)wparam)->c_str())) {
-		vlc->DestoryPlay();
-		return false;
+	std::string ret_data = *(std::string*)(wparam);
+	JsonOperate json_operate;
+	StudentData student_data;
+	json_operate.JsonAnalysis(ret_data.c_str(), student_data);
+	if (student_data.operate_type_ == OperateType::TEACHER_CONTROL) {
+		if (student_data.naem_ != "") {
+			PlayStream(student_data.stream_ip_, student_data.naem_);
+		} else {							// 教师操控时，若 name_ 为空，代表结束流播放
+			StopStream();
+			speaker_ = "";
+		}
+	} else if (student_data.operate_type_ == OperateType::HEARTBEATS) {
+
 	}
-	m_pm.FindControl(_T("point_label"))->SetText(_T("teacher"));
-	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
-	show_wnd_ = true;
-	SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
+	//VLCTool *vlc = App::GetInstance()->GetVLCTool();
+	//vlc->DestoryPlay();
+	//if (!vlc->PlayStream(play_hwnd_, ((std::string*)wparam)->c_str())) {
+	//	vlc->DestoryPlay();
+	//	return false;
+	//}
+	//m_pm.FindControl(_T("point_label"))->SetText(_T("teacher"));
+	//::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+	//show_wnd_ = true;
+	//SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
 
 	return LRESULT();
 }
@@ -308,15 +326,17 @@ void MainWnd::StartRpcThread()
 	rpc_listen_thread_->detach();
 }
 
-bool MainWnd::PlayStream(string url, LPCTSTR point_text)
+bool MainWnd::PlayStream(const string &stream_ip, const string &msg_str)
 {
+	std::string url = "rtsp://" + stream_ip + ":554/live";
 	VLCTool *vlc = App::GetInstance()->GetVLCTool();
 	vlc->DestoryPlay();
 	if (!vlc->PlayStream(play_hwnd_, url)) {
 		vlc->DestoryPlay();
 		return false;
 	}
-	m_pm.FindControl(_T("point_label"))->SetText(point_text);
+	speaker_ = msg_str;
+	m_pm.FindControl(_T("point_label"))->SetText(CA2W(msg_str.c_str()));
 	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
 	show_wnd_ = true;
 	SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
