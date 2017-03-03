@@ -22,7 +22,6 @@ enum OperateType {
 	STOP_SPEAK = 4,			// 结束发言
 	KEEPA_LIVE = 5,			// 
 	TEACHER_CONTROL = 6,	// 教师操控，教师确定使用哪个流
-	HEARTBEATS = 7,			// 用于收发心跳包
 };
 
 /* 学生发言信息结构体 */

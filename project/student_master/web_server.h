@@ -31,7 +31,11 @@ public:
 	int Initial(int time_out, const char* http_addr, short http_port);
 
 	void ServerStart();
+
+	std::shared_ptr<StudentData> GetHandupData();
+
 	void SetStreamIp(char* stream_ip);
+	std::string GetStreamIp();
 
 private:
 	std::shared_ptr<MsSqlDbOperate> mssqlo_;
@@ -45,5 +49,6 @@ private:
 	bool handup_;
 	bool teacher_;
 	bool already_handup_;
+	std::shared_ptr<StudentData> handup_return_data_;
 };
 #endif //__WEB_SERVER__

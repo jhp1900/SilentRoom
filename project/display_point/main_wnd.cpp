@@ -64,6 +64,7 @@ void MainWnd::InitWindow()
 	// 初始化、启动 ivga 广播
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
+	web_client_->SendWebMessage("fdsa", 1000);
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -236,8 +237,10 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 			StopStream();
 			speaker_ = "";
 		}
-	} else if (student_data.operate_type_ == OperateType::HEARTBEATS) {
-
+	} else if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
+		if (student_data.naem_ == "teacher")
+			PlayStream(student_data.stream_ip_, student_data.naem_);
+		StopStream();
 	}
 
 	return LRESULT();
