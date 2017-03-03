@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 #include <io.h>
+#include <mutex>
 #include "sql_server_operate.h"
 
 
@@ -49,6 +50,7 @@ private:
 	bool handup_;
 	bool teacher_;
 	bool already_handup_;
+	std::mutex server_metux_;
 	std::shared_ptr<StudentData> handup_return_data_;
 };
 #endif //__WEB_SERVER__
