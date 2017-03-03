@@ -160,7 +160,11 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 
 void WebServer::ServerStart()
 {
-	event_base_dispatch(base_);
+	auto start_server = [&]() {
+		event_base_dispatch(base_);
+	};
+	std::thread server_thread(start_server);
+	server_thread.detach();
 }
 
 void WebServer::SetStreamIp(char * stream_ip)
