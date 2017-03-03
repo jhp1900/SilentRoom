@@ -5,6 +5,7 @@
 
 WebServer::WebServer()
 {
+	handup_return_data_.reset(new StudentData);
 	handup_return_data_->appid_ = "1";
 	handup_return_data_->handup_ = false;
 	handup_return_data_->naem_ = "null";
@@ -43,7 +44,10 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			evhttp_send_reply(req, HTTP_OK, "OK", buf);
 		}
 		else {
+			pThis->server_metux_.lock();
 			pThis->req_vec_.push_back(tmp);
+			pThis->server_metux_.unlock();
+			OutputDebugStringA("hand up \n");
 		}
 	}
 	catch (std::exception& e) {
@@ -109,7 +113,9 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			}
 			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
 			evbuffer_free(buf);
+			pThis->server_metux_.lock();
 			pThis->req_vec_.pop_front();
+			pThis->server_metux_.unlock();
 		}
 	}
 	catch (std::exception& e) {

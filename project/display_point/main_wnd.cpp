@@ -64,7 +64,7 @@ void MainWnd::InitWindow()
 	// 初始化、启动 ivga 广播
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
-	web_client_->SendWebMessage("fdsa", 1000);
+	web_client_->SendWebMessage("fdsa", true);
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -226,7 +226,7 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 
 LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	std::string ret_data = *(std::string*)(wparam);
+	std::string ret_data = (char*)(wparam);
 	JsonOperate json_operate;
 	StudentData student_data;
 	json_operate.JsonAnalysis(ret_data.c_str(), student_data);
@@ -238,9 +238,9 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 			speaker_ = "";
 		}
 	} else if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
-		if (student_data.naem_ == "teacher")
+		if (student_data.naem_ == "teacher") {
 			PlayStream(student_data.stream_ip_, student_data.naem_);
-		StopStream();
+		}
 	}
 
 	return LRESULT();
