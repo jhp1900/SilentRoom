@@ -14,7 +14,7 @@ public:
 
 	void Initial(std::string url);
 	void SendWebMessage(std::string msg);
-	void SendWebMessage(std::string, int sleep_time);
+	void SendWebMessage(std::string, bool sleep_time);
 
 private:
 	CURL* curl_;

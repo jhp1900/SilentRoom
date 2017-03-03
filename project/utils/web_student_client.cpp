@@ -72,12 +72,13 @@ void WebStudentClient::SendWebMessage(std::string msg)
 	send_thread.detach();
 }
 
-void WebStudentClient::SendWebMessage(std::string msg, int sleep_time)
+void WebStudentClient::SendWebMessage(std::string msg, bool sleep_time)
 {
 	auto SendMsgThread = [&](std::string msg) {
 		try {
-			while (true)
+			do
 			{
+				if(sleep_time)
 				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				g_lock.lock();
 				curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg.c_str());
@@ -88,7 +89,7 @@ void WebStudentClient::SendWebMessage(std::string msg, int sleep_time)
 					fprintf(stderr, "curl_easy_perform() faild: %s\n", curl_easy_strerror(res));
 					OutputDebugStringA("server not response! \n");
 				}
-			}
+			} while (sleep_time);
 		}
 		catch (const std::exception& exc) {
 			printf("%s\n", exc.what());
