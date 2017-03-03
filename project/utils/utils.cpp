@@ -37,13 +37,12 @@ void GetLocalIP(std::string & loc_ip)
 void SetAutoGetIP()
 {
 	auto set_ip = [](LPCTSTR type, LPCTSTR net_name) {
-		LPTSTR comline = _T("/c netsh interface ip set ");
-		// TODO ... ×Ö·û´®Æ´½Ó
-
-		//comline += type;
-		//comline += _T(" name=\"");
-		//comline += net_name;
-		//comline += _T("\" dhcp");
+		TCHAR comline[MAX_PATH] = { 0 };
+		_tcscat_s(comline, MAX_PATH, _T("/c netsh interface ip set "));
+		_tcscat_s(comline, MAX_PATH, type);
+		_tcscat_s(comline, MAX_PATH, _T(" name=\""));
+		_tcscat_s(comline, MAX_PATH, net_name);
+		_tcscat_s(comline, MAX_PATH, _T("\" dhcp"));
 
 		SHELLEXECUTEINFO shell_info = { 0 };
 		shell_info.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -56,7 +55,6 @@ void SetAutoGetIP()
 		shell_info.lpParameters = comline;
 		shell_info.hInstApp = nullptr;
 
-		//DWORD exitcode;
 		ShellExecuteEx(&shell_info);
 	};
 
