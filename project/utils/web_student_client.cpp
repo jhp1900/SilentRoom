@@ -17,8 +17,6 @@ static size_t GetData(void *ptr, size_t size, size_t nmemb, void *userdata) {
 	std::string* server_data = static_cast<std::string*>(userdata);
 	server_data->append((char*)ptr, size* nmemb);
 	HWND hwnd = App::GetInstance()->GetMainWnd()->GetHWND();
-	//if (server_data->find("rtmp://"))								//心跳返回数据
-	//	PostMessage(hwnd, kAM_BroadcastTeacher, WPARAM(server_data), 0);
 	PostMessage(hwnd, kAM_WebRetMsg, WPARAM(server_data), 0);
 	return (size* nmemb);
 }
@@ -72,14 +70,26 @@ void WebStudentClient::SendWebMessage(std::string msg)
 	send_thread.detach();
 }
 
-void WebStudentClient::SendWebMessage(std::string msg, int sleep_time)
+void WebStudentClient::SendWebMessage(std::string msg, bool sleep_time)
 {
+	JsonOperate json_operate;
+	StudentData keep_alive;
 	auto SendMsgThread = [&](std::string msg) {
 		try {
-			while (true)
+			do
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				if (sleep_time) {
+					keep_alive.appid_ = "1";
+					keep_alive.handup_ = false;
+					keep_alive.naem_ = "xx";
+					keep_alive.operate_type_ = KEEPA_LIVE;
+					keep_alive.sno_ = "1";
+					keep_alive.stream_ip_ = "null";
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				}
+				if(sleep_time)
 				g_lock.lock();
+					curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, json_operate.AssembleJson(keep_alive));
 				curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, msg.c_str());
 				CURLcode res = curl_easy_perform(curl_);
 				g_lock.unlock();
@@ -88,7 +98,7 @@ void WebStudentClient::SendWebMessage(std::string msg, int sleep_time)
 					fprintf(stderr, "curl_easy_perform() faild: %s\n", curl_easy_strerror(res));
 					OutputDebugStringA("server not response! \n");
 				}
-			}
+			} while (sleep_time);
 		}
 		catch (const std::exception& exc) {
 			printf("%s\n", exc.what());

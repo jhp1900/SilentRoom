@@ -5,8 +5,13 @@
 
 WebServer::WebServer()
 {
+	handup_return_data_->appid_ = "1";
+	handup_return_data_->handup_ = false;
+	handup_return_data_->naem_ = "null";
+	handup_return_data_->operate_type_ = KEEPA_LIVE;
+	handup_return_data_->sno_ = "1";
+	handup_return_data_->stream_ip_ = "null";
 }
-
 
 WebServer::~WebServer()
 {
@@ -34,7 +39,7 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
 		{
 			evbuffer* buf = evbuffer_new();
-			evbuffer_add_printf(buf, pThis->broadcast_ip_.c_str(), evhttp_request_get_uri(req));
+			evbuffer_add_printf(buf, json_operator.AssembleJson(*(App::GetInstance()->GetWebServer()->handup_return_data_)), evhttp_request_get_uri(req));
 			evhttp_send_reply(req, HTTP_OK, "OK", buf);
 		}
 		else {
@@ -84,20 +89,14 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			auto on_handup = [&]() {
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
-				PostMessage((HWND)App::GetInstance()->GetMainWnd(), Silent_Handup, (WPARAM)(tmp_handup.stream_ip_.c_str()), 0);
-				/* 返回一个非 json 的字符串，会导致程序崩溃 */
-				//evbuffer_add_printf(buf, "null", evhttp_request_get_uri(pThis->req_vec_.front().first));
+				PostMessage((HWND)App::GetInstance()->GetMainWnd(), Silent_Handup, (WPARAM)(student_data.stream_ip_.c_str()), 0);
 			};
 
 			/* 学生小组内发言或停止发言 */
 			auto on_speak_or_stop = [&]() {
+				int ret = pThis->mssqlo_->Update(ATL::CA2W(student_data.sno_.c_str()), student_data.handup_);
 				// TODO ......
 				// 更新数据库状态（注：无需 evbuffer_add_printf 返回数据）
-			};
-
-			/* 心跳包处理 */
-			auto on_heartbeats = [&]() {
-				// TODO ......
 			};
 
 			switch (student_data.operate_type_) {
@@ -105,11 +104,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				case OperateType::HANDUP: on_handup(); break;
 				case OperateType::SPEAK:					// 处理函数同下
 				case OperateType::STOP_SPEAK: on_speak_or_stop();  break;
-				case OperateType::HEARTBEATS: on_heartbeats();  break;
-				case OperateType::KEEPA_LIVE:  break;		// TODO ......
 				default:
-					/* 返回一个非 json 的字符串，会导致程序崩溃 */
-					//evbuffer_add_printf(buf, "undefined command", evhttp_request_get_uri(pThis->req_vec_.front().first));
 					break;
 			}
 			evhttp_send_reply(pThis->req_vec_.front().first, HTTP_OK, NULL, buf);
@@ -167,10 +162,21 @@ void WebServer::ServerStart()
 	server_thread.detach();
 }
 
+std::shared_ptr<StudentData> WebServer::GetHandupData()
+{
+	return handup_return_data_;
+}
+
 void WebServer::SetStreamIp(char * stream_ip)
 {
 	assert(stream_ip);
-	broadcast_ip_ = stream_ip;
+	handup_return_data_->stream_ip_ = stream_ip;
+	handup_return_data_->naem_ = "teacher";
+}
+
+std::string WebServer::GetStreamIp()
+{
+	return broadcast_ip_;
 }
 
 void WebServer::HttpDisposal(evhttp_request * req, void * arg)
