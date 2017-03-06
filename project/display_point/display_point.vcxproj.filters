@@ -27,9 +27,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="student_hand_s.c">
-      <Filter>头文件</Filter>
-    </ClCompile>
     <ClCompile Include="rpc_server.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
     <ClCompile Include="..\utils\utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\RpcIDL\student_hand_s.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -75,9 +75,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="student_hand_h.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="rpc_server.h">
@@ -114,6 +111,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\utils\utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RpcIDL\student_hand_h.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

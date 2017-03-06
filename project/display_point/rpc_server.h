@@ -1,11 +1,6 @@
 #pragma once
 
-#include "student_hand_h.h"
 #include <string>
-#include <assert.h>
-
-#pragma comment(lib, "rpcrt4")
-#pragma comment(lib, "ole32")
 
 class RpcServer
 {

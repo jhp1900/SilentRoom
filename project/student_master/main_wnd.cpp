@@ -19,5 +19,8 @@ LRESULT MainWnd::OnHandup(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandl
 
 void MainWnd::InitWindow()
 {
+	/* …Ë÷√Õ¯“≥÷˜“≥ */
+	auto web_browser = static_cast<CWebBrowserUI*>(m_pm.FindControl(_T("web_browser")));
+	web_browser->SetHomePage(CPaintManagerUI::GetResourcePath() + _T("html/ParseXmlDemo.html"));
 }
 

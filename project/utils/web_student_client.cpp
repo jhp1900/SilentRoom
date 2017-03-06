@@ -4,11 +4,11 @@
 #include <mutex>
 
 
-//#include "..\student_client\application.h"
-//#include "..\student_client\main_wnd.h"
+#include "..\student_client\application.h"
+#include "..\student_client\main_wnd.h"
 
-#include "..\display_point\application.h"
-#include "..\display_point\main_wnd.h"
+//#include "..\display_point\application.h"
+//#include "..\display_point\main_wnd.h"
 
 std::mutex g_lock;
 

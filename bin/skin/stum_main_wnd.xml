@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Window size="300,651">
   <Container name="frame_body" bkcolor="#ffaaaaaa">
-    <WebBrowser homepage="file://D:/Code/Work/SilentRoom/bin/skin/html/ParseXmlDemo.html" autonavi="true" />
+    <WebBrowser name="web_browser" homepage="" autonavi="true" />
   </Container>
 </Window>
