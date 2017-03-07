@@ -19,6 +19,7 @@ public:
 		DUIMSG_HANDLER(kAM_TrayCallbackMsg, OnTray)
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
 		DUIMSG_HANDLER(kAM_WebRetMsg, OnWebRetMsg)
+		DUIMSG_HANDLER(kAM_IPSetupMsg, OnIpSetupMsg)
 		DUIMSG_HANDLER(WM_RBUTTONDOWN, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
@@ -40,6 +41,7 @@ private:
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
