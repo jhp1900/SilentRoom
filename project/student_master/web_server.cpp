@@ -25,20 +25,19 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	try {
 		WebServer* pThis = static_cast<WebServer*>(arg);
 		request_data tmp;
-		char* dest;
+		//std::shared_ptr<char> dest;
 		tmp.first = req;
 		tmp.second = true;
 
 		char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
 		post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
-		dest = new char[EVBUFFER_LENGTH(req->input_buffer)];
-		memcpy(dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
-		dest[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+		//dest.reset(new char[EVBUFFER_LENGTH(req->input_buffer)]);
+		//memcpy(&dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
+		//dest[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
 
 		JsonOperate json_operator;
 		StudentData student_data;
 		json_operator.JsonAnalysis(post_data, student_data);
-		//delete[] dest;
 		if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
 		{
 			evbuffer* buf = evbuffer_new();
@@ -66,7 +65,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 	try {
 		char output[2048] = "\0";
 		char tmp[1024] = "\0";
-		char* dest;
+		//char* dest;
 		WebServer* pThis = static_cast<WebServer*>(arg);
 #ifdef _DEBUG
 		OutputDebugStringA("time out callback \n");
@@ -80,8 +79,8 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				return;
 			}
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
-			dest = (new char[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)]);
-			memcpy(dest, (char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer), EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer));
+			//dest = (new char[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)]);
+			//memcpy(dest, (char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer), EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer));
 			post_data[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)] = '\0';
 
 			JsonOperate json_operate;
