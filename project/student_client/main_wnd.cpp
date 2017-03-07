@@ -99,7 +99,7 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	/* 解析从服务器返回的 json 数据 */
-	std::string ret_data = *(std::string*)(wparam);
+	std::string ret_data = (char*)(wparam);
 	LogonInfo logon_info;
 	json_operate_->JsonAnalysis(ret_data.c_str(), logon_info);
 

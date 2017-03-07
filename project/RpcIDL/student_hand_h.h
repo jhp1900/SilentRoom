@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Wed Jan 04 10:28:34 2017
+/* at Mon Mar 06 16:21:40 2017
  */
 /* Compiler settings for student_hand.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -56,12 +56,10 @@ extern "C"{
 /* interface StudentHand */
 /* [implicit_handle][version][uuid] */ 
 
-/* [async] */ void  Handup( 
-    /* [in] */ PRPC_ASYNC_STATE Handup_AsyncHandle,
+void Handup( 
     /* [string][in] */ unsigned char *start);
 
-/* [async] */ void  HandupEnd( 
-    /* [in] */ PRPC_ASYNC_STATE HandupEnd_AsyncHandle,
+void HandupEnd( 
     /* [string][in] */ unsigned char *end);
 
 

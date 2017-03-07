@@ -1,22 +1,21 @@
 #include "rpc_server.h"
 #include "application.h"
 #include "main_wnd.h"
+#include <assert.h>
+#include "..\RpcIDL\student_hand_h.h"
+#pragma comment(lib, "rpcrt4")
+#pragma comment(lib, "ole32")
 
-void Handup(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* start) {
+void Handup(unsigned char* start) {
 	
 	::PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_RpcHandupMsg, (WPARAM)start, 0);
-	RpcAsyncCompleteCall(rpcasynhandle, "ok");
-	//if (hand_flag)
-	//	return false;
-	//hand_flag = true;
-	//::PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_RpcHandupMsg, (WPARAM)start, 0);
-	//return true;
+	//RpcAsyncCompleteCall(rpcasynhandle, "ok");
 }
 
-void HandupEnd(PRPC_ASYNC_STATE rpcasynhandle, unsigned char* end) {
+void HandupEnd(unsigned char* end) {
 	printf("recieve");
 	printf("%s\n", end);
-	RpcAsyncCompleteCall(rpcasynhandle, NULL);
+	//RpcAsyncCompleteCall(rpcasynhandle, NULL);
 }
 
 void* __RPC_USER midl_user_allocate(size_t len) {

@@ -1,4 +1,9 @@
 #include "rpc_client.h"
+#include <assert.h>
+#include "..\RpcIDL\student_hand_h.h"
+
+#pragma comment(lib, "rpcrt4")
+#pragma comment(lib, "ole32")
 
 void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)
 {
@@ -12,8 +17,8 @@ void __RPC_USER midl_user_free(void __RPC_FAR *ptr)
 
 RpcClient::RpcClient()
 	:pszStringBinding_(NULL)
-	,test_ip_("10.18.3.67")
-	,test_port_("2016")
+	,test_ip_("")
+	,test_port_("")
 {
 }
 
@@ -54,18 +59,7 @@ void RpcClient::SetDisplayPointPort(const char * port)
 bool RpcClient::HandupOperat(const char* student_data)
 {
 	RpcTryExcept{
-		RpcAsyncInitializeHandle(&async_, sizeof(async_));
-		async_.UserInfo = NULL;
-		async_.NotificationType = RpcNotificationTypeNone;
-
-		Handup(&async_, (unsigned char*)student_data);
-		//if (RpcAsyncGetCallStatus(&async_) == ERROR_IO_PENDING)
-		//{
-		//	printf("call hello() pending, wait 1s...\n");
-		//	return false;
-		//	//Sleep(50);RPC_S_ASYNC_CALL_PENDING
-		//}
-		RpcAsyncCompleteCall(&async_, NULL);
+		Handup((unsigned char*)student_data);
 	} RpcExcept(1) {
 		printf("RPC Exception %d\n", RpcExceptionCode());
 	}
