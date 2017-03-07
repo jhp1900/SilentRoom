@@ -118,6 +118,12 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
+{
+	WebClientInit();		// 当 IP设置完成后，重新初始化 Web 客户端
+	return LRESULT();
+}
+
 LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	if (uMsg == WM_RBUTTONDOWN) {
@@ -155,17 +161,21 @@ LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 
 void MainWnd::WebClientInit()
 {
+	have_server_ip_ = false;
+
 	/* 获取服务器IP，判断是否需要设置IP信息 */
-	std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
-	if (server_ip == "") {
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
+	std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
+
+	if (server_ip == "" || server_port == "") {
 		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
 			SetupWnd setup_wnd(m_hWnd);
 			setup_wnd.DoModal(login_hwnd_);
 		}
-		have_server_ip_ = false;
 	} else {
 		have_server_ip_ = true;
-		web_client_->Initial(server_ip + ":8082");	// 初始化 web 客户端 
+		web_client_->Initial(server_ip + ":" + server_port);	// 初始化 web 客户端 
 	}
 }
 

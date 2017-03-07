@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window bktrans="true" roundcorner="4,4" size="250,170" caption="0,0,0,170">
+<Window bktrans="true" roundcorner="4,4" size="300,170" maxinfo="300,170" caption="0,0,0,170">
   <Font id="0" name="微软雅黑" size="18" bold="false" italic="false" default="true" />
   <Font id="1" name="微软雅黑" size="14" bold="false" italic="false" />
   <VerticalLayout inset="0,25,25,0">
-    <VerticalLayout bkcolor="#FFffffff" borderround="4,4" inset="25,5,25,5">
+    <VerticalLayout bkcolor="#FFffffff" borderround="4,4" inset="25,5,25,0">
       <Control />
-      <Container height="30">
+      <HorizontalLayout height="30">
         <IpControl name="ip_address" />
-      </Container>
+        <Control width="5" />
+        <Edit name="port" width="45" font="1" numberonly="true" maxchar="5" bordercolor="#ffaaaaaa" bordersize="1" />
+      </HorizontalLayout>
       <Control height="15" />
-      <Button name="ok_btn" height="35" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+      <Button name="ok_btn" height="35" text="确   定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
       <Control />
     </VerticalLayout>
-    <Button name="close_btn" float="true" pos="200,0,250,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
+    <Button name="close_btn" float="true" pos="250,0,300,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
   </VerticalLayout>
 </Window>
