@@ -25,22 +25,28 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	try {
 		WebServer* pThis = static_cast<WebServer*>(arg);
 		request_data tmp;
-		char dest[100] = "\0";
+		char* dest;
 		tmp.first = req;
 		tmp.second = true;
 
 		char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
-		memcpy(dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
 		post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+		dest = new char[EVBUFFER_LENGTH(req->input_buffer)];
+		memcpy(dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
+		dest[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
 
 		JsonOperate json_operator;
 		StudentData student_data;
 		json_operator.JsonAnalysis(post_data, student_data);
-
+		//delete[] dest;
 		if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
 		{
 			evbuffer* buf = evbuffer_new();
-			evbuffer_add_printf(buf, json_operator.AssembleJson(*(App::GetInstance()->GetWebServer()->handup_return_data_)), evhttp_request_get_uri(req));
+			StudentData data = *(pThis->handup_return_data_);
+			char debug_text[MAX_PATH];
+			sprintf(debug_text, json_operator.AssembleJson(data));
+			OutputDebugStringA(debug_text);
+			evbuffer_add_printf(buf, json_operator.AssembleJson(data), evhttp_request_get_uri(req));
 			evhttp_send_reply(req, HTTP_OK, "OK", buf);
 		}
 		else {
@@ -60,7 +66,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 	try {
 		char output[2048] = "\0";
 		char tmp[1024] = "\0";
-		char dest[100] = "\0";
+		char* dest;
 		WebServer* pThis = static_cast<WebServer*>(arg);
 #ifdef _DEBUG
 		OutputDebugStringA("time out callback \n");
@@ -74,6 +80,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				return;
 			}
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
+			dest = (new char[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)]);
 			memcpy(dest, (char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer), EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer));
 			post_data[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)] = '\0';
 
@@ -91,7 +98,13 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 
 			/* 举手消息处理 */
 			auto on_handup = [&](std::string streamip) {
-				StudentData tmp_handup;
+				pThis->handup_return_data_->appid_ = student_data.appid_;
+				pThis->handup_return_data_->handup_ = false;
+				pThis->handup_return_data_->naem_ = student_data.naem_;
+				//pThis->handup_return_data_->operate_type_ = student_data.operate_type_;
+				pThis->handup_return_data_->sno_ = student_data.sno_;
+				pThis->broadcast_ip_ = student_data.stream_ip_;
+				//StudentData tmp_handup;
 				//发送消息给主界面弹出提示
 				PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_Silent_Handup, (WPARAM)(streamip.c_str()), 0);
 			};
@@ -149,7 +162,11 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 
 		return -1;
 	}
-
+#ifdef DEBUG
+	char outputserver[MAX_PATH];
+	sprintf(outputserver,"server:%s:%d", http_addr, http_port);
+	OutputDebugStringA(outputserver);
+#endif // DEBUG
 	event_assign(&timeout_, base_, -1, EV_PERSIST, TimeOutCallback, this);
 	evutil_timerclear(&timevalue_);
 	timevalue_.tv_sec = time_out;
@@ -175,14 +192,18 @@ std::shared_ptr<StudentData> WebServer::GetHandupData()
 
 void WebServer::SetStreamIp(char* stream_ip)
 {
-	assert(stream_ip);
-	handup_return_data_->stream_ip_ = stream_ip;
-	handup_return_data_->naem_ = "teacher";
+	handup_return_data_->handup_ = true;
+	handup_return_data_->stream_ip_ = broadcast_ip_;
 }
 
 std::string WebServer::GetStreamIp()
 {
 	return broadcast_ip_;
+}
+
+std::shared_ptr<StudentData> WebServer::GetStudentReturnData()
+{
+	return handup_return_data_;
 }
 
 void WebServer::HttpDisposal(evhttp_request * req, void * arg)

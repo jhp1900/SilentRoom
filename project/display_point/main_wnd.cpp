@@ -231,6 +231,7 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	JsonOperate json_operate;
 	StudentData student_data;
 	json_operate.JsonAnalysis(ret_data.c_str(), student_data);
+	memset((char*)wparam, 0, ret_data.length());
 	if (student_data.operate_type_ == OperateType::TEACHER_CONTROL) {
 		if (student_data.naem_ != "") {
 			PlayStream(student_data.stream_ip_, student_data.naem_);
@@ -239,8 +240,13 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 			speaker_ = "";
 		}
 	} else if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
-		if (student_data.naem_ == "teacher") {
-			PlayStream(student_data.stream_ip_, student_data.naem_);
+		if (student_data == last_sutdentdata_) {
+			return LRESULT();
+		} else {
+			last_sutdentdata_ = student_data;
+			if (student_data.handup_)
+				PlayStream(student_data.stream_ip_, student_data.naem_);
+			//StopStream();
 		}
 	}
 
