@@ -238,7 +238,7 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 			speaker_ = "";
 		}
 	} else if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
-		if (student_data.naem_ == "teacher") {
+		if (student_data.handup_) {
 			PlayStream(student_data.stream_ip_, student_data.naem_);
 		}
 	}

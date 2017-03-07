@@ -38,6 +38,8 @@ public:
 	void SetStreamIp(char* stream_ip);
 	std::string GetStreamIp();
 
+	std::shared_ptr<StudentData> GetStudentReturnData();
+
 private:
 	std::shared_ptr<MsSqlDbOperate> mssqlo_;
 	std::list<request_data> req_vec_;
