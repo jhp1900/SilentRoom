@@ -42,7 +42,11 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
 		{
 			evbuffer* buf = evbuffer_new();
-			evbuffer_add_printf(buf, json_operator.AssembleJson(*(pThis->handup_return_data_)), evhttp_request_get_uri(req));
+			StudentData data = *(pThis->handup_return_data_);
+			char debug_text[MAX_PATH];
+			sprintf(debug_text, json_operator.AssembleJson(data));
+			OutputDebugStringA(debug_text);
+			evbuffer_add_printf(buf, json_operator.AssembleJson(data), evhttp_request_get_uri(req));
 			evhttp_send_reply(req, HTTP_OK, "OK", buf);
 		}
 		else {
@@ -100,7 +104,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				//pThis->handup_return_data_->operate_type_ = student_data.operate_type_;
 				pThis->handup_return_data_->sno_ = student_data.sno_;
 				pThis->broadcast_ip_ = student_data.stream_ip_;
-				StudentData tmp_handup;
+				//StudentData tmp_handup;
 				//发送消息给主界面弹出提示
 				PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_Silent_Handup, (WPARAM)(streamip.c_str()), 0);
 			};

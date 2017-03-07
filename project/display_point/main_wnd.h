@@ -75,5 +75,6 @@ private:
 	int alpha_;
 	HWND play_hwnd_;
 	std::string speaker_;		// 发言者，但没有人在发言是给字符串为 空
+	StudentData last_sutdentdata_;
 };
 

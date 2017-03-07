@@ -33,6 +33,24 @@ struct StudentData
 	bool handup_;					// 举手状态
 	OperateType operate_type_;		// 信息类型
 	std::string stream_ip_;			// 切换用的流地址
+
+	bool operator==(const StudentData value) {
+		return(appid_ == value.appid_ && sno_ == value.sno_
+			&& naem_ == value.naem_
+			&& handup_ == value.handup_
+			&& operate_type_ == value.operate_type_
+			&& stream_ip_ == value.stream_ip_);
+	}
+
+	StudentData& operator=(StudentData& value) {
+		appid_ = value.appid_;
+		sno_ = value.sno_;
+		naem_ = value.naem_;
+		handup_ = value.handup_;
+		operate_type_ = value.operate_type_;
+		stream_ip_ = value.stream_ip_;
+		return *this;
+	}
 };
 
 class JsonOperate
