@@ -68,5 +68,8 @@
     <ClInclude Include="..\utils\utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\utils\msg_head.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

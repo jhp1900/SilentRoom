@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "application.h"
 #include "web_server.h"
+#include "..\utils\msg_head.h"
 
 enum Msg {
 	Silent_Handup = WM_APP + 20
@@ -16,7 +17,7 @@ public:
 	DECLARE_DUIWND_INFO(_T("MainWnd"), CS_DBLCLKS, _T("stum_main_wnd.xml"))
 
 	BEGIN_DUIMSG_MAP(MainWnd)
-		DUIMSG_HANDLER(Silent_Handup, OnHandup)
+		DUIMSG_HANDLER(kAM_Silent_Handup, OnHandup)
 		//DUIMSG_HANDLER(kAM_ResetIPInfo, OnResetIPInfoMsg)
 		//DUIMSG_HANDLER(kAM_DPISetMsg, OnDPISetMsg)
 	END_DUIMSG_MAP()

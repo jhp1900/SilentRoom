@@ -9,5 +9,6 @@ enum MyMsg
 	kAM_WebRetMsg,				// web server 返回消息
 	kAM_RpcHandupMsg,			// RPC 举手消息
 	kAM_IPSetupMsg,				// 设置界面， IP设置完成后发送的信息
-	kAM_BroadcastTeacher		// 教师广播消息
+	kAM_BroadcastTeacher,		// 教师广播消息
+	kAM_Silent_Handup,
 };

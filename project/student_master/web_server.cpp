@@ -90,10 +90,10 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			};
 
 			/* 举手消息处理 */
-			auto on_handup = [&]() {
+			auto on_handup = [&](std::string streamip) {
 				StudentData tmp_handup;
 				//发送消息给主界面弹出提示
-				PostMessage((HWND)App::GetInstance()->GetMainWnd(), Silent_Handup, (WPARAM)(student_data.stream_ip_.c_str()), 0);
+				PostMessage(App::GetInstance()->GetMainWnd()->GetHWND(), kAM_Silent_Handup, (WPARAM)(streamip.c_str()), 0);
 			};
 
 			/* 学生小组内发言或停止发言 */
@@ -105,7 +105,7 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 
 			switch (student_data.operate_type_) {
 				case OperateType::LOGON: on_logon(); break;
-				case OperateType::HANDUP: on_handup(); break;
+				case OperateType::HANDUP: on_handup(student_data.stream_ip_); break;
 				case OperateType::SPEAK:					// 处理函数同下
 				case OperateType::STOP_SPEAK: on_speak_or_stop();  break;
 				default:
@@ -173,7 +173,7 @@ std::shared_ptr<StudentData> WebServer::GetHandupData()
 	return handup_return_data_;
 }
 
-void WebServer::SetStreamIp(char * stream_ip)
+void WebServer::SetStreamIp(char* stream_ip)
 {
 	assert(stream_ip);
 	handup_return_data_->stream_ip_ = stream_ip;
