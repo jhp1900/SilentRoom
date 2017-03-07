@@ -39,15 +39,6 @@
     <ClCompile Include="native_control_ui.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ip_control_ui.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="setup_wnd.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="xml_manager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\utils\json_operate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -58,6 +49,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\RpcIDL\student_hand_s.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\ip_control_ui.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\setup_wnd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\xml_manager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,15 +92,6 @@
     <ClInclude Include="native_control_ui.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ip_control_ui.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="setup_wnd.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="xml_manager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\utils\json_operate.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -114,6 +105,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\RpcIDL\student_hand_h.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\ip_control_ui.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\setup_wnd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\xml_manager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

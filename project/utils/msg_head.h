@@ -11,4 +11,5 @@ enum MyMsg
 	kAM_IPSetupMsg,				// 设置界面， IP设置完成后发送的信息
 	kAM_BroadcastTeacher,		// 教师广播消息
 	kAM_Silent_Handup,
+	kAM_BeginKeepaLive,			// 启动心跳
 };

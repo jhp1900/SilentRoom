@@ -4,8 +4,8 @@
 #include "vlc_tool.h"
 #include "..\utils\json_operate.h"
 #include <atlbase.h>
-#include "setup_wnd.h"
-#include "xml_manager.h"
+#include "..\utils\setup_wnd.h"
+#include "..\utils\xml_manager.h"
 #include <math.h>
 #include "..\utils\utils.h"
 
@@ -64,7 +64,6 @@ void MainWnd::InitWindow()
 	// 初始化、启动 ivga 广播
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
-	web_client_->SendWebMessage("fdsa", true);
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -150,8 +149,10 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 	auto ip_check = [&]() {
 		KillTimer(m_hWnd, 5);
 
-		std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")));
-		if (server_ip == "") {
+		auto xml_mnge = App::GetInstance()->GetXmlMnge();
+		std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")));
+		std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")));
+		if (server_ip == "" || server_port == "") {
 			if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
 				SetupWnd setup_wnd(m_hWnd);
 				setup_wnd.DoModal(m_hWnd);
@@ -162,8 +163,8 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 				return;
 			}
 		} else {
-			// 启动 Web 客户端
-			web_client_->Initial(server_ip + ":8082");
+			web_client_->Initial(server_ip + ":" + server_port);	// 启动 Web 客户端
+			::PostMessage(m_hWnd, kAM_BeginKeepaLive, 0, 0);
 		}
 	};
 
@@ -217,8 +218,8 @@ LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 
 LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")));
-	web_client_->Initial(server_ip);
+	//std::string server_ip = CW2A(App::GetInstance()->GetXmlMnge()->GetNodeAttr(_T("ServerIp"), _T("value")));
+	//web_client_->Initial(server_ip);
 	m_pm.FindControl(_T("point_label"))->SetText(_T("欢迎使用***!"));
 	Animation();	// 启动动效
 	return LRESULT();
@@ -259,6 +260,12 @@ LRESULT MainWnd::OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	//show_wnd_ = true;
 	//SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
 
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnBeginKeepaLive(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	web_client_->SendWebMessage("fdsa", true);
 	return LRESULT();
 }
 

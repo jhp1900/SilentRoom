@@ -4,8 +4,8 @@
 #include "resource.h"
 #include "vlc_tool.h"
 #include <atlbase.h>
-#include "setup_wnd.h"
-#include "xml_manager.h"
+#include "..\utils\setup_wnd.h"
+#include "..\utils\xml_manager.h"
 #include "..\utils\utils.h"
 
 MainWnd::MainWnd()

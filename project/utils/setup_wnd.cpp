@@ -1,7 +1,9 @@
 #include "setup_wnd.h"
-#include "..\utils\msg_head.h"
-#include "application.h"
+#include "msg_head.h"
 #include "xml_manager.h"
+
+//#include "..\student_client\application.h"
+#include "..\display_point\application.h"
 
 SetupWnd::SetupWnd(HWND pa_hwnd)
 	: pa_hwnd_(pa_hwnd)

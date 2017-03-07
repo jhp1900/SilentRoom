@@ -1,7 +1,7 @@
 #include "application.h"
 #include "main_wnd.h"
 #include "vlc_tool.h"
-#include "xml_manager.h"
+#include "..\utils\xml_manager.h"
 
 App *App::instance_ = nullptr;
 
