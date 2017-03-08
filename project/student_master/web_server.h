@@ -54,5 +54,6 @@ private:
 	bool already_handup_;
 	std::mutex server_metux_;
 	std::shared_ptr<StudentData> handup_return_data_;
+	std::vector<MasterData> master_data_;
 };
 #endif //__WEB_SERVER__
