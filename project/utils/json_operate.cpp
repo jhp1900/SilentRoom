@@ -82,6 +82,39 @@ const char * JsonOperate::AssembleJson(const LogonInfo & logon_info)
 	return assemble_json_str_.c_str();
 }
 
+const char * JsonOperate::AssembleJson(const std::vector<MasterData>& mast_dt)
+{
+	using namespace rapidjson;
+
+	Document doc;
+	Document::AllocatorType& allocator = doc.GetAllocator();
+	Value json_array(kArrayType);
+
+	for (auto &iter : mast_dt) {
+		Value object(kObjectType);
+		Value appid(kStringType);
+		appid.SetString(iter.id.c_str(), allocator);
+		object.AddMember("id", appid, allocator);
+
+		Value group_info(kStringType);
+		group_info.SetString(iter.group_info.c_str(), allocator);
+		object.AddMember("group_info", group_info, allocator);
+
+		Value status(kFalseType);
+		status.SetBool(iter.status);
+		object.AddMember("status", status, allocator);
+
+		json_array.PushBack(object, allocator);
+	}
+
+	StringBuffer buffer;
+	Writer<StringBuffer> wtr(buffer);
+	json_array.Accept(wtr);
+	assemble_json_str_ = buffer.GetString();
+
+	return assemble_json_str_.c_str();
+}
+
 void JsonOperate::JsonAnalysis(const char * stu_data, StudentData & log_info)
 {
 	assert(stu_data);
