@@ -5,7 +5,7 @@
 #include <rapidjson\stringbuffer.h>
 #include <rapidjson\prettywriter.h>
 #include <rapidjson\document.h>
-//#include "common_define.h"
+#include <vector>
 
 struct LogonInfo
 {
@@ -74,6 +74,7 @@ public:
 
 	const char* AssembleJson(const StudentData &stu_data);
 	const char* AssembleJson(const LogonInfo &logon_info);
+	const char* AssembleJson(const std::vector<MasterData> &mast_dt);
 	void JsonAnalysis(const char* json_data, StudentData &stu_data);
 	void JsonAnalysis(const char* json_data, LogonInfo &logon_info);
 
