@@ -29,31 +29,43 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		tmp.first = req;
 		tmp.second = true;
 
-		char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
-		post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
-		//dest.reset(new char[EVBUFFER_LENGTH(req->input_buffer)]);
-		//memcpy(&dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
-		//dest[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
-
-		JsonOperate json_operator;
-		StudentData student_data;
-		json_operator.JsonAnalysis(post_data, student_data);
-		if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
+		switch (req->type)
 		{
-			evbuffer* buf = evbuffer_new();
-			StudentData data = *(pThis->handup_return_data_);
-			char debug_text[MAX_PATH];
-			sprintf(debug_text, json_operator.AssembleJson(data));
-			OutputDebugStringA(debug_text);
-			evbuffer_add_printf(buf, json_operator.AssembleJson(data), evhttp_request_get_uri(req));
-			evhttp_send_reply(req, HTTP_OK, "OK", buf);
+		case EVHTTP_REQ_POST: {
+			char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
+			post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+			//dest.reset(new char[EVBUFFER_LENGTH(req->input_buffer)]);
+			//memcpy(&dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
+			//dest[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+
+			JsonOperate json_operator;
+			StudentData student_data;
+			json_operator.JsonAnalysis(post_data, student_data);
+			if (student_data.operate_type_ == OperateType::KEEPA_LIVE)
+			{
+				evbuffer* buf = evbuffer_new();
+				StudentData data = *(pThis->handup_return_data_);
+				char debug_text[MAX_PATH];
+				sprintf(debug_text, json_operator.AssembleJson(data));
+				OutputDebugStringA(debug_text);
+				evbuffer_add_printf(buf, json_operator.AssembleJson(data), evhttp_request_get_uri(req));
+				evhttp_send_reply(req, HTTP_OK, "OK", buf);
+			} else {
+				pThis->server_metux_.lock();
+				pThis->req_vec_.push_back(tmp);
+				pThis->server_metux_.unlock();
+				OutputDebugStringA("hand up \n");
+			}
 		}
-		else {
-			pThis->server_metux_.lock();
-			pThis->req_vec_.push_back(tmp);
-			pThis->server_metux_.unlock();
-			OutputDebugStringA("hand up \n");
+							  break;
+		case EVHTTP_REQ_GET: {
+			evbuffer_add_printf(0, evhttp_request_get_uri(req));
+			evhttp_send_reply(req, HTTP_OK, "OK", 0);
 		}
+		default:
+			break;
+		}
+
 	}
 	catch (std::exception& e) {
 		OutputDebugStringA(e.what());

@@ -14,6 +14,18 @@ struct LogonInfo
 	std::string group_ip;
 };
 
+struct MasterData {
+	std::string id;
+	std::string group_info;
+	bool status;
+};
+
+struct GroupManage
+{
+	std::string id;
+	std::string group_info;
+};
+
 enum OperateType {
 	NULL_TYPE = 0,
 	LOGON = 1,				// µÇÂ¼
