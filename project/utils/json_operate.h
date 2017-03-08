@@ -16,6 +16,7 @@ struct LogonInfo
 
 struct MasterData {
 	std::string id;
+	std::string name;
 	std::string group_info;
 	bool status;
 };

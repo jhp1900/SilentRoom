@@ -92,9 +92,13 @@ const char * JsonOperate::AssembleJson(const std::vector<MasterData>& mast_dt)
 
 	for (auto &iter : mast_dt) {
 		Value object(kObjectType);
-		Value appid(kStringType);
-		appid.SetString(iter.id.c_str(), allocator);
-		object.AddMember("id", appid, allocator);
+		Value sno(kStringType);
+		sno.SetString(iter.id.c_str(), allocator);
+		object.AddMember("sno", sno, allocator);
+
+		Value name(kStringType);
+		name.SetString(iter.name.c_str(), allocator);
+		object.AddMember("name", name, allocator);
 
 		Value group_info(kStringType);
 		group_info.SetString(iter.group_info.c_str(), allocator);
