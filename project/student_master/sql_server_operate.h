@@ -9,6 +9,7 @@
 #include <atlconv.h>
 #include <atlbase.h>
 #include <atlstr.h>
+#include <vector>
 #include "..\utils\json_operate.h"
 
 class MsSqlDbOperate
@@ -28,8 +29,10 @@ public:
 	int Update(wchar_t* sno, int handup);
 
 	LogonInfo* Query(wchar_t* in_appid);
+	std::vector<MasterData>* QueryStatus();
 private:
 	LogonInfo longon_info_;
+	std::vector<MasterData> master_data_;
 	StudentData student_data_;
 	SQLHENV henv_;
 	SQLHDBC hdbc_;

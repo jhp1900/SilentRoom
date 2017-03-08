@@ -182,3 +182,41 @@ LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 
 	return &longon_info_;
 }
+
+std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
+{
+	int ret = 0;
+
+	wchar_t strsql[MAX_PATH];
+	wchar_t id[MAX_PATH];
+	wchar_t student_name[MAX_PATH];
+	wchar_t group_info[MAX_PATH];
+	int handup;
+
+	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+
+	wsprintfW(strsql, L"select sno,name,group_info,handup from student_info s inner join group_info g on s.appid = g.appid");
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return NULL;
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA) {
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, id, 128, &Cbid);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 128, &Cbname);
+		SQLGetData(hstmt_, 3, SQL_C_WCHAR, group_info, 256, &Cbgroup_info);
+		SQLGetData(hstmt_, 4, SQL_C_LONG, &handup, 256, &Cbhandup);
+		MasterData master_data_tmp;
+		char* dest;
+		DWORD dwnum = WideCharToMultiByte(CP_UTF8, NULL, student_name, -1, NULL, 0, NULL, FALSE);
+		dest = new char[dwnum];
+		WideCharToMultiByte(CP_UTF8, NULL, student_name, -1, dest, dwnum, NULL, FALSE);
+		master_data_tmp.id = ATL::CW2A(id);
+		master_data_tmp.name = ATL::CW2A(student_name);
+		master_data_tmp.group_info = ATL::CW2A(group_info);
+		master_data_tmp.status = handup;
+
+		master_data_.push_back(master_data_tmp);
+	}
+	return &master_data_;
+}	

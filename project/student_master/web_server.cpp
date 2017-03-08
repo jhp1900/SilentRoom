@@ -59,6 +59,7 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		}
 							  break;
 		case EVHTTP_REQ_GET: {
+			pThis->master_data_;
 			evbuffer_add_printf(0, evhttp_request_get_uri(req));
 			evhttp_send_reply(req, HTTP_OK, "OK", 0);
 		}
@@ -153,6 +154,18 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 
 	mssqlo_.reset(new MsSqlDbOperate);
 	mssqlo_->Connect(L"SQS", L"sa", L"123");
+	auto query_thread = [&]() {
+		while (true)
+		{
+			this_thread::sleep_for(chrono::milliseconds(2000));
+			master_data_ = *mssqlo_->QueryStatus();
+#ifdef DEBUG
+			OutputDebugStringA("query server status \n");
+#endif
+		}
+	};
+	std::thread sql_thread(query_thread);
+	sql_thread.detach();
 
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
