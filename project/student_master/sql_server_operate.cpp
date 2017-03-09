@@ -143,9 +143,17 @@ int MsSqlDbOperate::Update(wchar_t * sno, int handup)
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
 	wsprintfW(strsql, L"UPDATE student_info SET handup='%d' WHERE sno='%s'", handup, sno);
-	if (ret = ExecDirect(strsql) == -1)
+	if (ExecDirect(strsql) == -1)
 		return -1;
 	return 0;
+}
+
+int MsSqlDbOperate::Update(wchar_t * sno, wchar_t * group_info)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"UPDATE group_info SET group_inf = '%s' WHERE appid = (SELECT appid FROM student_info WHERE sno = '%s')", sno, group_info);
+	return ExecDirect(strsql) ? 0 : -1;
 }
 
 LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
@@ -219,4 +227,4 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 		master_data_.push_back(master_data_tmp);
 	}
 	return &master_data_;
-}	
+}

@@ -27,6 +27,7 @@ public:
 	int AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup);
 	int DeleteRecord(wchar_t* student_name);
 	int Update(wchar_t* sno, int handup);
+	int Update(wchar_t* sno, wchar_t* group_info);
 
 	LogonInfo* Query(wchar_t* in_appid);
 	std::vector<MasterData>* QueryStatus();

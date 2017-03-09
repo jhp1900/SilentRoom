@@ -59,8 +59,12 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		}
 							  break;
 		case EVHTTP_REQ_GET: {
-			pThis->master_data_;
-			evbuffer_add_printf(0, evhttp_request_get_uri(req));
+			evbuffer* buf = evbuffer_new();
+			//char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
+			//post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+			JsonOperate json_operator;
+			auto xx = json_operator.AssembleJson(pThis->master_data_);
+			evbuffer_add_printf(buf, json_operator.AssembleJson(pThis->master_data_), evhttp_request_get_uri(req));
 			evhttp_send_reply(req, HTTP_OK, "OK", 0);
 		}
 		default:
