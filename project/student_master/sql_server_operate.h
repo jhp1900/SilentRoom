@@ -28,6 +28,7 @@ public:
 	int DeleteRecord(wchar_t* student_name);
 	int Update(wchar_t* sno, int handup);
 	int Update(wchar_t* sno, wchar_t* group_info);
+	int UpdateGroupIp(wchar_t* appid, wchar_t* group_info);
 
 	LogonInfo* Query(wchar_t* in_appid);
 	std::vector<MasterData>* QueryStatus();

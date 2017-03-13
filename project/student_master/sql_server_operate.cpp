@@ -139,6 +139,7 @@ int MsSqlDbOperate::DeleteRecord(wchar_t * student_name)
 	return 0;
 }
 
+//学生表发言操作
 int MsSqlDbOperate::Update(wchar_t * sno, int handup)
 {
 	int ret = 0;
@@ -149,14 +150,25 @@ int MsSqlDbOperate::Update(wchar_t * sno, int handup)
 	return 0;
 }
 
+//分组管理操作
 int MsSqlDbOperate::Update(wchar_t * sno, wchar_t * group_info)
 {
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"UPDATE group_info SET group_inf = '%s' WHERE appid = (SELECT appid FROM student_info WHERE sno = '%s')", sno, group_info);
+	wsprintfW(strsql, L"UPDATE group_info SET group_info = '%s' WHERE appid = (SELECT appid FROM student_info WHERE sno = '%s')", sno, group_info);
 	return ExecDirect(strsql) ? 0 : -1;
 }
 
+//修改分组IP
+int MsSqlDbOperate::UpdateGroupIp(wchar_t * group_ip, wchar_t * group)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"UPDATE group_info SET group_ip = '%s' WHERE group_info = '%s'", group_ip, group);
+	return ExecDirect(strsql) ? 0 : -1;
+}
+
+//学生登陆操作
 LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 {
 	int ret = 0;
@@ -168,7 +180,7 @@ LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 	//SQLINTEGER student_id, handup, group_info,operate_type;
 	SQLINTEGER Cbappid, Cbgroup_info, Cbgroup_ip;
 
-	wsprintfW(strsql, L"SELECT * FROM group_info WHERE appid='%s'", in_appid);
+	wsprintfW(strsql, L"SELECT appid, g.group_info, group_ip FROM group_info g inner join group_ip p on g.group_info = p.group_info WHERE appid='%s'", in_appid);
 
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
@@ -192,6 +204,7 @@ LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 	return &longon_info_;
 }
 
+//学生状态查询
 std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 {
 	int ret = 0;
