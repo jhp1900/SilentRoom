@@ -24,8 +24,8 @@ public:
 	int ExecDirect(wchar_t* strsql);
 	int CreateTable();
 
-	int AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup);
-	int DeleteRecord(wchar_t* student_name);
+	int AddStudent(wchar_t* student_id, wchar_t * student_name, wchar_t* appid);
+	int DeleteStudent(wchar_t* sno);
 	int Update(wchar_t* sno, int handup);
 	int Update(wchar_t* sno, wchar_t* group_info);
 	int UpdateGroupIp(wchar_t* appid, wchar_t* group_info);

@@ -108,32 +108,33 @@ int MsSqlDbOperate::ExecDirect(wchar_t * strsql)
 
 int MsSqlDbOperate::CreateTable()
 {
-	int ret = 0;
+	//int ret = 0;
+	//wchar_t* strsql = L"CREATE TABLE silentroom(student_id INT NOT NULL, student_name VARCHAR(10), group_info INT, stream_ip VARCHAR(128), handup int PRIMARY KEY(student_id))";
+	//ret = ExecDirect(strsql);
+	//if (ret == -1)
+	//	return -1;
+	return 0;
+}
 
-	wchar_t* strsql = L"CREATE TABLE silentroom(student_id INT NOT NULL, student_name VARCHAR(10), group_info INT, stream_ip VARCHAR(128), handup int PRIMARY KEY(student_id))";
+//添加学生
+int MsSqlDbOperate::AddStudent(wchar_t* student_id, wchar_t * student_name, wchar_t* appid)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"INSERT INTO student_info(student_id,student_name,appid) VALUES('%s', '%s', '%s');",
+		student_id, student_name, appid);
 	ret = ExecDirect(strsql);
 	if (ret == -1)
 		return -1;
 	return 0;
 }
 
-int MsSqlDbOperate::AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup)
+//删除学生
+int MsSqlDbOperate::DeleteStudent(wchar_t * sno)
 {
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"INSERT INTO silentroom(student_id,student_name,group_info,stream_ip,handup) VALUES(%d, '%s', %d, '%s', %d);",
-		student_id, student_name, group_info, stream_ip, handup);
-	ret = ExecDirect(strsql);
-	if (ret == -1)
-		return -1;
-	return 0;
-}
-
-int MsSqlDbOperate::DeleteRecord(wchar_t * student_name)
-{
-	int ret = 0;
-	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"DELETE FROM silentroom WHERE student_name='%s'", student_name);
+	wsprintfW(strsql, L"DELETE FROM student_info WHERE sno='%s'", sno);
 	if (ret = ExecDirect(strsql) == -1)
 		return -1;
 	return 0;
