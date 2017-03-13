@@ -60,8 +60,13 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 							  break;
 		case EVHTTP_REQ_GET: {
 			evbuffer* buf = evbuffer_new();
-			//char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
-			//post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+			evkeyvalq valkey;
+			const char* req_str = evhttp_request_get_uri(req);
+			evhttp_parse_query(req_str, &valkey);
+			evkeyval* val = valkey.tqh_first;
+			char* key = val->key;
+			char* value = val->value;
+
 			JsonOperate json_operator;
 			auto xx = json_operator.AssembleJson(pThis->master_data_);
 			evbuffer_add_printf(buf, json_operator.AssembleJson(pThis->master_data_), evhttp_request_get_uri(req));

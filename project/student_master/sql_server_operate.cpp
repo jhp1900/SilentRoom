@@ -1,4 +1,5 @@
-#include "sql_server_operate.h"
+﻿#include "sql_server_operate.h"
+#include <locale.h>
 
 MsSqlDbOperate::MsSqlDbOperate()
 {
@@ -199,7 +200,9 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 	wchar_t id[MAX_PATH];
 	wchar_t student_name[MAX_PATH];
 	wchar_t group_info[MAX_PATH];
+	char ttname[MAX_PATH];
 	int handup;
+	std::vector<MasterData> master_tmp;
 
 	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
 
@@ -211,20 +214,19 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 		return NULL;
 	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA) {
 		SQLGetData(hstmt_, 1, SQL_C_WCHAR, id, 128, &Cbid);
-		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 128, &Cbname);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 50, &Cbname);
 		SQLGetData(hstmt_, 3, SQL_C_WCHAR, group_info, 256, &Cbgroup_info);
 		SQLGetData(hstmt_, 4, SQL_C_LONG, &handup, 256, &Cbhandup);
 		MasterData master_data_tmp;
-		char* dest;
-		DWORD dwnum = WideCharToMultiByte(CP_UTF8, NULL, student_name, -1, NULL, 0, NULL, FALSE);
-		dest = new char[dwnum];
-		WideCharToMultiByte(CP_UTF8, NULL, student_name, -1, dest, dwnum, NULL, FALSE);
+
 		master_data_tmp.id = ATL::CW2A(id);
 		master_data_tmp.name = ATL::CW2A(student_name);
 		master_data_tmp.group_info = ATL::CW2A(group_info);
 		master_data_tmp.status = handup;
 
-		master_data_.push_back(master_data_tmp);
+		master_tmp.push_back(master_data_tmp);
+		
 	}
+	master_data_ = master_tmp;
 	return &master_data_;
 }
