@@ -62,6 +62,15 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			/*evbuffer* buf = evbuffer_new();
 			char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
 			post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+
+			evbuffer* buf = evbuffer_new();
+			evkeyvalq valkey;
+			const char* req_str = evhttp_request_get_uri(req);
+			evhttp_parse_query(req_str, &valkey);
+			evkeyval* val = valkey.tqh_first;
+			char* key = val->key;
+			char* value = val->value;
+
 			JsonOperate json_operator;
 			auto xx = json_operator.AssembleJson(pThis->master_data_);
 			evbuffer_add_printf(buf, json_operator.AssembleJson(pThis->master_data_), evhttp_request_get_uri(req));
@@ -248,18 +257,18 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 
 	mssqlo_.reset(new MsSqlDbOperate);
 	mssqlo_->Connect(L"SQS", L"sa", L"123");
-//	auto query_thread = [&]() {
-//		while (true)
-//		{
-//			this_thread::sleep_for(chrono::milliseconds(2000));
-//			master_data_ = *mssqlo_->QueryStatus();
-//#ifdef DEBUG
-//			OutputDebugStringA("query server status \n");
-//#endif
-//		}
-//	};
-//	std::thread sql_thread(query_thread);
-//	sql_thread.detach();
+	auto query_thread = [&]() {
+		while (true)
+		{
+			this_thread::sleep_for(chrono::milliseconds(2000));
+			master_data_ = *mssqlo_->QueryStatus();
+#ifdef DEBUG
+			OutputDebugStringA("query server status \n");
+#endif
+		}
+	};
+	std::thread sql_thread(query_thread);
+	sql_thread.detach();
 
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
