@@ -68,7 +68,7 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			char* value = val->value;
 
 			JsonOperate json_operator;
-			auto xx = json_operator.AssembleJson(pThis->master_data_);
+			string xx = json_operator.AssembleJson(pThis->master_data_);
 			evbuffer_add_printf(buf, json_operator.AssembleJson(pThis->master_data_), evhttp_request_get_uri(req));
 			evhttp_send_reply(req, HTTP_OK, "OK", 0);
 		}
@@ -166,8 +166,8 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	auto query_thread = [&]() {
 		while (true)
 		{
-			this_thread::sleep_for(chrono::milliseconds(2000));
 			master_data_ = *mssqlo_->QueryStatus();
+			this_thread::sleep_for(chrono::milliseconds(2000));
 #ifdef DEBUG
 			OutputDebugStringA("query server status \n");
 #endif
