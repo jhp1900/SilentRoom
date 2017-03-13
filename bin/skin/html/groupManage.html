@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -5,6 +6,19 @@
 	<link rel="stylesheet" href="css/screen.css" />
 	<link rel="stylesheet" href="css/bootstrap.css" />
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	
+	<script src="js/jquery-2.2.3.min.js"></script>
+	<script src="js/jquery.cookie.js"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".myselect").change(function(){
+				var id = $(this).attr("id");
+				var val = $(this).val();
+				alert(id + " : " + val);
+			});
+		});
+	</script>
 </head>
 <body style="background-color:#22252c">
 	<div id="home" class="a-banner">
@@ -17,6 +31,60 @@
 		</div>
 	</div>
 	<div id="main">
+		<ul id="browser"></ul>
+		<select id="sel1" class="myselect">
+        	<option value="0">DIVCSS0</option>
+        	<option value="1">DIVCSS1</option>
+			<option value="2">DIVCSS2</option>
+        	<option value="3">DIVCSS3</option>
+    	</select>
+		<br>
+		<select id="sel2" class="myselect">
+        	<option value="0">divcss0</option>
+        	<option value="1">divcss1</option>
+			<option value="2">divcss2</option>
+        	<option value="3">divcss3</option>
+    	</select>
+
+		<table border="5" style="borderframe=hsides">
+			<tr>
+				<td>
+					<input type="text" id="tex">
+				</td>
+				<td>
+					<select />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" id="tex">
+				</td>
+				<td>
+					<select />
+				</td>
+			</tr>
+		</table>
+
+		<script type="text/javascript">
+			function get_json(){
+				var data = {control:"reload",range:"group_mng"};
+				$.ajax({
+					type:"get",
+					url:"http://10.18.3.62:8082/",
+					data:data,
+					async:false,
+					success:function(result){
+						
+						var arr_obj = eval("(" + result + ")");
+						for(var item in arr_obj){
+							var appid = arr_obj[item].appid;
+							var group_id = arr_obj[item].group_info;
+						}
+					}
+				});
+			}
+			get_json();
+		</script>
 	</div>
 </body>
 </html>

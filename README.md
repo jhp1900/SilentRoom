@@ -6,6 +6,8 @@
 			值 reload: 表示刷新，重新加载，这时需要查询所以相关信息并返回；
 			值 speak: 表示请***发言；
 			值 updata: 表示修复内容；
+			值 add: 添加，可以添加分组IP（自然就添加了分组），也可以添加学生机
+			值 delete: 删除，同 add;
 			
 		2、键 range: 操作范围
 			值 students: 操作学生状态，一般用于刷新；
@@ -14,16 +16,14 @@
 			值 to_group: 小组内发言；
 			值 to_class: 班级发言;
 			
-		3、键 sno: 被操作学生的学号
+		3、键 obj: 被操作的对象
+				注：这里有可能是学号、小组、学生机编号（appid）
 		
-		4、键 obj_group: 被操作的小组
-		
-		5、键 appid: 被操作的学生机编号（优盘编号）
 			
 	二、示例
 		1、刷新学生状态页：
 			{control:"reload",range:"students"}
 		
 		2、请 2011号 同学在小组内发言
-			{control:"speak",range:"to_group",sno:"2011"};
+			{control:"speak",range:"to_group",obj:"2011"};
 			

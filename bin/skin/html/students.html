@@ -24,7 +24,7 @@
 			$(".please").click(function(){
 				var sno = $(this).attr("sno");
 				var range = $(this).attr("range");
-				var data = {control:"speak",range:range,sno:sno};
+				var data = {control:"speak",range:range,obj:sno};
 				$.ajax({
 					type:"get",
 					url:"http://10.18.3.62:8082/",
@@ -94,8 +94,8 @@
 					}
 				});
 			}
-			
 			get_json();
+			/*setTimeout('get_json()', 1000);*/
 		</script>
 	</div>
 </body>
