@@ -56,7 +56,6 @@ const char * JsonOperate::AssembleJson(const StudentData &stu_data)
 const char * JsonOperate::AssembleJson(const LogonInfo & logon_info)
 {
 	using namespace rapidjson;
-
 	Document doc;
 	Document::AllocatorType& allocator = doc.GetAllocator();
 
@@ -85,13 +84,13 @@ const char * JsonOperate::AssembleJson(const LogonInfo & logon_info)
 const char * JsonOperate::AssembleJson(const std::vector<MasterData>& mast_dt)
 {
 	using namespace rapidjson;
-
 	Document doc;
 	Document::AllocatorType& allocator = doc.GetAllocator();
 	Value json_array(kArrayType);
 
 	for (auto &iter : mast_dt) {
 		Value object(kObjectType);
+
 		Value sno(kStringType);
 		sno.SetString(iter.id.c_str(), allocator);
 		object.AddMember("sno", sno, allocator);
@@ -107,6 +106,64 @@ const char * JsonOperate::AssembleJson(const std::vector<MasterData>& mast_dt)
 		Value status(kFalseType);
 		status.SetBool(iter.status);
 		object.AddMember("status", status, allocator);
+
+		json_array.PushBack(object, allocator);
+	}
+
+	StringBuffer buffer;
+	Writer<StringBuffer> wtr(buffer);
+	json_array.Accept(wtr);
+	assemble_json_str_ = buffer.GetString();
+
+	return assemble_json_str_.c_str();
+}
+
+const char* JsonOperate::AssembleJson(const std::vector<GroupManage> &group_mng)
+{
+	using namespace rapidjson;
+	Document doc;
+	Document::AllocatorType& allocator = doc.GetAllocator();
+	Value json_array(kArrayType);
+
+	for (auto &iter : group_mng) {
+		Value object(kObjectType);
+
+		Value appid(kStringType);
+		appid.SetString(iter.appid.c_str(), allocator);
+		object.AddMember("appid", appid, allocator);
+
+		Value group_info(kStringType);
+		group_info.SetString(iter.group_info.c_str(), allocator);
+		object.AddMember("group_info", group_info, allocator);
+
+		json_array.PushBack(object, allocator);
+	}
+
+	StringBuffer buffer;
+	Writer<StringBuffer> wtr(buffer);
+	json_array.Accept(wtr);
+	assemble_json_str_ = buffer.GetString();
+
+	return assemble_json_str_.c_str();
+}
+
+const char* JsonOperate::AssembleJson(const std::vector<GroupIP> &group_ip)
+{
+	using namespace rapidjson;
+	Document doc;
+	Document::AllocatorType& allocator = doc.GetAllocator();
+	Value json_array(kArrayType);
+
+	for (auto &iter : group_ip) {
+		Value object(kObjectType);
+
+		Value group_info(kStringType);
+		group_info.SetString(iter.group_info.c_str(), allocator);
+		object.AddMember("name", group_info, allocator);
+
+		Value ip_info(kStringType);
+		ip_info.SetString(iter.ip_info.c_str(), allocator);
+		object.AddMember("name", ip_info, allocator);
 
 		json_array.PushBack(object, allocator);
 	}

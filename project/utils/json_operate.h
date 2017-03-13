@@ -23,8 +23,14 @@ struct MasterData {
 
 struct GroupManage
 {
-	std::string id;
-	std::string group_info;
+	std::string appid;			// 学生机编号
+	std::string group_info;		// 所在组
+};
+
+struct GroupIP
+{
+	std::string group_info;		// 小组名
+	std::string ip_info;		// 小组IP
 };
 
 enum OperateType {
@@ -75,6 +81,8 @@ public:
 	const char* AssembleJson(const StudentData &stu_data);
 	const char* AssembleJson(const LogonInfo &logon_info);
 	const char* AssembleJson(const std::vector<MasterData> &mast_dt);
+	const char* AssembleJson(const std::vector<GroupManage> &group_mng);
+	const char* AssembleJson(const std::vector<GroupIP> &group_ip);
 	void JsonAnalysis(const char* json_data, StudentData &stu_data);
 	void JsonAnalysis(const char* json_data, LogonInfo &logon_info);
 

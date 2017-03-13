@@ -1,7 +1,7 @@
 #include "web_server.h"
 #include "main_wnd.h"
 #include "application.h"
-
+#include <map>
 
 WebServer::WebServer()
 {
@@ -57,8 +57,12 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				OutputDebugStringA("hand up \n");
 			}
 		}
-							  break;
+			break;
 		case EVHTTP_REQ_GET: {
+			/*evbuffer* buf = evbuffer_new();
+			char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
+			post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
+
 			evbuffer* buf = evbuffer_new();
 			evkeyvalq valkey;
 			const char* req_str = evhttp_request_get_uri(req);
@@ -70,8 +74,98 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			JsonOperate json_operator;
 			string xx = json_operator.AssembleJson(pThis->master_data_);
 			evbuffer_add_printf(buf, json_operator.AssembleJson(pThis->master_data_), evhttp_request_get_uri(req));
-			evhttp_send_reply(req, HTTP_OK, "OK", 0);
+			evhttp_send_reply(req, HTTP_OK, "OK", 0);*/
+
+			/* 以下为测试代码 */
+			evbuffer* buf = evbuffer_new();
+			JsonOperate json_operator;
+			evkeyvalq keyvalq;
+			const char *req_str = evhttp_request_get_uri(req);
+			evhttp_parse_query(req_str, &keyvalq);
+			evkeyval *val = keyvalq.tqh_first;
+			std::map<string, string> dt_map;
+			while (val) {
+				dt_map[val->key] = val->value;
+				val = val->next.tqe_next;
+			}
+
+			const char * json_str = "";
+
+			/* 加载学生状态表 */
+			auto reload_stu = [&]() {
+				// test begin;
+				std::vector<MasterData> mast_dt;
+				mast_dt.push_back({ "2011101051", "xjhp", "Group1", true });
+				mast_dt.push_back({ "2011101052", "xjhp2", "Group2", true });
+				mast_dt.push_back({ "2011101053", "xjhp3", "Group3", false });
+				mast_dt.push_back({ "2011101054", "xjhp4", "Group3", true });
+				json_str = json_operator.AssembleJson(mast_dt);
+				// test end;
+
+				// TODO ......
+			};
+
+			/* 加载分组信息表 */
+			auto reload_gp_mng = [&]() {
+				// test begin;
+				std::vector<GroupManage> group_mng;
+				group_mng.push_back({ "01", "Group1" });
+				group_mng.push_back({ "02", "Group2" });
+				group_mng.push_back({ "03", "Group3" });
+				group_mng.push_back({ "04", "Group3" });
+				json_str = json_operator.AssembleJson(group_mng);
+				// test end;
+			};
+
+			/* 加载小组IP信息 */
+			auto reload_gp_ip = [&]() {
+				std::vector<GroupIP> group_ip;
+				group_ip.push_back({ "Group1", "10.18.3.62" });
+				group_ip.push_back({ "Group2", "10.18.3.63" });
+				group_ip.push_back({ "Group3", "10.18.3.67" });
+				json_str = json_operator.AssembleJson(group_ip);
+			};
+
+			
+
+			if (dt_map["control"] == "reload") {
+				if (dt_map["range"] == "students") {				// 加载学生状态表
+					reload_stu();
+				} else if(dt_map["range"] == "group_mng") {			// 加载分组信息表
+					reload_gp_mng();
+				} else if (dt_map["range"] == "group_ip") {			// 加载小组IP信息
+					reload_gp_ip();
+				}
+			} else if (dt_map["control"] == "speak") {
+				if (dt_map["range"] == "to_group") {				// 小组内发言
+
+				} else if (dt_map["range"] == "to_class") {			// 班级发言
+
+				}
+			} else if (dt_map["control"] == "updata") {
+				if (dt_map["range"] == "group_mng") {				// 修改分组信息
+
+				} else if (dt_map["range"] == "group_ip") {			// 修改小组IP
+
+				}
+			} else if (dt_map["control"] == "add") {
+				if (dt_map["range"] == "group_mng") {				// 添加 学生机信息
+
+				} else if (dt_map["range"] == "group_ip") {			// 添加小组IP
+
+				}
+			} else if (dt_map["control"] == "delete") {
+				if (dt_map["range"] == "group_mng") {				// 删除某个学生机
+
+				} else if (dt_map["range"] == "group_ip") {			// 删除某个小组（IP以及改组的所有信息）
+
+				}
+			}
+
+			evbuffer_add_printf(buf, json_str, req_str);
+			evhttp_send_reply(req, HTTP_OK, "OK", buf);
 		}
+			break;
 		default:
 			break;
 		}
