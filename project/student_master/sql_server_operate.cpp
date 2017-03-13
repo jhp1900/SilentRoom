@@ -244,3 +244,72 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 	master_data_ = master_tmp;
 	return &master_data_;
 }
+
+std::vector<GroupManage>* MsSqlDbOperate::QueryGroupManager()
+{
+	int ret = 0;
+
+	wchar_t strsql[MAX_PATH];
+	wchar_t id[MAX_PATH];
+	wchar_t student_name[MAX_PATH];
+	wchar_t group_info[MAX_PATH];
+	char ttname[MAX_PATH];
+	int handup;
+	std::vector<GroupManage> master_tmp;
+	GroupManage master_data_tmp;
+
+	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+
+	wsprintfW(strsql, L"select * from group_info");
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return NULL;
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA) {
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, id, 128, &Cbid);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 50, &Cbname);
+
+		master_data_tmp.appid = ATL::CW2A(id);
+		master_data_tmp.group_info = ATL::CW2A(student_name);
+		master_tmp.push_back(master_data_tmp);
+	}
+
+	group_manager_ = master_tmp;
+	return &group_manager_;
+}
+
+std::vector<GroupIP>* MsSqlDbOperate::QueryGroupIP()
+{
+	int ret = 0;
+
+	wchar_t strsql[MAX_PATH];
+	wchar_t id[MAX_PATH];
+	wchar_t student_name[MAX_PATH];
+	wchar_t group_info[MAX_PATH];
+	char ttname[MAX_PATH];
+	int handup;
+	std::vector<GroupIP> master_tmp;
+	GroupIP master_data_tmp;
+
+	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+
+	wsprintfW(strsql, L"select * from group_info");
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return NULL;
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA) {
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, id, 128, &Cbid);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 50, &Cbname);
+
+		master_data_tmp.group_info = ATL::CW2A(id);
+		master_data_tmp.ip_info = ATL::CW2A(student_name);
+		master_tmp.push_back(master_data_tmp);
+	}
+
+	group_ip_ = master_tmp;
+	return &group_ip_;
+}
+

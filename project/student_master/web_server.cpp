@@ -260,7 +260,9 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	auto query_thread = [&]() {
 		while (true)
 		{
-			master_data_ = *mssqlo_->QueryStatus();
+			mssqlo_->QueryStatus();
+			mssqlo_->QueryGroupManager();
+			mssqlo_->QueryGroupIP();
 			this_thread::sleep_for(chrono::milliseconds(2000));
 #ifdef DEBUG
 			OutputDebugStringA("query server status \n");

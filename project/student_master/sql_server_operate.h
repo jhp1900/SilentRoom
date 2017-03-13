@@ -32,9 +32,13 @@ public:
 
 	LogonInfo* Query(wchar_t* in_appid);
 	std::vector<MasterData>* QueryStatus();
+	std::vector<GroupManage>* QueryGroupManager();
+	std::vector<GroupIP>* QueryGroupIP();
 private:
 	LogonInfo longon_info_;
 	std::vector<MasterData> master_data_;
+	std::vector<GroupManage> group_manager_;
+	std::vector<GroupIP> group_ip_;
 	StudentData student_data_;
 	SQLHENV henv_;
 	SQLHDBC hdbc_;
