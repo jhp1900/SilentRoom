@@ -113,3 +113,28 @@
 	min-height: 54px;
 	background-color:#123456;
 }
+
+#customers{
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	width:100%;
+	border-collapse:collapse;
+}
+#customers td, #customers th {
+	font-size:1.3em;
+	border:1px solid #98bf21;
+	height:35px;
+	text-align:center;
+	vertical-align:middle;
+}
+#customers th {
+	height:40px;
+	font-size:1.5em;
+	padding-top:5px;
+	padding-bottom:4px;
+	background-color:#A7C942;
+	color:#ffffff;
+}
+#customers tr.alt td {
+	color:#000000;
+	background-color:#EAF2D3;
+}
