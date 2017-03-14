@@ -25,7 +25,6 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	try {
 		WebServer* pThis = static_cast<WebServer*>(arg);
 		request_data tmp;
-		//std::shared_ptr<char> dest;
 		tmp.first = req;
 		tmp.second = true;
 
@@ -34,9 +33,6 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		case EVHTTP_REQ_POST: {
 			char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
 			post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
-			//dest.reset(new char[EVBUFFER_LENGTH(req->input_buffer)]);
-			//memcpy(&dest, (char*)EVBUFFER_DATA(req->input_buffer), EVBUFFER_LENGTH(req->input_buffer));
-			//dest[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
 
 			JsonOperate json_operator;
 			StudentData student_data;
@@ -93,40 +89,18 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 
 			/* 加载学生状态表 */
 			auto reload_stu = [&]() {
-				// test begin;
-				std::vector<MasterData> mast_dt;
-				mast_dt.push_back({ "2011101051", "xjhp", "Group1", true });
-				mast_dt.push_back({ "2011101052", "xjhp2", "Group2", true });
-				mast_dt.push_back({ "2011101053", "xjhp3", "Group3", false });
-				mast_dt.push_back({ "2011101054", "xjhp4", "Group3", true });
-				json_str = json_operator.AssembleJson(mast_dt);
-				// test end;
-
-				// TODO ......
+				json_str = json_operator.AssembleJson(pThis->mssqlo_->master_data_);
 			};
 
 			/* 加载分组信息表 */
 			auto reload_gp_mng = [&]() {
-				// test begin;
-				std::vector<GroupManage> group_mng;
-				group_mng.push_back({ "01", "Group1" });
-				group_mng.push_back({ "02", "Group2" });
-				group_mng.push_back({ "03", "Group3" });
-				group_mng.push_back({ "04", "Group3" });
-				json_str = json_operator.AssembleJson(group_mng);
-				// test end;
+				json_str = json_operator.AssembleJson(pThis->mssqlo_->group_manager_);
 			};
 
 			/* 加载小组IP信息 */
 			auto reload_gp_ip = [&]() {
-				std::vector<GroupIP> group_ip;
-				group_ip.push_back({ "Group1", "10.18.3.62" });
-				group_ip.push_back({ "Group2", "10.18.3.63" });
-				group_ip.push_back({ "Group3", "10.18.3.67" });
-				json_str = json_operator.AssembleJson(group_ip);
+				json_str = json_operator.AssembleJson(pThis->mssqlo_->group_ip_);
 			};
-
-			
 
 			if (dt_map["control"] == "reload") {
 				if (dt_map["range"] == "students") {				// 加载学生状态表
