@@ -37,7 +37,8 @@ public:
 	std::vector<MasterData>* QueryStatus();
 	std::vector<GroupManage>* QueryGroupManager();
 	std::vector<GroupIP>* QueryGroupIP();
-private:
+
+public:
 	LogonInfo longon_info_;
 	std::vector<MasterData> master_data_;
 	std::vector<GroupManage> group_manager_;
