@@ -24,17 +24,24 @@ public:
 	int ExecDirect(wchar_t* strsql);
 	int CreateTable();
 
-	int AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup);
-	int DeleteRecord(wchar_t* student_name);
+	int AddStudent(wchar_t* student_id, wchar_t * student_name, wchar_t* appid);
+	int DeleteStudent(wchar_t* sno);
+	int AddGroupIp(wchar_t* group, wchar_t* group_ip);
+	int DeleteGroupIp(wchar_t* group);
+
 	int Update(wchar_t* sno, int handup);
 	int Update(wchar_t* sno, wchar_t* group_info);
 	int UpdateGroupIp(wchar_t* appid, wchar_t* group_info);
 
 	LogonInfo* Query(wchar_t* in_appid);
 	std::vector<MasterData>* QueryStatus();
+	std::vector<GroupManage>* QueryGroupManager();
+	std::vector<GroupIP>* QueryGroupIP();
 private:
 	LogonInfo longon_info_;
 	std::vector<MasterData> master_data_;
+	std::vector<GroupManage> group_manager_;
+	std::vector<GroupIP> group_ip_;
 	StudentData student_data_;
 	SQLHENV henv_;
 	SQLHDBC hdbc_;

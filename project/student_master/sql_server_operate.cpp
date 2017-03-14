@@ -108,35 +108,54 @@ int MsSqlDbOperate::ExecDirect(wchar_t * strsql)
 
 int MsSqlDbOperate::CreateTable()
 {
-	int ret = 0;
+	//int ret = 0;
+	//wchar_t* strsql = L"CREATE TABLE silentroom(student_id INT NOT NULL, student_name VARCHAR(10), group_info INT, stream_ip VARCHAR(128), handup int PRIMARY KEY(student_id))";
+	//ret = ExecDirect(strsql);
+	//if (ret == -1)
+	//	return -1;
+	return 0;
+}
 
-	wchar_t* strsql = L"CREATE TABLE silentroom(student_id INT NOT NULL, student_name VARCHAR(10), group_info INT, stream_ip VARCHAR(128), handup int PRIMARY KEY(student_id))";
+//添加学生
+int MsSqlDbOperate::AddStudent(wchar_t* student_id, wchar_t * student_name, wchar_t* appid)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"INSERT INTO student_info(student_id,student_name,appid) VALUES('%s', '%s', '%s');",
+		student_id, student_name, appid);
 	ret = ExecDirect(strsql);
 	if (ret == -1)
 		return -1;
 	return 0;
 }
 
-int MsSqlDbOperate::AddRecord(int student_id, wchar_t * student_name, int group_info, wchar_t* stream_ip, int handup)
+//删除学生
+int MsSqlDbOperate::DeleteStudent(wchar_t * sno)
 {
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"INSERT INTO silentroom(student_id,student_name,group_info,stream_ip,handup) VALUES(%d, '%s', %d, '%s', %d);",
-		student_id, student_name, group_info, stream_ip, handup);
-	ret = ExecDirect(strsql);
-	if (ret == -1)
-		return -1;
-	return 0;
-}
-
-int MsSqlDbOperate::DeleteRecord(wchar_t * student_name)
-{
-	int ret = 0;
-	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"DELETE FROM silentroom WHERE student_name='%s'", student_name);
+	wsprintfW(strsql, L"DELETE FROM student_info WHERE sno='%s'", sno);
 	if (ret = ExecDirect(strsql) == -1)
 		return -1;
 	return 0;
+}
+
+//添加小组IP
+int MsSqlDbOperate::AddGroupIp(wchar_t* group, wchar_t* group_ip)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"INSERT INTO group_info(group_info, group_ip) VALUES('%s', '%s');", group, group_ip);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
+//删除小组IP
+int MsSqlDbOperate::DeleteGroupIp(wchar_t* group)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"DELETE FROM group_info WHERE group_info = '%s'", group);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
 }
 
 //学生表发言操作
@@ -243,3 +262,72 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 	master_data_ = master_tmp;
 	return &master_data_;
 }
+
+std::vector<GroupManage>* MsSqlDbOperate::QueryGroupManager()
+{
+	int ret = 0;
+
+	wchar_t strsql[MAX_PATH];
+	wchar_t id[MAX_PATH];
+	wchar_t student_name[MAX_PATH];
+	wchar_t group_info[MAX_PATH];
+	char ttname[MAX_PATH];
+	int handup;
+	std::vector<GroupManage> master_tmp;
+	GroupManage master_data_tmp;
+
+	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+
+	wsprintfW(strsql, L"select * from group_info");
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return NULL;
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA) {
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, id, 128, &Cbid);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 50, &Cbname);
+
+		master_data_tmp.appid = ATL::CW2A(id);
+		master_data_tmp.group_info = ATL::CW2A(student_name);
+		master_tmp.push_back(master_data_tmp);
+	}
+
+	group_manager_ = master_tmp;
+	return &group_manager_;
+}
+
+std::vector<GroupIP>* MsSqlDbOperate::QueryGroupIP()
+{
+	int ret = 0;
+
+	wchar_t strsql[MAX_PATH];
+	wchar_t id[MAX_PATH];
+	wchar_t student_name[MAX_PATH];
+	wchar_t group_info[MAX_PATH];
+	char ttname[MAX_PATH];
+	int handup;
+	std::vector<GroupIP> master_tmp;
+	GroupIP master_data_tmp;
+
+	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+
+	wsprintfW(strsql, L"select * from group_info");
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return NULL;
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA) {
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, id, 128, &Cbid);
+		SQLGetData(hstmt_, 2, SQL_C_WCHAR, student_name, 50, &Cbname);
+
+		master_data_tmp.group_info = ATL::CW2A(id);
+		master_data_tmp.ip_info = ATL::CW2A(student_name);
+		master_tmp.push_back(master_data_tmp);
+	}
+
+	group_ip_ = master_tmp;
+	return &group_ip_;
+}
+
