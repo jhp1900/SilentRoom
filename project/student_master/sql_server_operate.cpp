@@ -140,6 +140,24 @@ int MsSqlDbOperate::DeleteStudent(wchar_t * sno)
 	return 0;
 }
 
+//添加小组IP
+int MsSqlDbOperate::AddGroupIp(wchar_t* group, wchar_t* group_ip)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"INSERT INTO group_info(group_info, group_ip) VALUES('%s', '%s');", group, group_ip);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
+//删除小组IP
+int MsSqlDbOperate::DeleteGroupIp(wchar_t* group)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"DELETE FROM group_info WHERE group_info = '%s'", group);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
 //学生表发言操作
 int MsSqlDbOperate::Update(wchar_t * sno, int handup)
 {
