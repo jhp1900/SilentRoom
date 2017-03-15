@@ -79,7 +79,7 @@ int MsSqlDbOperate::DisConnect()
 int MsSqlDbOperate::ExecDirect(wchar_t * strsql)
 {
 	SQLRETURN retcode;
-
+	mutex_.lock();
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO) {
 #ifdef DEBUG
@@ -102,7 +102,7 @@ int MsSqlDbOperate::ExecDirect(wchar_t * strsql)
 	OutputDebugStringA("exec sql succeed \n");
 #endif // DEBUG
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
-
+	mutex_.unlock();
 	return 0;
 }
 
@@ -140,22 +140,35 @@ int MsSqlDbOperate::DeleteStudent(wchar_t * sno)
 	return 0;
 }
 
-//添加小组IP
-int MsSqlDbOperate::AddGroupIp(wchar_t* group, wchar_t* group_ip)
+int MsSqlDbOperate::DeleteGroup(wchar_t * group)
 {
+	int ret = 0;
 	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"INSERT INTO group_info(group_info, group_ip) VALUES('%s', '%s');", group, group_ip);
-	int ret = ExecDirect(strsql);
-	return ret ? 0 : -1;
-}
+	wchar_t appid[MAX_PATH];
+	SQLINTEGER Cbappid;
+	std::list<std::wstring> exe_child;
+	wsprintfW(strsql, L"SELECT appid FROM group_info WHERE group_info = '%s'", group);
+	//wsprintfW(strsql_2, L"DELETE FROM group_ip WHERE group_info = '%s'", group);
+	mutex_.lock();
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 
-//删除小组IP
-int MsSqlDbOperate::DeleteGroupIp(wchar_t* group)
-{
-	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"DELETE FROM group_info WHERE group_info = '%s'", group);
-	int ret = ExecDirect(strsql);
-	return ret ? 0 : -1;
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return -1;
+
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA)
+	{
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, appid, 10, &Cbappid);
+		exe_child.push_back(appid);
+	}
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
+	mutex_.unlock();
+	for (auto v : exe_child) {
+		wchar_t str[MAX_PATH];
+		wsprintfW(str, L"DELETE FROM group_info WHERE appid = '%s'", v.c_str());
+		ret = ExecDirect(str);
+	}
+	return 0;
 }
 
 //学生表发言操作
@@ -169,21 +182,63 @@ int MsSqlDbOperate::Update(wchar_t * sno, int handup)
 	return 0;
 }
 
+int MsSqlDbOperate::AddAppid(wchar_t * appid, wchar_t * group)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"INSERT INTO group_info(appid, group_info) VALUES('%s', '%s');", appid, group);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
+int MsSqlDbOperate::DeleteAppid(wchar_t * appid)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"DELETE FROM group_info WHERE appid = '%s'", appid);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
+int MsSqlDbOperate::UpdateAppid(wchar_t * appid, wchar_t * group)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"UPDATE group_info SET group_info = '%s' WHERE appid = '%s'", group, appid);
+	return ExecDirect(strsql) ? 0 : -1;
+}
+
+//添加小组IP
+int MsSqlDbOperate::AddGroupIp(wchar_t* group, wchar_t* group_ip)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"INSERT INTO group_ip(group_info, group_ip) VALUES('%s', '%s');", group, group_ip);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
+//删除小组IP
+int MsSqlDbOperate::DeleteGroupIp(wchar_t* group)
+{
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"DELETE FROM group_ip WHERE group_info = '%s'", group);
+	int ret = ExecDirect(strsql);
+	return ret ? 0 : -1;
+}
+
+//修改小组IP
+int MsSqlDbOperate::UpdateGroupIp(wchar_t * group_ip, wchar_t * group)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wsprintfW(strsql, L"UPDATE group_ip SET group_ip = '%s' WHERE group_info = '%s'", group_ip, group);
+	return ExecDirect(strsql) ? 0 : -1;
+}
+
 //分组管理操作
 int MsSqlDbOperate::Update(wchar_t * sno, wchar_t * group_info)
 {
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
 	wsprintfW(strsql, L"UPDATE group_info SET group_info = '%s' WHERE appid = (SELECT appid FROM student_info WHERE sno = '%s')", sno, group_info);
-	return ExecDirect(strsql) ? 0 : -1;
-}
-
-//修改分组IP
-int MsSqlDbOperate::UpdateGroupIp(wchar_t * group_ip, wchar_t * group)
-{
-	int ret = 0;
-	wchar_t strsql[MAX_PATH];
-	wsprintfW(strsql, L"UPDATE group_info SET group_ip = '%s' WHERE group_info = '%s'", group_ip, group);
 	return ExecDirect(strsql) ? 0 : -1;
 }
 
@@ -200,7 +255,7 @@ LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 	SQLINTEGER Cbappid, Cbgroup_info, Cbgroup_ip;
 
 	wsprintfW(strsql, L"SELECT appid, g.group_info, group_ip FROM group_info g inner join group_ip p on g.group_info = p.group_info WHERE appid='%s'", in_appid);
-
+	mutex_.lock();
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 
@@ -219,7 +274,7 @@ LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 	}
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
-
+	mutex_.unlock();
 	return &longon_info_;
 }
 
@@ -239,6 +294,7 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
 
 	wsprintfW(strsql, L"select sno,name,group_info,handup from student_info s inner join group_info g on s.appid = g.appid");
+	mutex_.lock();
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 
@@ -259,6 +315,8 @@ std::vector<MasterData>* MsSqlDbOperate::QueryStatus()
 		master_tmp.push_back(master_data_tmp);
 		
 	}
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
+	mutex_.unlock();
 	master_data_ = master_tmp;
 	return &master_data_;
 }
@@ -276,9 +334,10 @@ std::vector<GroupManage>* MsSqlDbOperate::QueryGroupManager()
 	std::vector<GroupManage> master_tmp;
 	GroupManage master_data_tmp;
 
-	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+	SQLINTEGER Cbid, Cbname;
 
 	wsprintfW(strsql, L"select * from group_info");
+	mutex_.lock();
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 
@@ -292,7 +351,8 @@ std::vector<GroupManage>* MsSqlDbOperate::QueryGroupManager()
 		master_data_tmp.group_info = ATL::CW2A(student_name);
 		master_tmp.push_back(master_data_tmp);
 	}
-
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
+	mutex_.unlock();
 	group_manager_ = master_tmp;
 	return &group_manager_;
 }
@@ -310,9 +370,10 @@ std::vector<GroupIP>* MsSqlDbOperate::QueryGroupIP()
 	std::vector<GroupIP> master_tmp;
 	GroupIP master_data_tmp;
 
-	SQLINTEGER Cbid, Cbname, Cbgroup_info, Cbhandup;
+	SQLINTEGER Cbid, Cbname;
 
-	wsprintfW(strsql, L"select * from group_info");
+	wsprintfW(strsql, L"select * from group_ip");
+	mutex_.lock();
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 
@@ -326,7 +387,8 @@ std::vector<GroupIP>* MsSqlDbOperate::QueryGroupIP()
 		master_data_tmp.ip_info = ATL::CW2A(student_name);
 		master_tmp.push_back(master_data_tmp);
 	}
-
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
+	mutex_.unlock();
 	group_ip_ = master_tmp;
 	return &group_ip_;
 }
