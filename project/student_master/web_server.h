@@ -35,7 +35,7 @@ public:
 
 	std::shared_ptr<StudentData> GetHandupData();
 
-	void SetStreamIp(char* stream_ip);
+	void SetStreamIp(const char* stream_ip);
 	std::string GetStreamIp();
 
 	std::shared_ptr<StudentData> GetStudentReturnData();

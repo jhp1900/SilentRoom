@@ -242,6 +242,31 @@ int MsSqlDbOperate::Update(wchar_t * sno, wchar_t * group_info)
 	return ExecDirect(strsql) ? 0 : -1;
 }
 
+std::wstring MsSqlDbOperate::QueryStudentIp(wchar_t * sno)
+{
+	int ret = 0;
+	wchar_t strsql[MAX_PATH];
+	wchar_t stream_ip[MAX_PATH];
+	SQLINTEGER Cbappid;
+
+	wsprintfW(strsql, L"SELECT group_ip FROM group_ip WHERE group_info = (SELECT group_info FROM student_info s inner join group_info g on s.appid = g.appid WHERE sno= '%s')", sno);
+	mutex_.lock();
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
+	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
+
+	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+		return NULL;
+
+	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA)
+	{
+		SQLGetData(hstmt_, 1, SQL_C_WCHAR, stream_ip, 128, &Cbappid);
+	}
+
+	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
+	mutex_.unlock();
+	return stream_ip;
+}
+
 //学生登陆操作
 LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 {
