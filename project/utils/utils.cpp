@@ -79,3 +79,46 @@ void SetAutoGetIP()
 		set_ip(_T("dnsservers"), net_proper->pszwName);
 	}
 }
+
+std::string UnicodeToUTF8(const wchar_t * str)
+{
+	int len = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
+	char *utf8_str = (char*)malloc(len + 1);
+	memset(utf8_str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, str, -1, utf8_str, len, NULL, NULL);
+	std::string ret_utf8 = utf8_str;
+	free(utf8_str);
+	return ret_utf8;
+}
+
+std::string UnicodeToUTF8(const char * str)
+{
+	wchar_t *wide_str = nullptr;
+	int len = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+	wide_str = (wchar_t*)malloc(sizeof(wchar_t)*len);
+	MultiByteToWideChar(CP_ACP, 0, str, -1, wide_str, len);
+	std::string ret_utf8 = UnicodeToUTF8(wide_str);
+	free(wide_str);
+	return ret_utf8;
+}
+
+wchar_t * UTF8ToUnicode(const wchar_t * utf8)
+{
+	wchar_t *wide_str = nullptr;
+	int len = WideCharToMultiByte(CP_UTF8, 0, utf8, -1, NULL, 0, NULL, NULL);
+	char *multi_str = (char*)malloc(len + 1);
+	memset(multi_str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, utf8, -1, multi_str, len, NULL, NULL);
+	wide_str = UTF8ToUnicode(multi_str);
+	free(multi_str);
+	return wide_str;
+}
+
+wchar_t * UTF8ToUnicode(const char * utf8)
+{
+	wchar_t *wide_str = nullptr;
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+	wide_str = (wchar_t*)malloc(sizeof(wchar_t)*len);
+	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, wide_str, len);
+	return wide_str;
+}

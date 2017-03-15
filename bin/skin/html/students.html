@@ -76,19 +76,23 @@
 
 			/* 从服务器获取Json，解析Json */
 			function get_json(){
-				var data = {control:"reload",range:"students"};
+				var data = {control:"reload",range:"students",tstdemo:"杀死一只知更鸟"};
 				$.ajax({
 					type:"get",
 					url:"http://10.18.3.62:8082/",
 					data:data,
 					async:false,
+					/*dataType:"json",*/
+					scriptCharset:'utf-8',
+					contentType:"application/x-www-form-urlencoded;charset=utf-8", 
 					success:function(result){
-						var arr_obj = eval("(" + result + ")");
-						for(var item in arr_obj){
-							var s_id = arr_obj[item].sno;
-							var s_name = arr_obj[item].name;
-							var s_talk = arr_obj[item].status;
-							var group_id = arr_obj[item].group_info;
+						alert(result);
+						result = eval("(" + result + ")");
+						for(var item in result){
+							var s_id = result[item].sno;
+							var s_name = result[item].name;
+							var s_talk = result[item].status;
+							var group_id = result[item].group_info;
 							addStudent(group_id, s_id, s_name, s_talk);
 						}
 					}

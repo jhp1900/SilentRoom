@@ -2,6 +2,7 @@
 #include "main_wnd.h"
 #include "application.h"
 #include <map>
+#include "..\utils\utils.h"
 
 WebServer::WebServer()
 {
@@ -90,6 +91,18 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			/* 加载学生状态表 */
 			auto reload_stu = [&]() {
 				json_str = json_operator.AssembleJson(pThis->mssqlo_->master_data_);
+				std::vector<MasterData> mast_dt;
+				mast_dt.push_back({ "2011101051", "Luffy", "StrawHat", false });
+				mast_dt.push_back({ "2011101052", "Franky", "StrawHat", true });
+				mast_dt.push_back({ "2011101053", "Chopper ", "StrawHat", false });
+				mast_dt.push_back({ "2011101054", "Zoro ", "StrawHat", false });
+				mast_dt.push_back({ "2011101055", "布鲁克", "StrawHat", false });
+				//mast_dt.push_back({ "2011101051", "Luffy", "StrawHat", false });
+				//mast_dt.push_back({ "2011101052", "Franky", "StrawHat", true });
+				//mast_dt.push_back({ "2011101053", "Chopper ", "StrawHat", false });
+				//mast_dt.push_back({ "2011101054", "Zoro ", "StrawHat", false });
+				//json_str = UnicodeToUTF8(json_operator.AssembleJson(mast_dt));
+				json_str = json_operator.AssembleJson(mast_dt);
 			};
 
 			/* 加载分组信息表 */
@@ -136,8 +149,11 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				}
 			}
 
-			evbuffer_add_printf(buf, json_str, req_str);
+			//evbuffer_add_printf(buf, json_str, req_str);
+			const char *test_send = "杀死一只知更鸟";
+			evbuffer_add_printf(buf, "%s", UnicodeToUTF8(test_send));
 			evhttp_send_reply(req, HTTP_OK, "OK", buf);
+			evbuffer_free(buf);
 		}
 			break;
 		default:
