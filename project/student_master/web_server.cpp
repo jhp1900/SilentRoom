@@ -102,6 +102,29 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				json_str = json_operator.AssembleJson(pThis->mssqlo_->group_ip_);
 			};
 
+			/*删除学生机*/
+			auto delete_stu = [=](std::string appid) {
+				pThis->mssqlo_->DeleteAppid(ATL::CA2W(appid.c_str()));
+			};
+
+			/*添加小组IP*/
+			auto add_group_ip = [=](std::string group, std::string value) {
+				pThis->mssqlo_->AddGroupIp(ATL::CA2W(group.c_str()), ATL::CA2W(value.c_str()));
+			};
+
+			/*更新小组信息*/
+			auto update_group_ip = [=](std::string group, std::string value) {
+				pThis->mssqlo_->UpdateGroupIp(ATL::CA2W(value.c_str()), ATL::CA2W(group.c_str()));
+			};
+
+			auto update_appid = [=](std::string appid, std::string group) {
+				pThis->mssqlo_->UpdateAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
+			};
+
+			auto add_appid = [=](std::string appid, std::string group) {
+				pThis->mssqlo_->AddAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
+			};
+
 			if (dt_map["control"] == "reload") {
 				if (dt_map["range"] == "students") {				// 加载学生状态表
 					reload_stu();
@@ -112,27 +135,32 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				}
 			} else if (dt_map["control"] == "speak") {
 				if (dt_map["range"] == "to_group") {				// 小组内发言
-
+					//...
 				} else if (dt_map["range"] == "to_class") {			// 班级发言
-
+					//...
 				}
 			} else if (dt_map["control"] == "updata") {
 				if (dt_map["range"] == "group_mng") {				// 修改分组信息
-
+					std::thread update_appid_thread(update_appid, dt_map["obj"], dt_map["value"]);
+					update_appid_thread.detach();
 				} else if (dt_map["range"] == "group_ip") {			// 修改小组IP
-
+					std::thread update_group_thread(update_group_ip, dt_map["values"], dt_map["obj"]);
+					update_group_thread.detach();
 				}
 			} else if (dt_map["control"] == "add") {
 				if (dt_map["range"] == "group_mng") {				// 添加 学生机信息
-
+					std::thread add_appid_thread(add_appid, dt_map["obj"], dt_map["values"]);
+					add_appid_thread.detach();
 				} else if (dt_map["range"] == "group_ip") {			// 添加小组IP
-
+					std::thread add_group_thread(add_group_ip, dt_map["obj"], dt_map["values"]);
+					add_group_thread.detach();
 				}
 			} else if (dt_map["control"] == "delete") {
 				if (dt_map["range"] == "group_mng") {				// 删除某个学生机
-
+					std::thread stu_thread(delete_stu, dt_map["obj"]);
+					stu_thread.detach();
 				} else if (dt_map["range"] == "group_ip") {			// 删除某个小组（IP以及改组的所有信息）
-
+					//...
 				}
 			}
 
@@ -245,7 +273,7 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	};
 	std::thread sql_thread(query_thread);
 	sql_thread.detach();
-
+	mssqlo_->DeleteGroup(L"Group1");
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
 	}

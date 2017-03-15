@@ -10,6 +10,8 @@
 #include <atlbase.h>
 #include <atlstr.h>
 #include <vector>
+#include <list>
+#include <mutex>
 #include "..\utils\json_operate.h"
 
 class MsSqlDbOperate
@@ -26,12 +28,19 @@ public:
 
 	int AddStudent(wchar_t* student_id, wchar_t * student_name, wchar_t* appid);
 	int DeleteStudent(wchar_t* sno);
+
+	int AddAppid(wchar_t* appid, wchar_t* group);
+	int DeleteAppid(wchar_t* appid);
+	int UpdateAppid(wchar_t* appid, wchar_t* group);
+
 	int AddGroupIp(wchar_t* group, wchar_t* group_ip);
 	int DeleteGroupIp(wchar_t* group);
+	int UpdateGroupIp(wchar_t* group_ip, wchar_t* group_info);
 
+	int DeleteGroup(wchar_t* group);
 	int Update(wchar_t* sno, int handup);
 	int Update(wchar_t* sno, wchar_t* group_info);
-	int UpdateGroupIp(wchar_t* appid, wchar_t* group_info);
+
 
 	LogonInfo* Query(wchar_t* in_appid);
 	std::vector<MasterData>* QueryStatus();
@@ -39,6 +48,7 @@ public:
 	std::vector<GroupIP>* QueryGroupIP();
 
 public:
+	std::mutex mutex_;
 	LogonInfo longon_info_;
 	std::vector<MasterData> master_data_;
 	std::vector<GroupManage> group_manager_;
