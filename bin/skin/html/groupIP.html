@@ -21,24 +21,39 @@
 		</div>
 	</div>
 	<div id="main">
-		<ul id="browser"></ul>
+		<table id="customers" border="5" style="tablerules=rows">
+			<tr name="table_haed">
+				<th>学生机编号</th>
+				<th>所属组</th>
+			</tr>
+			<tr class="alt">
+				<td>Group1</td>
+				<td align="center"><input type="text" id="" value="10.18.3.62" style="width:100px"></td>
+			</tr>
+			<tr class="alt">
+				<td>Group2</td>
+				<td align="center"><input type="text" id="" value="10.18.3.63" style="width:100px"></td>
+			</tr>
+			<tr class="alt">
+				<td>Group3</td>
+				<td align="center"><input type="text" id="" value="10.18.3.64" style="width:100px"></td>
+			</tr>
+			<tr id="add_appid">
+				<td><input type="text" id="appid_text" style="width:80px"></td>
+				<td><input type="text" id="appid_text" style="width:100px"></td>
+			</tr>
+		</table>
+		<br>
+		<input type="button" id="add_btn" value="添   加" style="width:100%; height:40px">
 		<script type="text/javascript">
 			function get_json(){
-				var data = {control:"reload",range:"group_ip"};
-				$.ajax({
-					type:"get",
-					url:"http://10.18.3.62:8082/",
-					data:data,
-					async:false,
-					success:function(result){
-						alert(result);
-						var arr_obj = eval("(" + result + ")");
-						for(var item in arr_obj){
-							var group_id = arr_obj[item].group_info;
-							var ip_info = arr_obj[item].ip_info;
-						}
-					}
-				});
+				var manage = new DBManager();
+				var arry = manage.reload_gip();
+				delete manage;
+				for(var item in arry){
+					var group_id = arry[item].group_info;
+					var ip_info = arry[item].ip_info;
+				}
 			}
 			get_json();
 		</script>

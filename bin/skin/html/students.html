@@ -12,6 +12,7 @@
 	<script src="js/jquery.cookie.js"></script>
 	<script src="js/jquery.treeview.js" type="text/javascript"></script>
 	<script src="js/bootstrap-dropdown.js" type="text/javascript"></script>
+	<script src="js/db_manager.js"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -70,36 +71,24 @@
 							"<li><a class='please' sno='" + s_id + "' range='to_class'>拉到教室大屏</a></li>" +
 						"</ul></li>").appendTo("#" + g_id);
 				}
-				if(talk == true)
+				if(talk == "true")
 					$(document.getElementById(s_id)).css("background", "url(images/file-closed.jpg) no-repeat 0 0");
 			} 
 
 			/* 从服务器获取Json，解析Json */
 			function get_json(){
-				var data = {control:"reload",range:"students",tstdemo:"杀死一只知更鸟"};
-				$.ajax({
-					type:"get",
-					url:"http://10.18.3.62:8082/",
-					data:data,
-					async:false,
-					/*dataType:"json",*/
-					scriptCharset:'utf-8',
-					contentType:"application/x-www-form-urlencoded;charset=utf-8", 
-					success:function(result){
-						alert(result);
-						result = eval("(" + result + ")");
-						for(var item in result){
-							var s_id = result[item].sno;
-							var s_name = result[item].name;
-							var s_talk = result[item].status;
-							var group_id = result[item].group_info;
-							addStudent(group_id, s_id, s_name, s_talk);
-						}
-					}
-				});
+				var manage = new DBManager();
+				var arry = manage.reload_stu();
+				delete manage;
+				for(var item in arry){
+					var s_id = arry[item].sno;
+					var s_name = arry[item].name;
+					var s_talk = arry[item].handup;
+					var group_id = arry[item].group_info;
+					addStudent(group_id, s_id, s_name, s_talk);
+				}
 			}
 			get_json();
-			/*setTimeout('get_json()', 1000);*/
 		</script>
 	</div>
 </body>

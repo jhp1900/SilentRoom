@@ -9,6 +9,7 @@
 	
 	<script src="js/jquery-2.2.3.min.js"></script>
 	<script src="js/jquery.cookie.js"></script>
+	<script src="js/db_manager.js"></script>
 	
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -32,46 +33,40 @@
 		</div>
 	</div>
 	<div id="main">
-		<table id="customers" border="5" style="tablerules=rows">
+		<table id="customers" name="table_name" border="5" style="tablerules=rows">
 			<tr name="table_haed">
 				<th>学生机编号</th>
 				<th>所属组</th>
 			</tr>
 			<tr class="alt">
 				<td>01</td>
-				<td align="center"><div align="center"><select id="" style="width:100px; text-align:center;"></select></div></td>
-			</tr>
-			<tr class="alt">
-				<td>02</td>
 				<td align="center">
 					<select id="" style="width:100px">
+						<option value="Group1">Group1</option>
 					</select>
 				</td>
 			</tr>
-			<tr id="add_appid">
-				<td><input type="text" id="appid_text" style="width:80px"></td>
-				<td><select id="appid_group" style="width:100px" /></td>
-			</tr>
 		</table>
+		<br>
+		<input type="text" id="appid_text" style="width:80px">
+		<select id="appid_group" style="width:100px" />
 		<br>
 		<input type="button" id="add_btn" value="添   加" style="width:100%; height:40px">
 		
 		<script type="text/javascript">
 			function get_json(){
-				var data = {control:"reload",range:"group_mng"};
-				$.ajax({
-					type:"get",
-					url:"http://10.18.3.62:8082/",
-					data:data,
-					async:false,
-					success:function(result){
-						var arr_obj = eval("(" + result + ")");
-						for(var item in arr_obj){
-							var appid = arr_obj[item].appid;
-							var group_id = arr_obj[item].group_info;
-						}
-					}
-				});
+				var manage = new DBManager();
+				var arry = manage.reload_ginfo();
+				delete manage;
+				for(var item in arry){
+					var appid = arry[item].appid;
+					var group_id = arry[item].group_info;
+					var row = document.getElementById("customers").insertRow();
+					var td_1 = row.insertCell(0);
+					var td_2 = row.insertCell(1);
+					td_1.innerHTML = "<td>" + appid + "</td>";
+					td_2.innerHTML = "<td>" + group_id + "</td>";
+				}
 			}
 			get_json();
 		</script>

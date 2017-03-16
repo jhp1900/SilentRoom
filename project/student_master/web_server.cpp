@@ -96,12 +96,8 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				mast_dt.push_back({ "2011101052", "Franky", "StrawHat", true });
 				mast_dt.push_back({ "2011101053", "Chopper ", "StrawHat", false });
 				mast_dt.push_back({ "2011101054", "Zoro ", "StrawHat", false });
-				mast_dt.push_back({ "2011101055", "布鲁克", "StrawHat", false });
-				//mast_dt.push_back({ "2011101051", "Luffy", "StrawHat", false });
-				//mast_dt.push_back({ "2011101052", "Franky", "StrawHat", true });
-				//mast_dt.push_back({ "2011101053", "Chopper ", "StrawHat", false });
-				//mast_dt.push_back({ "2011101054", "Zoro ", "StrawHat", false });
-				//json_str = UnicodeToUTF8(json_operator.AssembleJson(mast_dt));
+				mast_dt.push_back({ "2011101055", "", "StrawHat", false });
+
 				json_str = json_operator.AssembleJson(mast_dt);
 			};
 
@@ -178,10 +174,10 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			}
 
 			//evbuffer_add_printf(buf, json_str, req_str);
-			const char *test_send = "杀死一只知更鸟";
-			evbuffer_add_printf(buf, "%s", UnicodeToUTF8(test_send));
-			evhttp_send_reply(req, HTTP_OK, "OK", buf);
-			evbuffer_free(buf);
+			////const char *test_send = "杀死一只知更鸟";
+			////evbuffer_add_printf(buf, "%s", UnicodeToUTF8(test_send));
+			//evhttp_send_reply(req, HTTP_OK, "OK", buf);
+			//evbuffer_free(buf);
 		}
 			break;
 		default:
@@ -192,6 +188,12 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	catch (std::exception& e) {
 		OutputDebugStringA(e.what());
 	}
+
+	evbuffer* buf = evbuffer_new();
+	const char *test_send = "杀死一只知更鸟";
+	evbuffer_add_printf(buf, "%s", "杀死一只知更鸟 -- To Kill a Mockingbird; ");
+	evhttp_send_reply(req, HTTP_OK, "OK", buf);
+	evbuffer_free(buf);
 }
 
 void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
