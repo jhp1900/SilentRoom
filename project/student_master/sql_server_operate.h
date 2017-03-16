@@ -41,7 +41,7 @@ public:
 	int Update(wchar_t* sno, int handup);
 	int Update(wchar_t* sno, wchar_t* group_info);
 
-
+	std::wstring QueryStudentIp(wchar_t* sno);
 	LogonInfo* Query(wchar_t* in_appid);
 	std::vector<MasterData>* QueryStatus();
 	std::vector<GroupManage>* QueryGroupManager();

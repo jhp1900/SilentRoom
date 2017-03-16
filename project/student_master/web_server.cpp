@@ -126,12 +126,23 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				pThis->mssqlo_->UpdateGroupIp(ATL::CA2W(value.c_str()), ATL::CA2W(group.c_str()));
 			};
 
+			/*更新APPID*/
 			auto update_appid = [=](std::string appid, std::string group) {
 				pThis->mssqlo_->UpdateAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
 			};
 
+			/*添加APPID*/
 			auto add_appid = [=](std::string appid, std::string group) {
 				pThis->mssqlo_->AddAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
+			};
+
+			auto delete_group = [=](std::string group) {
+				pThis->mssqlo_->DeleteGroup(ATL::CA2W(group.c_str()));
+			};
+
+			auto handle_student_speak = [=](std::string sno) {
+				App::GetInstance()->GetWebServer()->broadcast_ip_ = ATL::CW2A(pThis->mssqlo_->QueryStudentIp(ATL::CA2W(sno.c_str())).c_str());
+				OutputDebugStringA(App::GetInstance()->GetWebServer()->broadcast_ip_.c_str());
 			};
 
 			if (dt_map["control"] == "reload") {
@@ -146,7 +157,8 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				if (dt_map["range"] == "to_group") {				// 小组内发言
 					//...
 				} else if (dt_map["range"] == "to_class") {			// 班级发言
-					//...
+					std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
+					handle_student_speak_thread.detach();	
 				}
 			} else if (dt_map["control"] == "updata") {
 				if (dt_map["range"] == "group_mng") {				// 修改分组信息
@@ -169,7 +181,8 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 					std::thread stu_thread(delete_stu, dt_map["obj"]);
 					stu_thread.detach();
 				} else if (dt_map["range"] == "group_ip") {			// 删除某个小组（IP以及改组的所有信息）
-					//...
+					std::thread delete_group_thread(delete_group, dt_map["obj"]);
+					delete_group_thread.detach();
 				}
 			}
 
@@ -339,7 +352,7 @@ std::shared_ptr<StudentData> WebServer::GetHandupData()
 	return handup_return_data_;
 }
 
-void WebServer::SetStreamIp(char* stream_ip)
+void WebServer::SetStreamIp(const char* stream_ip)
 {
 	handup_return_data_->handup_ = true;
 	handup_return_data_->stream_ip_ = broadcast_ip_;
