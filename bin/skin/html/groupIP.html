@@ -9,6 +9,65 @@
 	
 	<script src="js/jquery-2.2.3.min.js"></script>
 	<script src="js/jquery.cookie.js"></script>
+	<script src="js/db_manager.js"></script>
+
+	<script type="text/javascript">
+	function add_tr(group_id, ip_info){
+		var row = document.getElementById("group_ip_info").insertRow();
+		var td_1 = row.insertCell(0);
+		var td_2 = row.insertCell(1);
+		td_1.innerHTML = "<td>" + group_id + "</td>";
+		td_2.innerHTML = "<td class='atrl'>" 
+			 + "<input type='text' class='ip_info' id=" + group_id + " value=" + ip_info + ">"
+			 + "<input type='button' class='seve_btn' value='保存' index=" + group_id + ">"
+			 + "<input type='button' class='del_btn' value='删除' index=" + group_id + ">"
+			 + "</td>";
+	}
+
+	function get_json(){
+		var manage = new DBManager();
+		var arry = manage.reload_gip();
+		delete manage;
+		for(var item in arry){
+			var group_id = arry[item].group_id;
+			var ip_info = arry[item].ip_info;
+			add_tr(group_id, ip_info);
+		}
+	}
+
+	$(document).ready(function(){
+		get_json();
+		$(".seve_btn").click(function(){
+			var index = $(this).attr("index");
+			var vle = document.getElementById(index).value;
+
+			var manage = new DBManager();
+			var arry = manage.update_ip_info(index, vle);
+			delete manage;
+
+			window.location.reload();
+		});
+		$(".del_btn").click(function(){
+			var index = $(this).attr("index");
+
+			var manage = new DBManager();
+			var arry = manage.del_ip_info(index);
+			delete manage;
+
+			window.location.reload();
+		});
+		$("#add_btn").click(function(){
+			var index = document.getElementById("g_id_text").value;
+			var vle = document.getElementById("ip_text").value;
+			
+			var manage = new DBManager();
+			var arry = manage.add_ip_info(index, vle);
+			delete manage;
+
+			window.location.reload();
+		});
+	});
+	</script>
 </head>
 <body style="background-color:#22252c">
 	<div id="home" class="a-banner">
@@ -20,43 +79,22 @@
 			</ul>
 		</div>
 	</div>
+	<br>
 	<div id="main">
-		<table id="customers" border="5" style="tablerules=rows">
+		<table id="group_ip_info" class="group_table" border="5" style="tablerules=rows">
 			<tr name="table_haed">
-				<th>学生机编号</th>
-				<th>所属组</th>
-			</tr>
-			<tr class="alt">
-				<td>Group1</td>
-				<td align="center"><input type="text" id="" value="10.18.3.62" style="width:100px"></td>
-			</tr>
-			<tr class="alt">
-				<td>Group2</td>
-				<td align="center"><input type="text" id="" value="10.18.3.63" style="width:100px"></td>
-			</tr>
-			<tr class="alt">
-				<td>Group3</td>
-				<td align="center"><input type="text" id="" value="10.18.3.64" style="width:100px"></td>
-			</tr>
-			<tr id="add_appid">
-				<td><input type="text" id="appid_text" style="width:80px"></td>
-				<td><input type="text" id="appid_text" style="width:100px"></td>
-			</tr>
+				<th>组名</th>
+				<th>IP 信息</th>
+			</tr>	
 		</table>
 		<br>
+		<table class="add_table">
+			<tr>
+				<td align="left"><input type="text" id="g_id_text" style="width:90%"></td>
+				<td align="right"><input type="text" id="ip_text" style="width:90%"></td>
+			</tr>
+		</table>
 		<input type="button" id="add_btn" value="添   加" style="width:100%; height:40px">
-		<script type="text/javascript">
-			function get_json(){
-				var manage = new DBManager();
-				var arry = manage.reload_gip();
-				delete manage;
-				for(var item in arry){
-					var group_id = arry[item].group_info;
-					var ip_info = arry[item].ip_info;
-				}
-			}
-			get_json();
-		</script>
 	</div>
 </body>
 </html>

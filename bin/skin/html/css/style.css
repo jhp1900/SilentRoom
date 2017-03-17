@@ -114,19 +114,19 @@
 	background-color:#123456;
 }
 
-#customers{
+.group_table{
 	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
 	width:100%;
 	border-collapse:collapse;
 }
-#customers td, #customers th {
+.group_table td, #customers th {
 	font-size:1.3em;
 	border:1px solid #98bf21;
-	height:35px;
+	height:30px;
 	text-align:center;
 	vertical-align:middle;
 }
-#customers th {
+.group_table th {
 	height:40px;
 	font-size:1.5em;
 	padding-top:5px;
@@ -134,7 +134,21 @@
 	background-color:#A7C942;
 	color:#ffffff;
 }
-#customers tr td {
+.group_table tr td {
 	color:#000000;
 	background-color:#EAF2D3;
+}
+.atrl {
+  padding-top:10px;
+}
+
+.add_table{
+  font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+  width:100%;
+  border-collapse:collapse;
+}
+
+.ip_info {
+  width:100px; 
+  text-align:center;
 }

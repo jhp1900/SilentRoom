@@ -73,11 +73,54 @@ function DBManager(){
 		return json_arry;
 	}
 
+	this.update_ip_info=function(index, vle){
+		var conn = this.db_connect();
+		var rs;
+		try{
+			rs = new ActiveXObject("ADODB.Recordset");
+			var sql = "update group_ip set ip_info='" + vle + "' where group_id='" + index + "'";
+			rs.open(sql, conn);
+		}catch(e){
+			document.write(e.description);
+		}finally{
+			this.db_closeAll(rs, conn);
+		}
+	}
+
+	this.del_ip_info=function(index){
+		var conn = this.db_connect();
+		var rs;
+		try{
+			rs = new ActiveXObject("ADODB.Recordset");
+			var sql = "delete from group_ip where group_id='" + index + "';";
+			sql += "delete from group_info where group_info='" + index + "';";
+			rs.open(sql, conn);
+		}catch(e){
+			document.write(e.description);
+		}finally{
+			this.db_closeAll(rs, conn);
+		}
+	}
+
+	this.add_ip_info=function(index, vle){
+		var conn = this.db_connect();
+		var rs;
+		try{
+			rs = new ActiveXObject("ADODB.Recordset");
+			var sql = "insert into group_ip values ('" + index + "', '" + vle + "');";
+			rs.open(sql, conn);
+		}catch(e){
+			document.write(e.description);
+		}finally{
+			this.db_closeAll(rs, conn);
+		}
+	}
+
 	this.db_closeAll=function(rs, conn){
-		if(rs != null){
+		/*if(rs != null){
 			rs.close();
 			rs = null;
-		}
+		}*/
 		if(conn != null){
 			conn.close();
 			conn = null;

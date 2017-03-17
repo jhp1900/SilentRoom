@@ -16,8 +16,8 @@
 			$(".myselect").change(function(){
 				var id = $(this).attr("id");
 				var val = $(this).val();
-				var te = $(this).text();
-				alert(id + " : " + val + " : " + te);
+				//var te = $(this).text();
+				alert(id + " : " + val);
 			});
 		});
 	</script>
@@ -32,27 +32,36 @@
 			</ul>
 		</div>
 	</div>
-	<div id="main">
-		<table id="customers" name="table_name" border="5" style="tablerules=rows">
+	<br>
+	<div id="main" style="width: 90%; height:522px; overflow:auto">
+		<table id="customers" class="group_table" name="table_name" border="5" style="tablerules=rows">
 			<tr name="table_haed">
-				<th>学生机编号</th>
+				<th>学生机 ID</th>
 				<th>所属组</th>
 			</tr>
-			<tr class="alt">
-				<td>01</td>
-				<td align="center">
-					<select id="" style="width:100px">
-						<option value="Group1">Group1</option>
+			<tr>
+				<td>AK2013</td style="width:25%">
+				<td class="atrl" style="width:75%">
+					<select id="" class="myselect" style="width:56%" onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;">
+						<option value="Group1">白胡子海贼团</option>
+						<option value="Group2">Group2</option>
+						<option value="Group3">Group3</option>
+						<option value="Group4">Group4</option>
+						<option value="Group5">Group5</option>
 					</select>
+					<input type="button" id="" value="编辑">
+					<input type="button" id="" value="删除">
 				</td>
 			</tr>
 		</table>
 		<br>
-		<input type="text" id="appid_text" style="width:80px">
-		<select id="appid_group" style="width:100px" />
-		<br>
+		<table class="add_table">
+			<tr>
+				<td align="left" style="width:50%"><input type="text" id="appid_text" style="width:90%"></td>
+				<td align="right" style="width:50%"><select id="appid_group" style="width:90%" /></td>
+			</tr>
+		</table>
 		<input type="button" id="add_btn" value="添   加" style="width:100%; height:40px">
-		
 		<script type="text/javascript">
 			function get_json(){
 				var manage = new DBManager();
