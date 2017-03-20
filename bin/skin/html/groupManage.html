@@ -6,54 +6,141 @@
 	<link rel="stylesheet" href="css/screen.css" />
 	<link rel="stylesheet" href="css/bootstrap.css" />
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
-	
-	<script src="js/jquery-2.2.3.min.js"></script>
-	<script src="js/jquery.cookie.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="css/github-dark.css" media="screen">
+
 	<script src="js/db_manager.js"></script>
+	<script src="js/jquery-git1.min.js"></script>
+	<script src="js/jquery-sortable-lists.min.js"></script>
 	
+	<style type="text/css">
+		html, body, ul, li { margin:0; padding:0; }
+		ul, li { list-style-type:none; color:#b5e853; border:1px solid #3f3f3f; }
+		ul.sTree, ul{ padding:0px; background-color:#151515; }
+		ul.sTree2 li, ul#sortableListsBase li { padding-left:50px; margin:5px; border:1px solid #3f3f3f; background-color:#3f3f3f; }
+		li div { padding:7px; background-color:#222; Nborder:1px solid #3f3f3f; }
+		li, ul, div { border-radius: 3px; }
+		.red { background-color:#ff9999; }
+		.blue { background-color:#aaaaff;}
+		.green { background-color:#99ff99; }
+		.gree2 { background-color:#bbffbb; }
+		.yellow { background-color:#ff8; }
+		.brown { background-color:#c26b2b; }
+		.pT20 { padding-top:20px; }
+		.pV10 { padding-top:10px; padding-bottom:10px; }
+		.dN { display:none; }
+		.zI1000 { z-index:1000; }
+		.c1 { color:#b5e853; }
+		.c2 { color:#63c0f5; }
+		.c3 { color: #f77720; }
+		.c4 { color: #888; }
+		.bgC1 { background-color:#ccc; }
+		.bgC2 { background-color:#ff8; }
+		.small1 { font-size:0.8em; }
+		.small2 { font-size:0.7em; }
+		.small3 { font-size:0.6em; }
+		.tAR { text-align:right; }
+		.clear { clear:both; }
+		img.descPicture { display:block; width:100%; margin:0 7px 30px 0; float:left; cursor:pointer; }
+		img.descPicture.descPictureClose { width:150px; }
+		#sTree2 { margin:10px auto; }
+	</style>
+
 	<script type="text/javascript">
+		function add_group(group_id) {
+			$("<li class='sortableListsOpen' data-module='Group'>"
+				+ "<div class='group'>" + group_id + "</div>"
+				+ "<ul id='" + group_id + "'></ul></li>").appendTo("#sTree2");
+		}
+
+		function add_appid(group_id, appid) {
+			$("<li id='" + appid + "' data-module='Appid'><div>" + appid + "</div></li>").appendTo("#" + group_id);
+		}
+
+		function get_json(){
+			var manage = new DBManager();
+			var app_arry = manage.reload_ginfo();
+			var group_arry = manage.reload_gip();
+			delete manage;
+			for(var item in group_arry) {
+				add_group(group_arry[item].group_id);
+			}
+
+			for(var item in app_arry) {
+				var appid = app_arry[item].appid;
+				var group_id = app_arry[item].group_info;
+				add_appid(group_id, appid);
+			}
+		}
+
+		$(function(){
+				var options = {
+				placeholderCss: {'background-color': '#ff8'},
+				hintCss: {'background-color':'#bbf'},
+				isAllowed: function(cEl, hint, target) {
+					if(hint.parents('li').first().data('module') === 'Group' && cEl.data('module') === 'Appid'){
+						hint.css('background-color', '#99ff99');
+						return true;
+					} else {
+						hint.css('background-color', '#ff9999');
+						return false;
+					}
+				},
+				opener: {
+					 active: true,
+					 close: 'images/Remove2.png',
+					 open: 'images/Add2.png',
+					 openerCss: {
+						 'display': 'inline-block',
+						 'width': '18px',
+						 'height': '18px',
+						 'float': 'left',
+						 'margin-left': '-35px',
+						 'margin-right': '5px',
+						 'background-position': 'center center',
+						 'background-repeat': 'no-repeat'
+					 },
+					 openerClass: ''
+				}
+			},
+			sWrapper = $('#settingsWrapper');
+
+			$('#sTree2, #sTree').sortableLists(options);
+			$('#toArrBtn').on('click', function(){ console.log($('#sTree2').sortableListsToArray()); });
+			$('#toHierBtn').on('click', function() { console.log($('#sTree2').sortableListsToHierarchy()); });
+			$('#toStrBtn').on('click', function() { console.log($('#sTree2').sortableListsToString()); });
+			$('.descPicture').on('click', function(e) { $(this).toggleClass('descPictureClose'); });
+		});
+
 		$(document).ready(function(){
-			$(".myselect").change(function(){
-				var id = $(this).attr("id");
-				var val = $(this).val();
-				//var te = $(this).text();
-				alert(id + " : " + val);
-			});
+			get_json();
 		});
 	</script>
 </head>
 <body style="background-color:#22252c">
 	<div id="home" class="a-banner">
 		<div class="top-nav">
-			<ul>
-				<li class="hvr-sweep-to-bottom"><a href="students.html">学生状态</a></li>
-				<li class="hvr-sweep-to-bottom active"><a href="groupManage.html">分组管理</a></li>
-				<li class="hvr-sweep-to-bottom"><a href="groupIP.html">小组IP</a></li>
+			<ul style="border:0px">
+				<li class="hvr-sweep-to-bottom" style="border:0px"><a href="students.html">学生状态</a></li>
+				<li class="hvr-sweep-to-bottom active" style="border:0px"><a href="groupManage.html">分组管理</a></li>
+				<li class="hvr-sweep-to-bottom" style="border:0px"><a href="groupIP.html">小组IP</a></li>
 			</ul>
 		</div>
 	</div>
 	<br>
-	<div id="main" style="width: 90%; height:522px; overflow:auto">
-		<table id="customers" class="group_table" name="table_name" border="5" style="tablerules=rows">
-			<tr name="table_haed">
-				<th>学生机 ID</th>
-				<th>所属组</th>
-			</tr>
-			<tr>
-				<td>AK2013</td style="width:25%">
-				<td class="atrl" style="width:75%">
-					<select id="" class="myselect" style="width:56%" onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;">
-						<option value="Group1">白胡子海贼团</option>
-						<option value="Group2">Group2</option>
-						<option value="Group3">Group3</option>
-						<option value="Group4">Group4</option>
-						<option value="Group5">Group5</option>
-					</select>
-					<input type="button" id="" value="编辑">
-					<input type="button" id="" value="删除">
-				</td>
-			</tr>
-		</table>
+	<div id="main">
+		<div class="container">
+			<section id="main_content">
+				<ul class="sTree2 listsClass" id="sTree2">
+					<li id="Group_id_1" class="sortableListsOpen" data-module="Group">
+						<div class="group">Group1</div>
+						<ul>
+							<li id="001" data-module="Appid"><div>001</div></li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+		</div>
 		<br>
 		<table class="add_table">
 			<tr>
@@ -62,23 +149,6 @@
 			</tr>
 		</table>
 		<input type="button" id="add_btn" value="添   加" style="width:100%; height:40px">
-		<script type="text/javascript">
-			function get_json(){
-				var manage = new DBManager();
-				var arry = manage.reload_ginfo();
-				delete manage;
-				for(var item in arry){
-					var appid = arry[item].appid;
-					var group_id = arry[item].group_info;
-					var row = document.getElementById("customers").insertRow();
-					var td_1 = row.insertCell(0);
-					var td_2 = row.insertCell(1);
-					td_1.innerHTML = "<td>" + appid + "</td>";
-					td_2.innerHTML = "<td>" + group_id + "</td>";
-				}
-			}
-			get_json();
-		</script>
 	</div>
 </body>
 </html>

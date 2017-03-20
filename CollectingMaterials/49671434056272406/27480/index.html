@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset='utf-8'>
+<meta charset='utf-8' http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>jQuery树结构且可拖拽排序的tree插件 - xw素材网</title>
 <link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
 <link rel="stylesheet" type="text/css" href="css/github-dark.css" media="screen">
@@ -45,17 +45,13 @@ $(function()
 	var options = {
 			placeholderCss: {'background-color': '#ff8'},
 			hintCss: {'background-color':'#bbf'},
-			isAllowed: function(cEl, hint, target)
-			{
-				if(hint.parents('li').first().data('module') === 'c' && cEl.data('module') !== 'c')
-				{
-					hint.css('background-color', '#ff9999');
-					return false;
-				}
-				else
-				{
+			isAllowed: function(cEl, hint, target) {
+				if(hint.parents('li').first().data('module') === 'Group' && cEl.data('module') === 'student'){
 					hint.css('background-color', '#99ff99');
 					return true;
+				} else {
+					hint.css('background-color', '#ff9999');
+					return false;
 				}
 			},
 			opener: {
@@ -86,88 +82,88 @@ $(function()
 </head>
 <body>
     <div class="container">
-      	<section id="main_content">
-	<ul class="sTree2 listsClass" id="sTree2">
-				<li id="item_a" data-module="a">
-					<div>选项 a</div>
+		<section id="main_content">
+			<ul class="sTree2 listsClass" id="sTree2">
+				<li id="group-1111" value="------------------147852-------------------" data-module="Group">
+					<div sno="111">Group0</div>
 				</li>
-				<li class="sortableListsOpen" id="item_b" data-module="b">
-					<div>选项 b</div>
+				<li class="sortableListsOpen" id="group-2222" data-id="111111" data-module="Group">
+					<div sno="222">Group1</div>
 					<ul class="">
-						<li id="item_b1" data-module="b">
+						<li id="item_b1" data-module="student">
 							<div>选项 b1</div>
 						</li>
-						<li id="item_b2" data-module="b">
+						<li id="item_b2" data-module="student">
 							<div>选项 b2</div>
 						</li>
-						<li id="item_b3" data-module="b">
+						<li id="item_b3" data-module="student">
 							<div>选项 b3</div>
 						</li>
-						<li id="item_b4" data-module="b">
+						<li id="item_b4" data-module="student">
 							<div>选项 b4</div>
 						</li>
-						<li id="item_b5" data-module="b">
+						<li id="item_b5" data-module="student">
 							<div>选项 b5</div>
 						</li>
 					</ul>
 				</li>
-				<li class="" id="item_c" data-module="b">
-					<div>选项 c</div>
+				<li class="sortableListsOpen" id="group-3333" data-id="222222" data-module="Group">
+					<div sno="333">Group2</div>
 					<ul class="">
-						<li id="item_c1" data-module="c">
+						<li id="item_c1" data-module="student">
 							<div>选项 c1</div>
 						</li>
-						<li id="item_c2" data-module="c">
+						<li id="item_c2" data-module="student">
 							<div>选项 c2</div>
 						</li>
-						<li id="item_c3" data-module="c">
+						<li id="item_c3" data-module="student">
 							<div>选项 c3</div>
 						</li>
-						<li id="item_c4" data-module="c">
+						<li id="item_c4" data-module="student">
 							<div>选项 c4</div>
 						</li>
-						<li id="item_c5" data-module="c">
+						<li id="item_c5" data-module="student">
 							<div>选项 c5</div>
 						</li>
 					</ul>
 				</li>
-				<li class="" id="item_d" data-module="d">
-					<div>选项 d</div>
+				<li class="" id="group-4444"  data-id="333333" data-module="Group">
+					<div sno="444">Group3</div>
 					<ul class="">
-						<li id="item_d1" data-module="d">
+						<li id="item_d1" data-module="student">
 							<div>选项 d1</div>
 						</li>
-						<li id="item_d2" data-module="d">
+						<li id="item_d2" data-module="student">
 							<div>选项 d2</div>
 						</li>
-						<li id="item_d3" data-module="d">
+						<li id="item_d3" data-module="student">
 							<div>选项 d3</div>
 						</li>
-						<li id="item_d4" data-module="d">
+						<li id="item_d4" data-module="student">
 							<div>选项 d4</div>
 						</li>
-						<li id="item_d5" data-module="d">
+						<li id="item_d5" data-module="student">
 							<div>选项 d5</div>
 						</li>
 					</ul>
 				</li>
-				<li class="" id="item_e" data-module="e">
-					<div>选项 e</div>
+				<li class="" id="group-5555" data-module="Group">
+					<div sno="555">选项 e</div>
 				</li>
-				<li class="" id="item_f" data-module="f">
-					<div>选项 f</div>
+				<li class="" id="group-6666" data-module="Group">
+					<div sno="666">选项 f</div>
 				</li>
-				<li class="" id="item_g" data-module="g">
-					<div>选项 g</div>
+				<li class="" id="group-7777" data-module="Group">
+					<div sno="777">选项 g</div>
 				</li>
 			</ul>
-      </section>
+		</section>
     </div>
     <!--
 <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
 <p>适用浏览器：360、FireFox、Chrome、Safari、Opera、傲游、搜狗、世界之窗. 不支持IE8及以下浏览器。</p>
 <p>来源：<a href="http://www.xwcms.net/" target="_blank">xw素材网</a></p>
--->
 </div>
+-->
 </body>
 </html>

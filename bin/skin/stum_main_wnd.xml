@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Window size="325,651">
   <Container name="frame_body" bkcolor="#ffaaaaaa">
-    <WebBrowser name="web_browser" homepage="" autonavi="true" />
+    <WebBrowser name="web_browser" homepage="file:///D:/Code/Work/SilentRoom/CollectingMaterials/49671434056272406/27480/index.html" autonavi="true" />
   </Container>
 </Window>
