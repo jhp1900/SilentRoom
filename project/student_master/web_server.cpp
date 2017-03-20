@@ -55,23 +55,6 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		}
 			break;
 		case EVHTTP_REQ_GET: {
-			/*evbuffer* buf = evbuffer_new();
-			char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
-			post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
-
-			evbuffer* buf = evbuffer_new();
-			evkeyvalq valkey;
-			const char* req_str = evhttp_request_get_uri(req);
-			evhttp_parse_query(req_str, &valkey);
-			evkeyval* val = valkey.tqh_first;
-			char* key = val->key;
-			char* value = val->value;
-
-			JsonOperate json_operator;
-			string xx = json_operator.AssembleJson(pThis->master_data_);
-			evbuffer_add_printf(buf, json_operator.AssembleJson(pThis->master_data_), evhttp_request_get_uri(req));
-			evhttp_send_reply(req, HTTP_OK, "OK", 0);*/
-
 			/* 以下为测试代码 */
 			evbuffer* buf = evbuffer_new();
 			JsonOperate json_operator;
@@ -210,8 +193,6 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 				return;
 			}
 			char* post_data = ((char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer));
-			//dest = (new char[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)]);
-			//memcpy(dest, (char*)EVBUFFER_DATA(pThis->req_vec_.front().first->input_buffer), EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer));
 			post_data[EVBUFFER_LENGTH(pThis->req_vec_.front().first->input_buffer)] = '\0';
 
 			JsonOperate json_operate;
