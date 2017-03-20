@@ -12,6 +12,7 @@
 	<script src="js/jquery.cookie.js"></script>
 	<script src="js/jquery.treeview.js" type="text/javascript"></script>
 	<script src="js/bootstrap-dropdown.js" type="text/javascript"></script>
+	<script src="js/db_manager.js"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -47,7 +48,8 @@
 			</ul>
 		</div>
 	</div>
-	<div id="main">
+	<br>
+	<div id="main" style="height:500px; overflow:auto">
 		<ul id="browser" class="filetree treeview-famfamfam"></ul>
 		<script type="text/javascript">
 			/* 添加分组信息 */
@@ -70,32 +72,24 @@
 							"<li><a class='please' sno='" + s_id + "' range='to_class'>拉到教室大屏</a></li>" +
 						"</ul></li>").appendTo("#" + g_id);
 				}
-				if(talk == true)
+				if(talk == "true")
 					$(document.getElementById(s_id)).css("background", "url(images/file-closed.jpg) no-repeat 0 0");
 			} 
 
 			/* 从服务器获取Json，解析Json */
 			function get_json(){
-				var data = {control:"reload",range:"students"};
-				$.ajax({
-					type:"get",
-					url:"http://10.18.3.67:8082/",
-					data:data,
-					async:false,
-					success:function(result){
-						var arr_obj = eval("(" + result + ")");
-						for(var item in arr_obj){
-							var s_id = arr_obj[item].sno;
-							var s_name = arr_obj[item].name;
-							var s_talk = arr_obj[item].status;
-							var group_id = arr_obj[item].group_info;
-							addStudent(group_id, s_id, s_name, s_talk);
-						}
-					}
-				});
+				var manage = new DBManager();
+				var arry = manage.reload_stu();
+				delete manage;
+				for(var item in arry){
+					var s_id = arry[item].sno;
+					var s_name = arry[item].name;
+					var s_talk = arry[item].handup;
+					var group_id = arry[item].group_info;
+					addStudent(group_id, s_id, s_name, s_talk);
+				}
 			}
 			get_json();
-			/*setTimeout('get_json()', 1000);*/
 		</script>
 	</div>
 </body>
