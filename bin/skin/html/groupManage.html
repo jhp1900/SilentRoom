@@ -48,13 +48,21 @@
 
 	<script type="text/javascript">
 		function add_group(group_id) {
-			$("<li class='sortableListsOpen' data-module='Group'>"
+			$("<li id='" + group_id + "' class='sortableListsOpen' data-module='Group'>"
 				+ "<div class='group'>" + group_id + "</div>"
-				+ "<ul id='" + group_id + "'></ul></li>").appendTo("#sTree2");
+				+ "<ul name='" + group_id + "'></ul></li>").appendTo("#sTree2");
+			
+			$("<option value='" + group_id + "'>" + group_id + "</option>").appendTo("#appid_group");
+		}
+
+		function add_del_li() {
+			$("<li id='del_li' class='sortableListsOpen' data-module='DelApp'>"
+				+ "<div class='del_li'>删除</div></li>").appendTo("#sTree2");
 		}
 
 		function add_appid(group_id, appid) {
-			$("<li id='" + appid + "' data-module='Appid'><div>" + appid + "</div></li>").appendTo("#" + group_id);
+			var g_ul = document.getElementsByName(group_id)[0];
+			$("<li id='" + appid + "' data-module='Appid'><div>" + appid + "</div></li>").appendTo(g_ul);
 		}
 
 		function get_json(){
@@ -65,6 +73,7 @@
 			for(var item in group_arry) {
 				add_group(group_arry[item].group_id);
 			}
+			add_del_li();
 
 			for(var item in app_arry) {
 				var appid = app_arry[item].appid;
@@ -78,7 +87,8 @@
 				placeholderCss: {'background-color': '#ff8'},
 				hintCss: {'background-color':'#bbf'},
 				isAllowed: function(cEl, hint, target) {
-					if(hint.parents('li').first().data('module') === 'Group' && cEl.data('module') === 'Appid'){
+					var tar = hint.parents('li').first().data('module');
+					if( (tar === 'Group' || tar === 'DelApp') && cEl.data('module') === 'Appid'){
 						hint.css('background-color', '#99ff99');
 						return true;
 					} else {
@@ -114,6 +124,15 @@
 
 		$(document).ready(function(){
 			get_json();
+			$("#add_btn").click(function(){
+				var appid = $("#appid_text")[0].value;
+				var group_id = $("#appid_group")[0].value;
+				var manage = new DBManager();
+				var arry = manage.add_group_info(group_id, appid);
+				delete manage;
+				add_appid(group_id, appid);
+				$("#appid_text")[0].value = "";
+			});
 		});
 	</script>
 </head>
@@ -132,12 +151,6 @@
 		<div class="container">
 			<section id="main_content">
 				<ul class="sTree2 listsClass" id="sTree2">
-					<li id="Group_id_1" class="sortableListsOpen" data-module="Group">
-						<div class="group">Group1</div>
-						<ul>
-							<li id="001" data-module="Appid"><div>001</div></li>
-						</ul>
-					</li>
 				</ul>
 			</section>
 		</div>

@@ -87,6 +87,20 @@ function DBManager(){
 		}
 	}
 
+	this.update_group_info=function(group_id, appid){
+		var conn = this.db_connect();
+		var rs;
+		try{
+			rs = new ActiveXObject("ADODB.Recordset");
+			var sql = "update group_info set group_info='" + group_id + "' where appid='" + appid + "'";
+			rs.open(sql, conn);
+		}catch(e){
+			document.write(e.description);
+		}finally{
+			this.db_closeAll(rs, conn);
+		}
+	}
+
 	this.del_ip_info=function(index){
 		var conn = this.db_connect();
 		var rs;
@@ -94,6 +108,20 @@ function DBManager(){
 			rs = new ActiveXObject("ADODB.Recordset");
 			var sql = "delete from group_ip where group_id='" + index + "';";
 			sql += "delete from group_info where group_info='" + index + "';";
+			rs.open(sql, conn);
+		}catch(e){
+			document.write(e.description);
+		}finally{
+			this.db_closeAll(rs, conn);
+		}
+	}
+
+	this.del_group_info=function(appid){
+		var conn = this.db_connect();
+		var rs;
+		try{
+			rs = new ActiveXObject("ADODB.Recordset");
+			var sql = "delete from group_info where appid='" + appid + "';";
 			rs.open(sql, conn);
 		}catch(e){
 			document.write(e.description);
@@ -116,6 +144,20 @@ function DBManager(){
 		}
 	}
 
+	this.add_group_info=function(group_id, appid){
+		var conn = this.db_connect();
+		var rs;
+		try{
+			rs = new ActiveXObject("ADODB.Recordset");
+			var sql = "insert into group_info values ('" + appid + "', '" + group_id + "');";
+			rs.open(sql, conn);
+		}catch(e){
+			document.write(e.description);
+		}finally{
+			this.db_closeAll(rs, conn);
+		}
+	}
+
 	this.db_closeAll=function(rs, conn){
 		/*if(rs != null){
 			rs.close();
@@ -126,4 +168,25 @@ function DBManager(){
 			conn = null;
 		}
 	}
+}
+
+function moveTo(group_id, appid, old_group) {
+	if(appid === "" || group_id === "main_content")
+		return;
+	console.log("group_id : " + group_id);
+	console.log("appid : " + appid);
+	console.log("old_group : " + old_group);
+
+	if(group_id !== "del_li") {
+		var manage = new DBManager();
+		manage.update_group_info(group_id, appid);
+		delete manage;
+		return;
+	}
+
+	var manage = new DBManager();
+	manage.del_group_info(appid);
+	delete manage;
+	
+	$("#" + group_id)[0].removeChild($("#sortableListsHintWrapper")[0]);
 }
