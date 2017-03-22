@@ -158,7 +158,7 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 					//...
 				} else if (dt_map["range"] == "to_class") {			// 班级发言
 					std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
-					handle_student_speak_thread.detach();	
+					handle_student_speak_thread.detach();
 				}
 			} else if (dt_map["control"] == "updata") {
 				if (dt_map["range"] == "group_mng") {				// 修改分组信息

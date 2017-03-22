@@ -26,9 +26,10 @@
 				var sno = $(this).attr("sno");
 				var range = $(this).attr("range");
 				var data = {control:"speak",range:range,obj:sno};
+				var sv_info = get_server();
 				$.ajax({
 					type:"get",
-					url:"http://10.18.3.62:8082/",
+					url:"http://" + sv_info.ip + ":" + sv_info.port + "/",
 					data:data,
 					success:function(result){
 						//alert(result);
