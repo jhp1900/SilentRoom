@@ -201,12 +201,6 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 	catch (std::exception& e) {
 		OutputDebugStringA(e.what());
 	}
-
-	evbuffer* buf = evbuffer_new();
-	const char *test_send = "杀死一只知更鸟";
-	evbuffer_add_printf(buf, "%s", "杀死一只知更鸟 -- To Kill a Mockingbird; ");
-	evhttp_send_reply(req, HTTP_OK, "OK", buf);
-	evbuffer_free(buf);
 }
 
 void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)

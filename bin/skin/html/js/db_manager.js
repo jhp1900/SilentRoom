@@ -5,7 +5,7 @@
 function DBManager(){
 	this.db_connect=function(){
 		var conn = new ActiveXObject("ADODB.Connection");
-		conn.Open("Provider=SQLOLEDB.1;Data Source=10.18.3.62,1433;User ID=sa;Password=718811107;Initial Catalog=RBS");
+		conn.Open("Provider=SQLOLEDB.1;Data Source=10.18.3.67,1433;User ID=sa;Password=123;Initial Catalog=demo");
 		return conn;
 	}
 
@@ -15,7 +15,7 @@ function DBManager(){
 		var json_arry = [];
 		try{
 			rs = new ActiveXObject("ADODB.Recordset");
-			var sql = "select * from student join group_info on(student.appid = group_info.appid)";
+			var sql = "select * from student_info join group_info on(student_info.appid = group_info.appid)";
 			rs.open(sql, conn);
 			while(!rs.EOF){
 				var temp = {"sno":rs.Fields("sno").Value};
@@ -62,7 +62,7 @@ function DBManager(){
 			var sql = "select * from group_ip";
 			rs.open(sql, conn);
 			while(!rs.EOF){
-				json_arry.push({"group_id":rs.Fields("group_id").Value, "ip_info":rs.Fields("ip_info").Value});
+				json_arry.push({"group_id":rs.Fields("group_info").Value, "ip_info":rs.Fields("group_ip").Value});
 				rs.moveNext();
 			}
 		}catch(e){
@@ -78,7 +78,7 @@ function DBManager(){
 		var rs;
 		try{
 			rs = new ActiveXObject("ADODB.Recordset");
-			var sql = "update group_ip set ip_info='" + vle + "' where group_id='" + index + "'";
+			var sql = "update group_ip set group_ip='" + vle + "' where group_info='" + index + "'";
 			rs.open(sql, conn);
 		}catch(e){
 			document.write(e.description);
