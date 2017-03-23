@@ -22,6 +22,5 @@ void MainWnd::InitWindow()
 	/* ÉèÖÃÍøÒ³Ö÷Ò³ */
 	auto web_browser = static_cast<CWebBrowserUI*>(m_pm.FindControl(_T("web_browser")));
 	web_browser->SetHomePage(CPaintManagerUI::GetResourcePath() + _T("html/students.html"));
-	//web_browser->SetHomePage(_T("D:/Code/Work/SilentRoom/CollectingMaterials/49671434056272406/27480/index.html"));
 }
 

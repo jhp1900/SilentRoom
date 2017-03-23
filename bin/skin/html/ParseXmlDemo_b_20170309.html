@@ -69,7 +69,7 @@
 						$(document.getElementById(s_id)).css("background", "url(images/file-closed.jpg) no-repeat 0 0");
 				} 
 				
-				function parse_xml(){
+				function parse_xml() {
 					var xmlDoc = null;
 					var xmlDomVersions = ['MSXML.2.DOMDocument.6.0', 'MSXML.2.DOMDocument.3.0', 'Microsoft.XMLDOM'];
 					for(var i = 0; i < xmlDomVersions.length; i++){
@@ -79,7 +79,7 @@
 						}catch(e){}
 					}
 					
-					if(xmlDoc != null){
+					if(xmlDoc != null) {
 						xmlDoc.async = false;
 						xmlDoc.load("group.xml");
 					}
