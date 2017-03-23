@@ -277,8 +277,8 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 #endif
 		}
 	};
-	std::thread sql_thread(query_thread);
-	sql_thread.detach();
+	th_1_ = new std::thread(query_thread);
+	//sql_thread.detach();
 	mssqlo_->DeleteGroup(L"Group1");
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
