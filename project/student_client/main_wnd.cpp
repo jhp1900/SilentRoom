@@ -201,7 +201,8 @@ bool MainWnd::Login()
 	stu_info_.naem_ = CW2A(name.GetData());
 
 	/* 组装登录信息,登录服务器 */
-	stu_info_.operate_type_ = LOGON;
+	stu_info_.operate_type_ = OperateType::LOGON;
+	stu_info_.stream_ip_ = local_ip_;
 	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
 
 	return true;

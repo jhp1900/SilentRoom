@@ -9,7 +9,7 @@ WebServer::WebServer()
 {
 	handup_return_data_.reset(new StudentData);
 	handup_return_data_->appid_ = "1";
-	handup_return_data_->handup_ = false;
+	handup_return_data_->handup_ = true;
 	handup_return_data_->naem_ = "null";
 	handup_return_data_->operate_type_ = KEEPA_LIVE;
 	handup_return_data_->sno_ = "1";
@@ -58,8 +58,8 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			break;
 		case EVHTTP_REQ_GET: {
 			/* 以下为测试代码 */
-			evbuffer* buf = evbuffer_new();
-			JsonOperate json_operator;
+			//evbuffer* buf = evbuffer_new();
+			//JsonOperate json_operator;
 			evkeyvalq keyvalq;
 			const char *req_str = evhttp_request_get_uri(req);
 			evhttp_parse_query(req_str, &keyvalq);
@@ -125,7 +125,9 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			} while (0);
 
 			auto handle_student_speak = [=](std::string sno) {
-				App::GetInstance()->GetWebServer()->broadcast_ip_ = ATL::CW2A(pThis->mssqlo_->QueryStudentIp(ATL::CA2W(sno.c_str())).c_str());
+				std::string ip_temp = ATL::CW2A(pThis->mssqlo_->QueryStudentIp(ATL::CA2W(sno.c_str())).c_str());
+				pThis->handup_return_data_->stream_ip_ = ip_temp;
+				App::GetInstance()->GetWebServer()->broadcast_ip_ = ip_temp;
 				OutputDebugStringA(App::GetInstance()->GetWebServer()->broadcast_ip_.c_str());
 			};
 
@@ -220,10 +222,15 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			auto on_logon = [&]() {
 				LogonInfo ret_logon;
 				if (pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()), ret_logon)) {
+					pThis->mssqlo_->AddStudent(ATL::CA2W(student_data.sno_.c_str())
+						, ATL::CA2W(student_data.naem_.c_str())
+						, ATL::CA2W(student_data.appid_.c_str())
+						, 0
+						, ATL::CA2W(student_data.stream_ip_.c_str()));
+
 					std::string json_str = json_operate.AssembleJson(ret_logon);
 					evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
 				}
-				int a = 0;
 			};
 
 			/* 举手消息处理 */
@@ -288,7 +295,7 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	};
 	th_1_ = new std::thread(query_thread);
 	//sql_thread.detach();
-	mssqlo_->DeleteGroup(L"Group1");
+	//mssqlo_->DeleteGroup(L"Group1");
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
 	}

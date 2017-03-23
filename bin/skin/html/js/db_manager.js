@@ -179,7 +179,7 @@ function DBManager(){
 		var rs;
 		try{
 			rs = new ActiveXObject("ADODB.Recordset");
-			var sql = "delete from group_ip where group_id='" + index + "';";
+			var sql = "delete from group_ip where group_info='" + index + "';";
 			sql += "delete from group_info where group_info='" + index + "';";
 			rs.open(sql, conn);
 		}catch(e){

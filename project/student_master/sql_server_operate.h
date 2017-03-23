@@ -26,7 +26,8 @@ public:
 	int ExecDirect(wchar_t* strsql);
 	int CreateTable();
 
-	int AddStudent(wchar_t* student_id, wchar_t * student_name, wchar_t* appid);
+	int AddStudent(const wchar_t* sno, const wchar_t * name, const wchar_t* appid
+		, const int handup, const wchar_t* stream_ip);
 	int DeleteStudent(wchar_t* sno);
 
 	int AddAppid(wchar_t* appid, wchar_t* group);
