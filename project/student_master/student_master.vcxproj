@@ -75,7 +75,7 @@
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\third_party\duilib;$(SolutionDir)\third_party\libevent\libs;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)\third_party\libevent\include;$(SolutionDir)\third_party\libevent;$(ProjectDir)..\..\third_party\rapidjson\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\third_party\libevent\include;$(SolutionDir)\third_party\libevent;$(ProjectDir)..\..\third_party\rapidjson\include;..\utils;..\..\third_party\pugixml;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="..\utils\json_operate.cpp" />
     <ClCompile Include="..\utils\utils.cpp" />
+    <ClCompile Include="..\utils\xml_manager.cpp" />
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="main_wnd.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="..\utils\json_operate.h" />
     <ClInclude Include="..\utils\msg_head.h" />
     <ClInclude Include="..\utils\utils.h" />
+    <ClInclude Include="..\utils\xml_manager.h" />
     <ClInclude Include="application.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="main_wnd.h" />

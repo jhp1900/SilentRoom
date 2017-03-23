@@ -9,7 +9,7 @@ MsSqlDbOperate::~MsSqlDbOperate()
 {
 }
 
-int MsSqlDbOperate::Connect(wchar_t * servername, wchar_t * username, wchar_t * password)
+int MsSqlDbOperate::Connect(const wchar_t * servername, const wchar_t * username, const wchar_t * password)
 {
 	try
 	{
@@ -268,7 +268,7 @@ std::wstring MsSqlDbOperate::QueryStudentIp(wchar_t * sno)
 }
 
 //学生登陆操作
-LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
+bool MsSqlDbOperate::Query(wchar_t* in_appid, LogonInfo &lg_info)
 {
 	int ret = 0;
 	wchar_t strsql[MAX_PATH];
@@ -284,23 +284,18 @@ LogonInfo* MsSqlDbOperate::Query(wchar_t* in_appid)
 	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc_, &hstmt_);
 	ret = SQLExecDirectW(hstmt_, (SQLWCHAR*)strsql, SQL_NTS);
 
-	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
-		return NULL;
-
-	while ((ret = SQLFetch(hstmt_)) != SQL_NO_DATA)
-	{
+	if ((ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO) && SQLFetch(hstmt_) != SQL_NO_DATA) {
 		SQLGetData(hstmt_, 1, SQL_C_WCHAR, appid, 128, &Cbappid);
 		SQLGetData(hstmt_, 2, SQL_C_WCHAR, group_info, 128, &Cbgroup_info);
 		SQLGetData(hstmt_, 3, SQL_C_WCHAR, group_ip, 256, &Cbgroup_ip);
-		longon_info_.appid = ATL::CW2A(appid);
-		longon_info_.group_info = ATL::CW2A(group_info);
-		longon_info_.group_ip = ATL::CW2A(group_ip);
-
+		lg_info.appid = ATL::CW2A(appid);
+		lg_info.group_info = ATL::CW2A(group_info);
+		lg_info.group_ip = ATL::CW2A(group_ip);
 	}
 
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt_);
 	mutex_.unlock();
-	return &longon_info_;
+	return true;
 }
 
 //学生状态查询

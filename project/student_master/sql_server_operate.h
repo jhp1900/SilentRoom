@@ -20,7 +20,7 @@ public:
 	MsSqlDbOperate();
 	~MsSqlDbOperate();
 
-	int Connect(wchar_t* servername, wchar_t* username, wchar_t* password);
+	int Connect(const wchar_t* servername, const wchar_t* username, const wchar_t* password);
 	int DisConnect();
 
 	int ExecDirect(wchar_t* strsql);
@@ -42,7 +42,7 @@ public:
 	int Update(wchar_t* sno, wchar_t* group_info);
 
 	std::wstring QueryStudentIp(wchar_t* sno);
-	LogonInfo* Query(wchar_t* in_appid);
+	bool Query(wchar_t* in_appid, LogonInfo &lg_info);
 	std::vector<MasterData>* QueryStatus();
 	std::vector<GroupManage>* QueryGroupManager();
 	std::vector<GroupIP>* QueryGroupIP();

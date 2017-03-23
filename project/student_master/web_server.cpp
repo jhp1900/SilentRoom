@@ -3,6 +3,7 @@
 #include "application.h"
 #include <map>
 #include "..\utils\utils.h"
+#include "..\utils\xml_manager.h"
 
 WebServer::WebServer()
 {
@@ -233,9 +234,11 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			/* 登录消息处理 */
 			auto on_logon = [&]() {
 				LogonInfo ret_logon;
-				ret_logon = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
-				std::string json_str = json_operate.AssembleJson(ret_logon);
-				evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				if (pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()), ret_logon)) {
+					std::string json_str = json_operate.AssembleJson(ret_logon);
+					evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				}
+				int a = 0;
 			};
 
 			/* 举手消息处理 */
@@ -281,9 +284,11 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 {
 	WSADATA ws_data;
-
+	XmlManager *xml = App::GetInstance()->GetXmlMnge();
+	CDuiString user = xml->GetNodeAttr(_T("Database"), _T("user"));
+	CDuiString pwd = xml->GetNodeAttr(_T("Database"), _T("pwd"));
 	mssqlo_.reset(new MsSqlDbOperate);
-	mssqlo_->Connect(L"SQS", L"sa", L"123");
+	mssqlo_->Connect(L"SQS", user, pwd);
 	auto query_thread = [&]() {
 		while (true)
 		{
