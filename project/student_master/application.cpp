@@ -2,11 +2,13 @@
 #include "main_wnd.h"
 #include "web_server.h"
 #include "..\utils\utils.h"
+#include "..\utils\xml_manager.h"
 
 App *App::instance_ = nullptr;
 
 App::App()
 {
+	xml_mnge_.reset(new XmlManager());
 }
 
 App::~App()
@@ -29,6 +31,7 @@ void App::DestroyInstance()
 bool App::Initialize(HINSTANCE inst)
 {
 	InitResource(inst);
+	xml_mnge_->LoadFile(CPaintManagerUI::GetResourcePath(), _T("configs.xml"));
 
 	std::string loc_ip("");
 	GetLocalIP(loc_ip);

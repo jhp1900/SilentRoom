@@ -3,6 +3,7 @@
 #include "application.h"
 #include <map>
 #include "..\utils\utils.h"
+#include "..\utils\xml_manager.h"
 
 WebServer::WebServer()
 {
@@ -69,111 +70,115 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				val = val->next.tqe_next;
 			}
 
-			const char * json_str = "";
+			do {///* 加载学生状态表 */
+				//const char * json_str = "";
+				//auto reload_stu = [&]() {
+				//	json_str = json_operator.AssembleJson(pThis->mssqlo_->master_data_);
+				//	std::vector<MasterData> mast_dt;
+				//	mast_dt.push_back({ "2011101051", "Luffy", "StrawHat", false });
+				//	mast_dt.push_back({ "2011101052", "Franky", "StrawHat", true });
+				//	mast_dt.push_back({ "2011101053", "Chopper ", "StrawHat", false });
+				//	mast_dt.push_back({ "2011101054", "Zoro ", "StrawHat", false });
+				//	mast_dt.push_back({ "2011101055", "", "StrawHat", false });
 
-			/* 加载学生状态表 */
-			auto reload_stu = [&]() {
-				json_str = json_operator.AssembleJson(pThis->mssqlo_->master_data_);
-				std::vector<MasterData> mast_dt;
-				mast_dt.push_back({ "2011101051", "Luffy", "StrawHat", false });
-				mast_dt.push_back({ "2011101052", "Franky", "StrawHat", true });
-				mast_dt.push_back({ "2011101053", "Chopper ", "StrawHat", false });
-				mast_dt.push_back({ "2011101054", "Zoro ", "StrawHat", false });
-				mast_dt.push_back({ "2011101055", "", "StrawHat", false });
+				//	json_str = json_operator.AssembleJson(mast_dt);
+				//};
 
-				json_str = json_operator.AssembleJson(mast_dt);
-			};
+				///* 加载分组信息表 */
+				//auto reload_gp_mng = [&]() {
+				//	json_str = json_operator.AssembleJson(pThis->mssqlo_->group_manager_);
+				//};
 
-			/* 加载分组信息表 */
-			auto reload_gp_mng = [&]() {
-				json_str = json_operator.AssembleJson(pThis->mssqlo_->group_manager_);
-			};
+				///* 加载小组IP信息 */
+				//auto reload_gp_ip = [&]() {
+				//	json_str = json_operator.AssembleJson(pThis->mssqlo_->group_ip_);
+				//};
 
-			/* 加载小组IP信息 */
-			auto reload_gp_ip = [&]() {
-				json_str = json_operator.AssembleJson(pThis->mssqlo_->group_ip_);
-			};
+				///*删除学生机*/
+				//auto delete_stu = [=](std::string appid) {
+				//	pThis->mssqlo_->DeleteAppid(ATL::CA2W(appid.c_str()));
+				//};
 
-			/*删除学生机*/
-			auto delete_stu = [=](std::string appid) {
-				pThis->mssqlo_->DeleteAppid(ATL::CA2W(appid.c_str()));
-			};
+				///*添加小组IP*/
+				//auto add_group_ip = [=](std::string group, std::string value) {
+				//	pThis->mssqlo_->AddGroupIp(ATL::CA2W(group.c_str()), ATL::CA2W(value.c_str()));
+				//};
 
-			/*添加小组IP*/
-			auto add_group_ip = [=](std::string group, std::string value) {
-				pThis->mssqlo_->AddGroupIp(ATL::CA2W(group.c_str()), ATL::CA2W(value.c_str()));
-			};
+				///*更新小组信息*/
+				//auto update_group_ip = [=](std::string group, std::string value) {
+				//	pThis->mssqlo_->UpdateGroupIp(ATL::CA2W(value.c_str()), ATL::CA2W(group.c_str()));
+				//};
 
-			/*更新小组信息*/
-			auto update_group_ip = [=](std::string group, std::string value) {
-				pThis->mssqlo_->UpdateGroupIp(ATL::CA2W(value.c_str()), ATL::CA2W(group.c_str()));
-			};
+				///*更新APPID*/
+				//auto update_appid = [=](std::string appid, std::string group) {
+				//	pThis->mssqlo_->UpdateAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
+				//};
 
-			/*更新APPID*/
-			auto update_appid = [=](std::string appid, std::string group) {
-				pThis->mssqlo_->UpdateAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
-			};
+				///*添加APPID*/
+				//auto add_appid = [=](std::string appid, std::string group) {
+				//	pThis->mssqlo_->AddAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
+				//};
 
-			/*添加APPID*/
-			auto add_appid = [=](std::string appid, std::string group) {
-				pThis->mssqlo_->AddAppid(ATL::CA2W(appid.c_str()), ATL::CA2W(group.c_str()));
-			};
-
-			auto delete_group = [=](std::string group) {
-				pThis->mssqlo_->DeleteGroup(ATL::CA2W(group.c_str()));
-			};
+				//auto delete_group = [=](std::string group) {
+				//	pThis->mssqlo_->DeleteGroup(ATL::CA2W(group.c_str()));
+				//};
+			} while (0);
 
 			auto handle_student_speak = [=](std::string sno) {
 				App::GetInstance()->GetWebServer()->broadcast_ip_ = ATL::CW2A(pThis->mssqlo_->QueryStudentIp(ATL::CA2W(sno.c_str())).c_str());
 				OutputDebugStringA(App::GetInstance()->GetWebServer()->broadcast_ip_.c_str());
 			};
 
-			if (dt_map["control"] == "reload") {
-				if (dt_map["range"] == "students") {				// 加载学生状态表
-					reload_stu();
-				} else if(dt_map["range"] == "group_mng") {			// 加载分组信息表
-					reload_gp_mng();
-				} else if (dt_map["range"] == "group_ip") {			// 加载小组IP信息
-					reload_gp_ip();
-				}
-			} else if (dt_map["control"] == "speak") {
-				if (dt_map["range"] == "to_group") {				// 小组内发言
+			if (dt_map["control"] == "speak") {
+				 if (dt_map["range"] == "to_group") {				// 小组内发言
 					//...
-				} else if (dt_map["range"] == "to_class") {			// 班级发言
-					std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
-					handle_student_speak_thread.detach();
-				}
-			} else if (dt_map["control"] == "updata") {
-				if (dt_map["range"] == "group_mng") {				// 修改分组信息
-					std::thread update_appid_thread(update_appid, dt_map["obj"], dt_map["value"]);
-					update_appid_thread.detach();
-				} else if (dt_map["range"] == "group_ip") {			// 修改小组IP
-					std::thread update_group_thread(update_group_ip, dt_map["values"], dt_map["obj"]);
-					update_group_thread.detach();
-				}
-			} else if (dt_map["control"] == "add") {
-				if (dt_map["range"] == "group_mng") {				// 添加 学生机信息
-					std::thread add_appid_thread(add_appid, dt_map["obj"], dt_map["values"]);
-					add_appid_thread.detach();
-				} else if (dt_map["range"] == "group_ip") {			// 添加小组IP
-					std::thread add_group_thread(add_group_ip, dt_map["obj"], dt_map["values"]);
-					add_group_thread.detach();
-				}
-			} else if (dt_map["control"] == "delete") {
-				if (dt_map["range"] == "group_mng") {				// 删除某个学生机
-					std::thread stu_thread(delete_stu, dt_map["obj"]);
-					stu_thread.detach();
-				} else if (dt_map["range"] == "group_ip") {			// 删除某个小组（IP以及改组的所有信息）
-					std::thread delete_group_thread(delete_group, dt_map["obj"]);
-					delete_group_thread.detach();
-				}
+				 }
+				 else if (dt_map["range"] == "to_class") {			// 班级发言
+					 std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
+					 handle_student_speak_thread.detach();
+				 }
 			}
+			do {
+				/* else if (dt_map["control"] == "reload") {
+					if (dt_map["range"] == "students") {				// 加载学生状态表
+						reload_stu();
+					} else if(dt_map["range"] == "group_mng") {			// 加载分组信息表
+						reload_gp_mng();
+					} else if (dt_map["range"] == "group_ip") {			// 加载小组IP信息
+						reload_gp_ip();
+					}
+				} else if (dt_map["control"] == "updata") {
+					if (dt_map["range"] == "group_mng") {				// 修改分组信息
+						std::thread update_appid_thread(update_appid, dt_map["obj"], dt_map["value"]);
+						update_appid_thread.detach();
+					} else if (dt_map["range"] == "group_ip") {			// 修改小组IP
+						std::thread update_group_thread(update_group_ip, dt_map["values"], dt_map["obj"]);
+						update_group_thread.detach();
+					}
+				} else if (dt_map["control"] == "add") {
+					if (dt_map["range"] == "group_mng") {				// 添加 学生机信息
+						std::thread add_appid_thread(add_appid, dt_map["obj"], dt_map["values"]);
+						add_appid_thread.detach();
+					} else if (dt_map["range"] == "group_ip") {			// 添加小组IP
+						std::thread add_group_thread(add_group_ip, dt_map["obj"], dt_map["values"]);
+						add_group_thread.detach();
+					}
+				} else if (dt_map["control"] == "delete") {
+					if (dt_map["range"] == "group_mng") {				// 删除某个学生机
+						std::thread stu_thread(delete_stu, dt_map["obj"]);
+						stu_thread.detach();
+					} else if (dt_map["range"] == "group_ip") {			// 删除某个小组（IP以及改组的所有信息）
+						std::thread delete_group_thread(delete_group, dt_map["obj"]);
+						delete_group_thread.detach();
+					}
+				}
 
-			//evbuffer_add_printf(buf, json_str, req_str);
-			////const char *test_send = "杀死一只知更鸟";
-			////evbuffer_add_printf(buf, "%s", UnicodeToUTF8(test_send));
-			//evhttp_send_reply(req, HTTP_OK, "OK", buf);
-			//evbuffer_free(buf);
+				//evbuffer_add_printf(buf, json_str, req_str);
+				////const char *test_send = "杀死一只知更鸟";
+				////evbuffer_add_printf(buf, "%s", UnicodeToUTF8(test_send));
+				//evhttp_send_reply(req, HTTP_OK, "OK", buf);
+				//evbuffer_free(buf);*/
+			} while (0);
 		}
 			break;
 		default:
@@ -214,9 +219,11 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 			/* 登录消息处理 */
 			auto on_logon = [&]() {
 				LogonInfo ret_logon;
-				ret_logon = *pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()));
-				std::string json_str = json_operate.AssembleJson(ret_logon);
-				evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				if (pThis->mssqlo_->Query(ATL::CA2W(student_data.appid_.c_str()), ret_logon)) {
+					std::string json_str = json_operate.AssembleJson(ret_logon);
+					evbuffer_add_printf(buf, json_str.c_str(), evhttp_request_get_uri(pThis->req_vec_.front().first));
+				}
+				int a = 0;
 			};
 
 			/* 举手消息处理 */
@@ -262,9 +269,11 @@ void WebServer::TimeOutCallback(evutil_socket_t fd, short event, void * arg)
 int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 {
 	WSADATA ws_data;
-
+	XmlManager *xml = App::GetInstance()->GetXmlMnge();
+	CDuiString user = xml->GetNodeAttr(_T("Database"), _T("user"));
+	CDuiString pwd = xml->GetNodeAttr(_T("Database"), _T("pwd"));
 	mssqlo_.reset(new MsSqlDbOperate);
-	mssqlo_->Connect(L"SQS", L"sa", L"123");
+	mssqlo_->Connect(L"SQS", user, pwd);
 	auto query_thread = [&]() {
 		while (true)
 		{
