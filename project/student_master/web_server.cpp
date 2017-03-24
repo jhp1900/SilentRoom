@@ -122,7 +122,17 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				//auto delete_group = [=](std::string group) {
 				//	pThis->mssqlo_->DeleteGroup(ATL::CA2W(group.c_str()));
 				//};
+
+
 			} while (0);
+
+			auto free_time = [=](std::string group) {
+				pThis->handup_return_data_->handup_ = false;
+			};
+
+			auto free_time = [=](std::string group) {
+				pThis->handup_return_data_->naem_ = "teacher_speak";
+			};
 
 			auto handle_student_speak = [=](std::string sno) {
 				std::string ip_temp = ATL::CW2A(pThis->mssqlo_->QueryStudentIp(ATL::CA2W(sno.c_str())).c_str());
@@ -137,7 +147,8 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			} else if (dt_map["control"] == "teacher_speak") {		// 老师讲课(传道解惑)
 
 			} else if (dt_map["control"] == "auto_speak") {			// 自由讨论
-
+				std::thread free_time_thread(free_time);
+				free_time_thread.detach();
 			}
 
 			do {
