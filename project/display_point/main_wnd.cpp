@@ -325,7 +325,9 @@ bool MainWnd::PlayStream(const string &stream_ip, const string &msg_str)
 	std::string url;
 
 	if (msg_str == "teacher_speak") {
-												   //老师传道授业播放流地址
+		auto xml_mnge = App::GetInstance()->GetXmlMnge();
+		std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")));  //老师传道授业播放流地址
+		url = "rtsp://" + server_ip + ":554/session0";
 	} else {
 		url = "rtsp://" + stream_ip + ":554/live"; //正常播流地址
 	}
