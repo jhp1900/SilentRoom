@@ -24,8 +24,8 @@
 
 			$(".please").click(function(){
 				var sno = $(this).attr("sno");
-				var range = $(this).attr("range");
-				var data = {control:"speak",range:range,obj:sno};
+				var control = $(this).attr("control");
+				var data = {control:control,obj:sno};
 				var sv_info = get_server();
 				$.ajax({
 					type:"get",
@@ -69,8 +69,7 @@
 						"<a class='dropdown-toggle' data-toggle='dropdown'>" +
 						"<span id='" + s_id + "' class='file'>" + s_id + " - " + s_name + "<b class='caret'></b></span></a>" +
 							"<ul class='dropdown-menu'>" +
-							"<li><a class='please' sno='" + s_id + "' range='to_group'>拉到小组大屏</a></li>" +
-							"<li><a class='please' sno='" + s_id + "' range='to_class'>拉到教室大屏</a></li>" +
+							"<li><a class='please' sno='" + s_id + "' control='to_class'>拉到教室大屏</a></li>" +
 						"</ul></li>").appendTo("#" + g_id);
 				}
 				if(talk == "true")
@@ -92,6 +91,15 @@
 			}
 			get_json();
 		</script>
+		<br>
+		<div>
+			<table class="add_table">
+				<tr>
+					<td align="left"><input type="button" id="add_btn" class='please' control="teacher_speak" value="传道解惑" style="width:95%; height:40px"></td>
+					<td align="right"><input type="button" id="add_btn" class='please' control="auto_speak" value="自由讨论" style="width:95%; height:40px"></td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

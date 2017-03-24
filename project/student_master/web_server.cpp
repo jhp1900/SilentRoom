@@ -131,15 +131,15 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				OutputDebugStringA(App::GetInstance()->GetWebServer()->broadcast_ip_.c_str());
 			};
 
-			if (dt_map["control"] == "speak") {
-				 if (dt_map["range"] == "to_group") {				// 小组内发言
-					//...
-				 }
-				 else if (dt_map["range"] == "to_class") {			// 班级发言
-					 std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
-					 handle_student_speak_thread.detach();
-				 }
+			if (dt_map["control"] == "to_class") {					// 请班级发言
+				std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
+				handle_student_speak_thread.detach();
+			} else if (dt_map["control"] == "teacher_speak") {		// 老师讲课(传道解惑)
+
+			} else if (dt_map["control"] == "auto_speak") {			// 自由讨论
+
 			}
+
 			do {
 				/* else if (dt_map["control"] == "reload") {
 					if (dt_map["range"] == "students") {				// 加载学生状态表
