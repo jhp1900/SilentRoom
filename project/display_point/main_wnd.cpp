@@ -243,10 +243,13 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 		if (student_data == last_sutdentdata_) {
 			return LRESULT();
 		} else {
-			last_sutdentdata_ = student_data;
-			if (student_data.handup_)
+			last_sutdentdata_ = student_data;	//保存上次播放流，避免重复播放同一流
+
+			if (student_data.handup_) {
 				PlayStream(student_data.stream_ip_, student_data.naem_);
-			//StopStream();
+			} else {
+				StopStream();					//自由讨论判断
+			}
 		}
 	}
 
@@ -319,7 +322,16 @@ void MainWnd::StartRpcThread()
 
 bool MainWnd::PlayStream(const string &stream_ip, const string &msg_str)
 {
-	std::string url = "rtsp://" + stream_ip + ":554/live";
+	std::string url;
+
+	if (msg_str == "teacher_speak") {
+		auto xml_mnge = App::GetInstance()->GetXmlMnge();
+		std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")));  //老师传道授业播放流地址
+		url = "rtsp://" + server_ip + ":554/session0";
+	} else {
+		url = "rtsp://" + stream_ip + ":554/live"; //正常播流地址
+	}
+
 	VLCTool *vlc = App::GetInstance()->GetVLCTool();
 	vlc->DestoryPlay();
 	if (!vlc->PlayStream(play_hwnd_, url)) {

@@ -178,17 +178,21 @@ const char* JsonOperate::AssembleJson(const std::vector<GroupIP> &group_ip)
 
 void JsonOperate::JsonAnalysis(const char * stu_data, StudentData & log_info)
 {
-	assert(stu_data);
-	using namespace rapidjson;
-	Document doc;
-	doc.Parse<0>(stu_data);
+	try {
+		using namespace rapidjson;
+		Document doc;
+		doc.Parse<0>(stu_data);
 
-	log_info.appid_ = doc["appid"].GetString();
-	log_info.sno_ = doc["sno"].GetString();
-	log_info.naem_ = doc["name"].GetString();
-	log_info.handup_ = doc["handup"].GetBool();
-	log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
-	log_info.stream_ip_ = doc["stream_ip"].GetString();
+		log_info.appid_ = doc["appid"].GetString();
+		log_info.sno_ = doc["sno"].GetString();
+		log_info.naem_ = doc["name"].GetString();
+		log_info.handup_ = doc["handup"].GetBool();
+		log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
+		log_info.stream_ip_ = doc["stream_ip"].GetString();
+	}
+	catch (...) {
+		OutputDebugStringA("json pharse error!");
+	}
 }
 
 void JsonOperate::JsonAnalysis(const char * json_data, LogonInfo & logon_info)
