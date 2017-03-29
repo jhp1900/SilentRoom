@@ -34,6 +34,9 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 		{
 		case EVHTTP_REQ_POST: {
 			char* post_data = ((char*)EVBUFFER_DATA(req->input_buffer));
+			if (!post_data) {
+				return;
+			}
 			post_data[EVBUFFER_LENGTH(req->input_buffer)] = '\0';
 
 			JsonOperate json_operator;
@@ -122,7 +125,17 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				//auto delete_group = [=](std::string group) {
 				//	pThis->mssqlo_->DeleteGroup(ATL::CA2W(group.c_str()));
 				//};
+
+
 			} while (0);
+
+			auto free_time = [=]() {
+				pThis->handup_return_data_->handup_ = false;
+			};
+
+			auto teacher_time = [=]() {
+				pThis->handup_return_data_->naem_ = "teacher_speak";
+			};
 
 			auto handle_student_speak = [=](std::string sno) {
 				std::string ip_temp = ATL::CW2A(pThis->mssqlo_->QueryStudentIp(ATL::CA2W(sno.c_str())).c_str());
@@ -135,9 +148,11 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 				std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
 				handle_student_speak_thread.detach();
 			} else if (dt_map["control"] == "teacher_speak") {		// 老师讲课(传道解惑)
-
+				std::thread teacher_time_thread(teacher_time);
+				teacher_time_thread.detach();
 			} else if (dt_map["control"] == "auto_speak") {			// 自由讨论
-
+				std::thread free_time_thread(free_time);
+				free_time_thread.detach();
 			}
 
 			do {
@@ -295,7 +310,7 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 //	};
 //	th_1_ = new std::thread(query_thread);
 	//sql_thread.detach();
-	//mssqlo_->DeleteGroup(L"Group1");
+
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
 	}
