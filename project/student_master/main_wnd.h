@@ -18,13 +18,16 @@ public:
 
 	BEGIN_DUIMSG_MAP(MainWnd)
 		DUIMSG_HANDLER(kAM_Silent_Handup, OnHandup)
-		//DUIMSG_HANDLER(kAM_ResetIPInfo, OnResetIPInfoMsg)
-		//DUIMSG_HANDLER(kAM_DPISetMsg, OnDPISetMsg)
 	END_DUIMSG_MAP()
+
+	BEGIN_DUINOTIFY_MAP(MainWnd)
+		DUINOTIFY_HANDLER(_T("setup"), DUI_MSGTYPE_CLICK, OnClickBtn)
+	END_DUINOTIFY_MAP()
 
 public:
 	virtual void InitWindow() override;
 
 	LRESULT OnHandup(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	void OnClickBtn(TNotifyUI &msg, bool &handled);		// µ„ª˜ …Ë÷√∞¥≈•
 private:
 };

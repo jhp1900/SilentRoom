@@ -280,20 +280,20 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	CDuiString user = xml->GetNodeAttr(_T("Database"), _T("user"));
 	CDuiString pwd = xml->GetNodeAttr(_T("Database"), _T("pwd"));
 	mssqlo_.reset(new MsSqlDbOperate);
-	mssqlo_->Connect(L"SQS", user, pwd);
-	auto query_thread = [&]() {
-		while (true)
-		{
-			mssqlo_->QueryStatus();
-			mssqlo_->QueryGroupManager();
-			mssqlo_->QueryGroupIP();
-			this_thread::sleep_for(chrono::milliseconds(2000));
-#ifdef DEBUG
-			OutputDebugStringA("query server status \n");
-#endif
-		}
-	};
-	th_1_ = new std::thread(query_thread);
+	mssqlo_->Connect(L"SQS62", user, pwd);
+//	auto query_thread = [&]() {
+//		while (true)
+//		{
+//			mssqlo_->QueryStatus();
+//			mssqlo_->QueryGroupManager();
+//			mssqlo_->QueryGroupIP();
+//			this_thread::sleep_for(chrono::milliseconds(2000));
+//#ifdef DEBUG
+//			OutputDebugStringA("query server status \n");
+//#endif
+//		}
+//	};
+//	th_1_ = new std::thread(query_thread);
 	//sql_thread.detach();
 	//mssqlo_->DeleteGroup(L"Group1");
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {

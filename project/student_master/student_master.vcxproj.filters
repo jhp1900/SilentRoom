@@ -42,6 +42,12 @@
     <ClCompile Include="..\utils\xml_manager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="mst_setup_wnd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\ip_control_ui.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h">
@@ -75,6 +81,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\utils\xml_manager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="mst_setup_wnd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\ip_control_ui.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

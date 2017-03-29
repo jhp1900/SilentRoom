@@ -10,7 +10,7 @@ public:
 
 	DECLARE_DUIWND_INFO(_T("SetupWnd"), CS_DBLCLKS, _T("setup_wnd.xml"))
 
-	BEGIN_DUICONTROL_CREATE(MainWnd)
+	BEGIN_DUICONTROL_CREATE(SetupWnd)
 		DUICONTROL_CREATE_FROM_XML(_T("IpControl"), _T("ip_control.xml"))
 		DUICONTROL_CREATE(_T("IpControlLayout"), IpControlUI)
 	END_DUICONTROL_CREATE()

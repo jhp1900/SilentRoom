@@ -160,17 +160,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\utils\ip_control_ui.cpp" />
     <ClCompile Include="..\utils\json_operate.cpp" />
     <ClCompile Include="..\utils\utils.cpp" />
     <ClCompile Include="..\utils\xml_manager.cpp" />
     <ClCompile Include="application.cpp" />
     <ClCompile Include="inlet.cpp" />
     <ClCompile Include="main_wnd.cpp" />
+    <ClCompile Include="mst_setup_wnd.cpp" />
     <ClCompile Include="sql_server_operate.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="web_server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\utils\ip_control_ui.h" />
     <ClInclude Include="..\utils\json_operate.h" />
     <ClInclude Include="..\utils\msg_head.h" />
     <ClInclude Include="..\utils\utils.h" />
@@ -178,6 +181,7 @@
     <ClInclude Include="application.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="main_wnd.h" />
+    <ClInclude Include="mst_setup_wnd.h" />
     <ClInclude Include="sql_server_operate.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
