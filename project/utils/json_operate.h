@@ -39,8 +39,9 @@ enum OperateType {
 	HANDUP = 2,				// 举手发言，在老师广播的情况使用
 	SPEAK = 3,				// 发言，小组讨论使用
 	STOP_SPEAK = 4,			// 结束发言
-	KEEPA_LIVE = 5,			// 
+	KEEPA_LIVE = 5,			// 心跳包
 	TEACHER_CONTROL = 6,	// 教师操控，教师确定使用哪个流
+	QUIT = 7,				// 学生退出，正常或非正常
 };
 
 /* 学生发言信息结构体 */
