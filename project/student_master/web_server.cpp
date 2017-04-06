@@ -147,14 +147,14 @@ void WebServer::HttpResponse(evhttp_request * req, void * arg)
 			};
 
 			if (dt_map["control"] == "to_class") {					// 请班级发言
-				std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
-				handle_student_speak_thread.detach();
+				//std::thread handle_student_speak_thread(handle_student_speak, dt_map["obj"]);
+				//handle_student_speak_thread.detach();
 			} else if (dt_map["control"] == "teacher_speak") {		// 老师讲课(传道解惑)
-				std::thread teacher_time_thread(teacher_time);
-				teacher_time_thread.detach();
+				//std::thread teacher_time_thread(teacher_time);
+				//teacher_time_thread.detach();
 			} else if (dt_map["control"] == "auto_speak") {			// 自由讨论
-				std::thread free_time_thread(free_time);
-				free_time_thread.detach();
+				//std::thread free_time_thread(free_time);
+				//free_time_thread.detach();
 			}
 
 			do {

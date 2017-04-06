@@ -1,4 +1,6 @@
 ﻿#include "vlc_tool.h"
+#include "application.h"
+#include "main_wnd.h"
 
 VLCTool::VLCTool()
 	: broadcast_vlc_(nullptr)
@@ -63,6 +65,7 @@ bool VLCTool::PlayStream(HWND pa_hwnd, string url)
 
 	libvlc_media_player_set_hwnd(play_player_, pa_hwnd);
 	libvlc_media_player_play(play_player_);
+	CheckPlayState();		// 启动播放的时候，就开始检测，一旦播放异常，便可停止播放
 	return true;
 }
 
@@ -80,4 +83,34 @@ void VLCTool::DestoryPlay()
 		libvlc_release(play_vlc_);
 		play_vlc_ = nullptr;
 	}
+}
+
+libvlc_state_t VLCTool::PlayState()
+{
+	if (play_player_)
+		return libvlc_media_player_get_state(play_player_);
+	return libvlc_state_t::libvlc_Error;
+}
+
+void VLCTool::CheckPlayState()
+{
+	auto check_thread_fun = [&]() {
+		while (true) {
+			libvlc_state_t state = PlayState();
+			if (state != libvlc_state_t::libvlc_Playing 
+				&& state != libvlc_state_t::libvlc_Opening)
+				break;
+			Sleep(2000);
+		}
+		HWND pa_hwnd = App::GetInstance()->GetMainWnd()->GetHWND();
+		::PostMessage(pa_hwnd, kAM_PlayErrorToEnd, 0, 0);		// 通知主窗口，播放结束
+		//DestoryPlay();
+	};
+	std::thread temp(check_thread_fun);
+	chack_thread_.swap(temp);
+	chack_thread_.detach();
+}
+
+void VLCTool::StopCheckThread()
+{
 }

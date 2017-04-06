@@ -280,6 +280,14 @@ LRESULT MainWnd::OnBeginKeepaLive(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL 
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnPlayErrorToEndMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	StopStream();
+	speaker_ = "";							// 结束发言后，发言者设置空
+	//web_client_->SendWebMessage(json_str);
+	return LRESULT();
+}
+
 void MainWnd::AddTray()
 {
 	// 创建、初始化 托盘菜单窗体

@@ -37,6 +37,7 @@ public:
 		DUIMSG_HANDLER(kAM_WebRetMsg, OnWebRetMsg)
 		DUIMSG_HANDLER(kAM_BroadcastTeacher, OnPlayStream)
 		DUIMSG_HANDLER(kAM_BeginKeepaLive, OnBeginKeepaLive)
+		DUIMSG_HANDLER(kAM_PlayErrorToEnd, OnPlayErrorToEndMsg)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUICONTROL_CREATE(Manager)
@@ -56,6 +57,7 @@ private:
 	LRESULT OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnPlayStream(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnBeginKeepaLive(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);		// 启动心跳包
+	LRESULT OnPlayErrorToEndMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);		// 启动心跳包
 
 	void AddTray();			// 添加托盘
 	void Animation();

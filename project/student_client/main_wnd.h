@@ -53,6 +53,7 @@ private:
 	bool HandUp();
 	//void SetupWnd();
 	void AddTray();			// ÃÌº”Õ–≈Ã
+	void OnCloseMsg();
 
 private:
 	NOTIFYICONDATA tray_data_;

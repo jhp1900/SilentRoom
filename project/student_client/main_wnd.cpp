@@ -30,7 +30,7 @@ MainWnd::~MainWnd()
 void MainWnd::InitWindow()
 {
 	AddTray();				// 添加托盘
-	SetAutoGetIP();			// 设置电脑为自动获取IP
+	//SetAutoGetIP();			// 设置电脑为自动获取IP
 	GetLocalIP(local_ip_);	// 获取本机ip
 
 	json_operate_.reset(new JsonOperate);
@@ -77,7 +77,7 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 {
 	switch (wparam) {
 		case MenuMsgClose:
-			Close();
+			OnCloseMsg();
 			break;
 		case MenuMsgSpeak:
 			Speak();
@@ -296,4 +296,10 @@ void MainWnd::AddTray()
 
 	wcscpy_s(tray_data_.szTip, L"iVGA");
 	Shell_NotifyIcon(NIM_ADD, &tray_data_);
+}
+
+void MainWnd::OnCloseMsg()
+{
+	StopSpeak();		// 退出程序前，先结束发言；
+	Close();
 }

@@ -12,4 +12,5 @@ enum MyMsg
 	kAM_BroadcastTeacher,		// 教师广播消息
 	kAM_Silent_Handup,
 	kAM_BeginKeepaLive,			// 启动心跳
+	kAM_PlayErrorToEnd,			// VLC播放异常导致播放结束
 };
