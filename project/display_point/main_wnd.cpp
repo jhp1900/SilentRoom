@@ -189,6 +189,7 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 	return LRESULT();
 }
 
+//RPC通信方式
 LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	std::string json_str = (char*)wparam;
@@ -225,6 +226,7 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	return LRESULT();
 }
 
+//WEB通信方式
 LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	std::string ret_data = (char*)(wparam);
@@ -335,7 +337,7 @@ bool MainWnd::PlayStream(const string &stream_ip, const string &msg_str)
 	if (msg_str == "teacher_speak") {
 		auto xml_mnge = App::GetInstance()->GetXmlMnge();
 		std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")));  //老师传道授业播放流地址
-		url = "rtsp://" + server_ip + ":554/session0";
+		url = "rtsp://root:root@" + server_ip + ":554/session0";
 	} else {
 		url = "rtsp://" + stream_ip + ":554/live"; //正常播流地址
 	}

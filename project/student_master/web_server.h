@@ -56,5 +56,6 @@ private:
 	std::shared_ptr<StudentData> handup_return_data_;
 	std::vector<MasterData> master_data_;
 	std::thread* th_1_;
+	std::thread server_thread;
 };
 #endif //__WEB_SERVER__
