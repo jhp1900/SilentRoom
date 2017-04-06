@@ -18,6 +18,8 @@ WebServer::WebServer()
 
 WebServer::~WebServer()
 {
+	event_base_got_exit(base_);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	evhttp_free(http_server_);
 	WSACleanup();
 }
@@ -295,21 +297,7 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	CDuiString user = xml->GetNodeAttr(_T("Database"), _T("user"));
 	CDuiString pwd = xml->GetNodeAttr(_T("Database"), _T("pwd"));
 	mssqlo_.reset(new MsSqlDbOperate);
-	mssqlo_->Connect(L"SQS62", user, pwd);
-//	auto query_thread = [&]() {
-//		while (true)
-//		{
-//			mssqlo_->QueryStatus();
-//			mssqlo_->QueryGroupManager();
-//			mssqlo_->QueryGroupIP();
-//			this_thread::sleep_for(chrono::milliseconds(2000));
-//#ifdef DEBUG
-//			OutputDebugStringA("query server status \n");
-//#endif
-//		}
-//	};
-//	th_1_ = new std::thread(query_thread);
-	//sql_thread.detach();
+	mssqlo_->Connect(L"SQS", user, pwd);
 
 	if (WSAStartup(MAKEWORD(2, 2), &ws_data) != 0) {
 		return -1;
@@ -325,14 +313,15 @@ int WebServer::Initial(int time_out, const char* http_addr, short http_port)
 	int ret = evhttp_bind_socket(http_server_, http_addr, http_port);
 	if (ret != 0) {
 #ifdef DEBUG
-		OutputDebugStringA("server initial faild");
+		OutputDebugStringA("server initial faild\n");
 #endif // DEBUG
 
 		return -1;
 	}
 #ifdef DEBUG
+	OutputDebugStringA("server running addr: ");
 	char outputserver[MAX_PATH];
-	sprintf(outputserver,"server:%s:%d", http_addr, http_port);
+	sprintf(outputserver,"server:%s:%d\n", http_addr, http_port);
 	OutputDebugStringA(outputserver);
 #endif // DEBUG
 	event_assign(&timeout_, base_, -1, EV_PERSIST, TimeOutCallback, this);
@@ -349,7 +338,8 @@ void WebServer::ServerStart()
 	auto start_server = [&]() {
 		event_base_dispatch(base_);
 	};
-	std::thread server_thread(start_server);
+	std::thread server_thread_child(start_server);
+	server_thread.swap(server_thread_child);
 	server_thread.detach();
 }
 

@@ -189,6 +189,7 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 	return LRESULT();
 }
 
+//RPC通信方式
 LRESULT MainWnd::OnRpcHandupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	std::string json_str = (char*)wparam;
@@ -225,6 +226,7 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	return LRESULT();
 }
 
+//WEB通信方式
 LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	std::string ret_data = (char*)(wparam);
