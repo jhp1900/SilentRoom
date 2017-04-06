@@ -261,7 +261,7 @@ void MainWnd::LoginAnimation()
 void MainWnd::Speak()
 {
 	// ÇëÇó·¢ÑÔ£»
-	stu_info_.handup_ = false;
+	stu_info_.handup_ = true;
 	stu_info_.operate_type_ = OperateType::SPEAK;
 	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
 }
