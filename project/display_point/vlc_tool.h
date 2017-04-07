@@ -25,5 +25,7 @@ private:
 	libvlc_media_player_t* play_player_;
 	libvlc_media_t* play_source_;
 	std::thread chack_thread_;
+	bool is_playing_;
+	bool the_chack_isrun_;
 };
 

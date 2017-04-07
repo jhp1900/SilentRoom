@@ -234,14 +234,7 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	StudentData student_data;
 	json_operate.JsonAnalysis(ret_data.c_str(), student_data);
 	memset((char*)wparam, 0, ret_data.length());
-	if (student_data.operate_type_ == OperateType::TEACHER_CONTROL) {
-		if (student_data.naem_ != "") {
-			PlayStream(student_data.stream_ip_, student_data.naem_);
-		} else {							// 教师操控时，若 name_ 为空，代表结束流播放
-			StopStream();
-			speaker_ = "";
-		}
-	} else if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
+	if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
 		if (student_data == last_sutdentdata_) {
 			return LRESULT();
 		} else {
