@@ -7,7 +7,7 @@
 
 #pragma comment(lib,"Iphlpapi.lib")
 
-void GetLocalIP(std::string & loc_ip)
+void GetLocalIP(std::vector<std::wstring> &ips)
 {
 	PIP_ADAPTER_INFO pIpAdapterInfo = new IP_ADAPTER_INFO();
 	unsigned long stSize = sizeof(IP_ADAPTER_INFO);
@@ -19,13 +19,13 @@ void GetLocalIP(std::string & loc_ip)
 		nRel = GetAdaptersInfo(pIpAdapterInfo, &stSize);	// 利用传出的新空间大小值，重新填充 pIpAdapterInfo
 	}
 	if (ERROR_SUCCESS == nRel) {
-		std::ostringstream oss;
+		std::wostringstream oss;
 		while (pIpAdapterInfo) {
 			auto iter = &pIpAdapterInfo->IpAddressList;
 			while (iter) {
-				oss.str("");
+				oss.str(L"");
 				oss << iter->IpAddress.String;
-				loc_ip = oss.str();
+				ips.push_back(oss.str());
 				iter = iter->Next;
 			}
 			pIpAdapterInfo = pIpAdapterInfo->Next;

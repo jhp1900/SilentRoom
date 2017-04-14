@@ -13,7 +13,7 @@ VLCTool::~VLCTool()
 bool VLCTool::BeginBroadcast(string ipaddr)
 {
 	const char * const vlc_argv[] = {
-		"--screen-fps=25",
+		"--screen-fps=15",
 		"--screen-follow-mouse",
 		"--live-caching=300",
 	};

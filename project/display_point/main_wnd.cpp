@@ -49,7 +49,7 @@ MainWnd::~MainWnd()
 void MainWnd::InitWindow()
 {
 	AddTray();		// 添加托盘
-	GetLocalIP(local_ip_);	// 获取本机IP, 用于 ivga 广播
+	//GetLocalIP(local_ip_);	// 获取本机IP, 用于 ivga 广播
 	Animation();	// 启动动效
 
 	web_client_.reset(new WebStudentClient);
@@ -62,6 +62,8 @@ void MainWnd::InitWindow()
 	StartRpcThread();
 
 	// 初始化、启动 ivga 广播
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
 }
@@ -152,12 +154,13 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 		auto xml_mnge = App::GetInstance()->GetXmlMnge();
 		std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")));
 		std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")));
-		if (server_ip == "" || server_port == "") {
+		std::string local_ip = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
+		if (server_ip == "" || server_port == "" || local_ip == "") {
 			if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
 				SetupWnd setup_wnd(m_hWnd);
 				setup_wnd.DoModal(m_hWnd);
 			} else {
-				m_pm.FindControl(_T("point_label"))->SetText(_T("请先设置 服务器IP！"));
+				m_pm.FindControl(_T("point_label"))->SetText(_T("请先设置 IP信息！"));
 				SetLayeredWindowAttributes(m_hWnd, 0, 255, LWA_ALPHA);
 				::ShowWindow(m_hWnd, SW_SHOW);
 				return;
@@ -165,6 +168,12 @@ LRESULT MainWnd::OnTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandle
 		} else {
 			web_client_->Initial(server_ip + ":" + server_port);	// 启动 Web 客户端
 			::PostMessage(m_hWnd, kAM_BeginKeepaLive, 0, 0);
+			if (local_ip_ != local_ip) {
+				local_ip_ = local_ip;
+				App::GetInstance()->GetVLCTool()->EndBroadcast();
+				if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
+					MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
+			}
 		}
 	};
 

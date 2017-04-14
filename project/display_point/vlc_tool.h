@@ -10,6 +10,7 @@ public:
 	~VLCTool();
 
 	bool BeginBroadcast(string ipaddr);		// 开始广播
+	bool EndBroadcast();					// 结束广播
 
 	bool PlayStream(HWND pa_hwnd, string url);
 	void DestoryPlay();
