@@ -15,7 +15,8 @@ VLCTool::VLCTool()
 
 VLCTool::~VLCTool()
 {
-	libvlc_release(broadcast_vlc_);
+	if(broadcast_vlc_)
+		libvlc_release(broadcast_vlc_);
 }
 
 bool VLCTool::BeginBroadcast(string ipaddr)
@@ -26,7 +27,7 @@ bool VLCTool::BeginBroadcast(string ipaddr)
 		"--live-caching=100",
 	};
 	const char* url = "Screen://";
-	string first_part = "#transcode{vcodec=mp4v,acodec=none,vb=16,threads=10,scale=0.90}:duplicate{dst=rtp{sdp=rtsp://";
+	string first_part = "#transcode{vcodec=mp4v,acodec=none,vb=16,threads=10,scale=1.00}:duplicate{dst=rtp{sdp=rtsp://";
 	string second_part = ":554/live}}";
 
 	first_part += ipaddr + second_part;
@@ -41,6 +42,14 @@ bool VLCTool::BeginBroadcast(string ipaddr)
 	if (ret == -1)
 		return false;
 
+	return true;
+}
+
+bool VLCTool::EndBroadcast()
+{
+	libvlc_vlm_stop_media(broadcast_vlc_, broadcast_name_.c_str());
+	libvlc_release(broadcast_vlc_);
+	broadcast_vlc_ = nullptr;
 	return true;
 }
 
@@ -107,14 +116,14 @@ void VLCTool::CheckPlayState()
 			std::string msg = "";
 			switch (state)
 			{
-			case libvlc_state_t::libvlc_Buffering: msg = "libvlc_Buffering"; break;
-			case libvlc_state_t::libvlc_Ended: msg = "libvlc_Ended"; break;
+			//case libvlc_state_t::libvlc_Buffering: msg = "libvlc_Buffering"; break;
+			//case libvlc_state_t::libvlc_Ended: msg = "libvlc_Ended"; break;
 			case libvlc_state_t::libvlc_Error: msg = "libvlc_Error"; break;
 			case libvlc_state_t::libvlc_NothingSpecial: msg = "libvlc_NothingSpecial"; break;
-			case libvlc_state_t::libvlc_Opening: msg = "libvlc_Opening"; break;
-			case libvlc_state_t::libvlc_Paused: msg = "libvlc_Paused"; break;
-			case libvlc_state_t::libvlc_Playing: msg = "libvlc_Playing"; break;
-			case libvlc_state_t::libvlc_Stopped: msg = "libvlc_Stopped"; break;
+			//case libvlc_state_t::libvlc_Opening: msg = "libvlc_Opening"; break;
+			//case libvlc_state_t::libvlc_Paused: msg = "libvlc_Paused"; break;
+			//case libvlc_state_t::libvlc_Playing: msg = "libvlc_Playing"; break;
+			//case libvlc_state_t::libvlc_Stopped: msg = "libvlc_Stopped"; break;
 			default:
 				break;
 			}

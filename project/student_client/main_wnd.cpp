@@ -31,7 +31,7 @@ void MainWnd::InitWindow()
 {
 	AddTray();				// 添加托盘
 	//SetAutoGetIP();			// 设置电脑为自动获取IP
-	GetLocalIP(local_ip_);	// 获取本机ip
+	//GetLocalIP(local_ip_);	// 获取本机ip
 
 	json_operate_.reset(new JsonOperate);
 	web_client_.reset(new WebStudentClient);
@@ -167,9 +167,10 @@ void MainWnd::WebClientInit()
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
 	std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
 	std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
+	local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
 
-	if (server_ip == "" || server_port == "") {
-		if (MessageBox(m_hWnd, _T("尚未设置服务器IP，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
+	if (server_ip == "" || server_port == "" || local_ip_ == "") {
+		if (MessageBox(m_hWnd, _T("IP配置尚未完善，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
 			SetupWnd setup_wnd(m_hWnd);
 			setup_wnd.DoModal(login_hwnd_);
 		}

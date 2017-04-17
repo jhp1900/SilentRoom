@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window bktrans="true" roundcorner="4,4" size="300,170" maxinfo="300,170" caption="0,0,0,170">
-  <Font id="0" name="微软雅黑" size="18" bold="false" italic="false" default="true" />
-  <Font id="1" name="微软雅黑" size="14" bold="false" italic="false" />
+<Window bktrans="true" roundcorner="4,4" size="320,200" caption="0,0,0,200">
+  <Font id="0" name="微软雅黑" size="14" bold="false" italic="false" default="true" />
+  <Font id="1" name="微软雅黑" size="18" bold="false" italic="false" />
   <VerticalLayout inset="0,25,25,0">
-    <VerticalLayout bkcolor="#FFffffff" borderround="4,4" inset="25,5,25,0">
+    <VerticalLayout bkcolor="#FFffffff" borderround="4,4" childpadding="3" inset="30,10,30,0">
       <Control />
-      <HorizontalLayout height="30">
-        <IpControl name="ip_address" />
+      <HorizontalLayout height="27">
+        <Label width="75" text="本机 IP:" />
         <Control width="5" />
-        <Edit name="port" width="45" font="1" numberonly="true" maxchar="5" bordercolor="#ffaaaaaa" bordersize="1" />
+        <Combo name="local_ip_list" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
+        </Combo>
       </HorizontalLayout>
-      <Control height="15" />
-      <Button name="ok_btn" height="35" text="确   定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+      <HorizontalLayout height="27">
+        <Label width="75" text="服务器 IP:" />
+        <Control width="5" />
+        <IpControl name="ip_address" />
+      </HorizontalLayout>
+      <HorizontalLayout height="27">
+        <Label width="75" text="服务器端口:" />
+        <Control width="5" />
+        <Edit name="port" width="45" numberonly="true" maxchar="5" bordercolor="#ffaaaaaa" bordersize="1" />
+      </HorizontalLayout>
+      <Control height="10" />
+      <Button name="ok_btn" height="35" text="确   定" font="1" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
       <Control />
     </VerticalLayout>
-    <Button name="close_btn" float="true" pos="250,0,300,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
+    <Button name="close_btn" float="true" pos="270,0,320,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
   </VerticalLayout>
 </Window>
