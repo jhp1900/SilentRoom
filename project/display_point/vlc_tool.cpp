@@ -67,7 +67,7 @@ bool VLCTool::PlayStream(HWND pa_hwnd, string url)
 		DestoryPlay();
 		return false;
 	}
-
+	libvlc_media_add_option(play_source_, ":network-caching=200");
 	play_player_ = libvlc_media_player_new_from_media(play_source_);
 	if (!play_player_) {
 		DestoryPlay();
