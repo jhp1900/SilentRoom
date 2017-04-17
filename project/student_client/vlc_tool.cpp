@@ -13,13 +13,12 @@ VLCTool::~VLCTool()
 bool VLCTool::BeginBroadcast(string ipaddr)
 {
 	const char * const vlc_argv[] = {
-		"--screen-fps=15",
+		"--screen-fps=20",
 		"--screen-follow-mouse",
 		"--live-caching=100",
-		"--screen-fragment-size=16"
 	};
 	const char* url = "Screen://";
-	string first_part = "#transcode{vcodec=mpeg4,fps=25,acodec=none,vb=256,threads=2,scale=1.00}:duplicate{dst=rtp{sdp=rtsp://";
+	string first_part = "#transcode{vcodec=mpeg4,fps=20,acodec=none,vb=256,threads=4,scale=1.00}:duplicate{dst=rtp{sdp=rtsp://";
 	string second_part = ":554/live}}";
 
 	first_part += ipaddr + second_part;
