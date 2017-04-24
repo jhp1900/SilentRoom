@@ -113,24 +113,24 @@ void VLCTool::CheckPlayState()
 		while (true) {
 			libvlc_state_t state = PlayState();
 			
-			std::string msg = "";
-			switch (state)
-			{
-			//case libvlc_state_t::libvlc_Buffering: msg = "libvlc_Buffering"; break;
-			//case libvlc_state_t::libvlc_Ended: msg = "libvlc_Ended"; break;
-			case libvlc_state_t::libvlc_Error: msg = "libvlc_Error"; break;
-			case libvlc_state_t::libvlc_NothingSpecial: msg = "libvlc_NothingSpecial"; break;
-			//case libvlc_state_t::libvlc_Opening: msg = "libvlc_Opening"; break;
-			//case libvlc_state_t::libvlc_Paused: msg = "libvlc_Paused"; break;
-			//case libvlc_state_t::libvlc_Playing: msg = "libvlc_Playing"; break;
-			//case libvlc_state_t::libvlc_Stopped: msg = "libvlc_Stopped"; break;
-			default:
-				break;
-			}
-			OutputDebugStringA("\n-------------------------");
-			OutputDebugStringA((msg + "-------------------------\n").c_str());
+			//std::string msg = "";
+			//switch (state)
+			//{
+			////case libvlc_state_t::libvlc_Buffering: msg = "libvlc_Buffering"; break;
+			////case libvlc_state_t::libvlc_Ended: msg = "libvlc_Ended"; break;
+			//case libvlc_state_t::libvlc_Error: msg = "libvlc_Error"; break;
+			//case libvlc_state_t::libvlc_NothingSpecial: msg = "libvlc_NothingSpecial"; break;
+			////case libvlc_state_t::libvlc_Opening: msg = "libvlc_Opening"; break;
+			////case libvlc_state_t::libvlc_Paused: msg = "libvlc_Paused"; break;
+			////case libvlc_state_t::libvlc_Playing: msg = "libvlc_Playing"; break;
+			////case libvlc_state_t::libvlc_Stopped: msg = "libvlc_Stopped"; break;
+			//default:
+			//	break;
+			//}
+			//OutputDebugStringA("\n-------------------------");
+			//OutputDebugStringA((msg + "-------------------------\n").c_str());
 
-			Sleep(2000);
+			Sleep(500);
 			
 			if (state != libvlc_state_t::libvlc_Playing
 				&& state != libvlc_state_t::libvlc_Opening) { 

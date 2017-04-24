@@ -244,7 +244,9 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	json_operate.JsonAnalysis(ret_data.c_str(), student_data);
 	memset((char*)wparam, 0, ret_data.length());
 	if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
-		if (student_data == last_sutdentdata_) {
+		if (student_data.stream_ip_ == "null" && student_data.stream_ip_ == "")
+			return LRESULT();
+		else if (student_data == last_sutdentdata_) {
 			return LRESULT();
 		} else {
 			last_sutdentdata_ = student_data;	//保存上次播放流，避免重复播放同一流
@@ -354,7 +356,7 @@ bool MainWnd::PlayStream(const string &stream_ip, const string &msg_str)
 	m_pm.FindControl(_T("point_label"))->SetText(CA2W(msg_str.c_str()));
 	::ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
 	show_wnd_ = true;
-	SetTimer(m_hWnd, 3, 6300, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
+	SetTimer(m_hWnd, 3, 1500, nullptr);			// 定时器 3， 用于等待新流的稳定以及提示新流的来源
 	return true;
 }
 
