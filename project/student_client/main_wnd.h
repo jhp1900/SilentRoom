@@ -6,6 +6,7 @@
 #include "rpc_client.h"
 #include "..\utils\json_operate.h"
 #include "..\utils\web_student_client.h"
+#include "hook.h"
 
 class MainWnd : public WindowImplBase
 {
@@ -25,6 +26,7 @@ public:
 		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_MOUSEMOVE, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_NCLBUTTONDBLCLK, OnMouseMoveWnd)
+		DUIMSG_HANDLER(FastKey, OnHotKey);
 	END_DUIMSG_MAP()
 
 	BEGIN_DUINOTIFY_MAP(MainWnd)
@@ -44,6 +46,7 @@ private:
 	LRESULT OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	void WebClientInit();
 	bool Login();			// ÏìÓ¦µÇÂ¼ÊÂ¼þ

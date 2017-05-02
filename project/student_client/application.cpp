@@ -45,6 +45,9 @@ int App::Run()
 	main_wnd_->CreateDuiWindow(NULL, _T(""), UI_WNDSTYLE_FRAME, WS_EX_TOPMOST);
 	if (main_wnd_->GetHWND() == nullptr)
 		return -1;
+	schook_.SetViewer(*main_wnd_);
+	schook_.SetSCInterceptMsg(true);
+	schook_.SetSChook();
 	main_wnd_->CenterWindow();
 	::ShowWindow(*main_wnd_, SW_SHOW);
 

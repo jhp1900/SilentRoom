@@ -84,7 +84,7 @@
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\$(Configuration)\</IntDir>
     <LibraryPath>..\..\third_party\duilib;..\..\third_party\libvlc_lib;..\..\third_party\libcurl\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;..\..\third_party\pugixml;D:\Code\Work\SilentRoom\third_party\libcurl\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;..\..\third_party\pugixml;$(ProjectDir)..\..\third_party\libcurl\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -170,6 +170,7 @@
     <ClInclude Include="..\utils\web_student_client.h" />
     <ClInclude Include="..\utils\xml_manager.h" />
     <ClInclude Include="application.h" />
+    <ClInclude Include="hook.h" />
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="menu_wnd.h" />

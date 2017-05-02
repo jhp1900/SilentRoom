@@ -159,15 +159,39 @@ LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	switch (wparam)
+	{
+	case 0x5a:
+	{
+		OutputDebugStringA("0x5a");
+	}
+	break;
+	case 0x58:
+	{
+		OutputDebugStringA("0x58");
+	}
+	default:
+		break;
+	}
+
+	return LRESULT();
+}
+
 void MainWnd::WebClientInit()
 {
 	have_server_ip_ = false;
 
 	/* 获取服务器IP，判断是否需要设置IP信息 */
-	auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
-	std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
-	local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
+	//auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	//std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
+	//std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
+	//local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
+
+	std::string server_ip = "10.18.3.67";
+	std::string server_port = "8082";
+	local_ip_ = "10.18.3.67";
 
 	if (server_ip == "" || server_port == "" || local_ip_ == "") {
 		if (MessageBox(m_hWnd, _T("IP配置尚未完善，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
