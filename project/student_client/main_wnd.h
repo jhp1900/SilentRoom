@@ -29,7 +29,8 @@ public:
 		DUIMSG_HANDLER(WM_MOUSEHOVER, OnMouseHover)
 		DUIMSG_HANDLER(WM_TIMER, OnMouseTimer)
 		DUIMSG_HANDLER(WM_NCLBUTTONDBLCLK, OnMouseMoveWnd)
-		DUIMSG_HANDLER(FastKey, OnHotKey);
+		//DUIMSG_HANDLER(FastKey, OnHotKey);
+		DUIMSG_HANDLER(WM_HOTKEY, OnHotKey)
 	    //DUIMSG_HANDLER( WM_LBUTTONDOWN, OnMyLButtonDown)
 	END_DUIMSG_MAP()
 
@@ -82,6 +83,7 @@ private:
 	std::shared_ptr<JsonOperate> json_operate_;
 	std::shared_ptr<WebStudentClient> web_client_;
 
+	bool login_succeed_;
 	bool timer_mouse_leave_;
 	bool speak_button_ont_the_edge_;
 	HWND login_hwnd_;

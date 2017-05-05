@@ -18,12 +18,16 @@ MainWnd::MainWnd()
 	, move_now_(false)
 	, login_hwnd_(nullptr)
 	, have_server_ip_(false)
+	, login_succeed_(false)
 {
 	stu_info_.appid_ = appid_str;
 }
 
 MainWnd::~MainWnd()
 {
+	UnregisterHotKey(m_hWnd, 1);
+	UnregisterHotKey(m_hWnd, 2);
+	UnregisterHotKey(m_hWnd, 3);
 	Shell_NotifyIcon(NIM_DELETE, &tray_data_);
 }
 
@@ -42,6 +46,10 @@ void MainWnd::InitWindow()
 	track_mouse_event_.hwndTrack = m_hWnd;
 	track_mouse_event_.dwHoverTime = 10;
 
+	RegisterHotKey(m_hWnd, 1, MOD_CONTROL, '1');
+	RegisterHotKey(m_hWnd, 2, MOD_CONTROL, '2');
+	RegisterHotKey(m_hWnd, 3, MOD_CONTROL, '3');
+	RegisterHotKey(m_hWnd, 4, MOD_CONTROL, 'X');
 	login_hwnd_ = m_hWnd;
 	WebClientInit();
 }
@@ -105,6 +113,7 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	json_operate_->JsonAnalysis(ret_data.c_str(), logon_info);
 
 	login_hwnd_ = NULL;		// 登录成功后，"设置界面的窗口"不再以本窗口为父窗口！
+	login_succeed_ = true;
 	LoginAnimation();		// 登录动效
 
 	// 初始化、启动 ivga
@@ -168,19 +177,27 @@ LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 
 LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	switch (wparam)
-	{
-	case 0x5a:
-	{
-		OutputDebugStringA("0x5a");
-	}
-	break;
-	case 0x58:
-	{
-		OutputDebugStringA("0x58");
-	}
-	default:
-		break;
+	if (!login_succeed_) {
+		switch (wparam) {
+		case 1: {
+			OutputDebugStringA("CTRL + 1:发言 \n");
+			Speak();
+		}break;
+		case 2: {
+			OutputDebugStringA("CTRL + 2:举手 \n");
+			HandUp();
+		}break;
+		case 3: {
+			OutputDebugStringA("CTRL + 3:结束 \n");
+			StopSpeak();
+		}break;
+		case 4: {
+			OutputDebugStringA("CTRL + X:退出 \n");
+			PostQuitMessage(0);
+		}break;
+		default:
+			break;
+		}
 	}
 
 	return LRESULT();
@@ -188,6 +205,7 @@ LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandl
 
 LRESULT MainWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
+	OutputDebugStringA("---mouse leave---\n");
 	SetTimer(m_hWnd, 211, 4000, NULL);
 	timer_mouse_leave_ = true;
 
@@ -200,14 +218,14 @@ LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 		OutputDebugStringA("time up\n");
 		RECT rectwindow;
 		GetWindowRect(m_hWnd, &rectwindow);
-		if (GetSystemMetrics(SM_CXSCREEN) - rectwindow.left < 210) {
+		if (GetSystemMetrics(SM_CXSCREEN) - rectwindow.left < 400) {
 			mouse_move_old_position_.x = rectwindow.left;
 			mouse_move_old_position_.y = rectwindow.top;
 			speak_button_ont_the_edge_ = true;
-			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 20, rectwindow.top, 40, 40, false);
-			KillTimer(this->m_hWnd, 211);
-		}
+			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 20, rectwindow.top, 20, 40, false);
 
+		}
+		KillTimer(this->m_hWnd, 211);
 	}
 
 	return LRESULT();
@@ -229,13 +247,6 @@ LRESULT MainWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bH
 	}
 	return LRESULT();
 }
-
-//LRESULT MainWnd::OnMyLButtonDown(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
-//{
-//	if(m_pm.FindControl(_T("speak_btn")))
-//	PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, lparam);
-//	return 0;
-//}
 
 void MainWnd::WebClientInit()
 {
