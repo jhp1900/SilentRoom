@@ -38,8 +38,9 @@ void MainWnd::InitWindow()
 
 	/* 鼠标事件初始化 */
 	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
-	track_mouse_event_.dwFlags = TME_LEAVE;
+	track_mouse_event_.dwFlags = TME_LEAVE | TME_HOVER;
 	track_mouse_event_.hwndTrack = m_hWnd;
+	track_mouse_event_.dwHoverTime = 10;
 
 	login_hwnd_ = m_hWnd;
 	WebClientInit();
@@ -126,6 +127,12 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHa
 
 LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
+	TrackMouseEvent(&track_mouse_event_);
+
+	if (timer_mouse_leave_) {
+		KillTimer(m_hWnd, 211);
+	}
+
 	if (uMsg == WM_RBUTTONDOWN) {
 		::GetCursorPos(&old_point_);
 		RECT rect = m_pm.FindControl(_T("speak_btn"))->GetPos();
@@ -179,6 +186,57 @@ LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandl
 	return LRESULT();
 }
 
+LRESULT MainWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	SetTimer(m_hWnd, 211, 4000, NULL);
+	timer_mouse_leave_ = true;
+
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	if (wparam == 211) {
+		OutputDebugStringA("time up\n");
+		RECT rectwindow;
+		GetWindowRect(m_hWnd, &rectwindow);
+		if (GetSystemMetrics(SM_CXSCREEN) - rectwindow.left < 210) {
+			mouse_move_old_position_.x = rectwindow.left;
+			mouse_move_old_position_.y = rectwindow.top;
+			speak_button_ont_the_edge_ = true;
+			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 20, rectwindow.top, 40, 40, false);
+			KillTimer(this->m_hWnd, 211);
+		}
+
+	}
+
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled)
+{
+	switch (uMsg)
+	{
+	case WM_MOUSEHOVER:
+		if (speak_button_ont_the_edge_) {
+			OutputDebugStringA("mouse hover \n");
+			MoveWindow(m_hWnd, mouse_move_old_position_.x, mouse_move_old_position_.y, 60, 60, false);
+			speak_button_ont_the_edge_ = false;
+		}
+		break;
+	default:
+		break;
+	}
+	return LRESULT();
+}
+
+//LRESULT MainWnd::OnMyLButtonDown(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+//{
+//	if(m_pm.FindControl(_T("speak_btn")))
+//	PostMessage(WM_NCLBUTTONDOWN, HTCAPTION, lparam);
+//	return 0;
+//}
+
 void MainWnd::WebClientInit()
 {
 	have_server_ip_ = false;
@@ -229,14 +287,14 @@ bool MainWnd::Login()
 	stu_info_.operate_type_ = OperateType::LOGON;
 	stu_info_.stream_ip_ = local_ip_;
 	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
-
+	LoginAnimation();
 	return true;
 }
 
 void MainWnd::LoginAnimation()
 {
 	m_pm.FindControl(_T("mask_label"))->SetVisible(false);
-	static_cast<CAnimationTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
+	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
 
 	RECT rect = { 0 };
 	GetWindowRect(m_hWnd, &rect);

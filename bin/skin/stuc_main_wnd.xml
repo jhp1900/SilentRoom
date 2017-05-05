@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Window bktrans="true" shadowimage="" size="325,325" maxinfo="325,325" caption="0,0,0,325">
   <Container>
-    <AnimationTabLayout name="anima_tab">
+    <TabLayout name="anima_tab">
       <VerticalLayout inset="0,25,25,0">
         <Container bkcolor="#FFffffff">
           <GifAnim bkimage="res/test.gif" />
@@ -21,7 +21,7 @@
       <Container borderround="5,5">
         <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
       </Container>
-    </AnimationTabLayout>
+    </TabLayout>
     <Label name="mask_label" float="true" pos="0,0,300,190" bkcolor="#01000000" />
     <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
   </Container>

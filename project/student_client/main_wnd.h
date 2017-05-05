@@ -23,10 +23,14 @@ public:
 		DUIMSG_HANDLER(kAM_IPSetupMsg, OnIpSetupMsg)
 		DUIMSG_HANDLER(WM_RBUTTONDOWN, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
-		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
+		//DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
+		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseLeaveWnd)
 		DUIMSG_HANDLER(WM_MOUSEMOVE, OnMouseMoveWnd)
+		DUIMSG_HANDLER(WM_MOUSEHOVER, OnMouseHover)
+		DUIMSG_HANDLER(WM_TIMER, OnMouseTimer)
 		DUIMSG_HANDLER(WM_NCLBUTTONDBLCLK, OnMouseMoveWnd)
 		DUIMSG_HANDLER(FastKey, OnHotKey);
+	    //DUIMSG_HANDLER( WM_LBUTTONDOWN, OnMyLButtonDown)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUINOTIFY_MAP(MainWnd)
@@ -47,6 +51,11 @@ private:
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) override;
+
+	//LRESULT OnMyLButtonDown(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
 	void WebClientInit();
 	bool Login();			// ÏìÓ¦µÇÂ¼ÊÂ¼þ
@@ -63,6 +72,7 @@ private:
 	StudentData stu_info_;
 	POINT old_point_;
 	POINT cursor_point_;
+	POINT mouse_move_old_position_;
 	bool move_now_;
 	std::string local_ip_;
 	TRACKMOUSEEVENT track_mouse_event_;
@@ -72,6 +82,8 @@ private:
 	std::shared_ptr<JsonOperate> json_operate_;
 	std::shared_ptr<WebStudentClient> web_client_;
 
+	bool timer_mouse_leave_;
+	bool speak_button_ont_the_edge_;
 	HWND login_hwnd_;
 	bool have_server_ip_;
 };
