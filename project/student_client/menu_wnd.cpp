@@ -51,15 +51,15 @@ void MenuWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 {
 	CDuiString name = msg.pSender->GetName();
 	if (name == _T("speak_item"))
-		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgSpeak, 0);
+		::PostMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgSpeak, 0);
 	else if (name == _T("handup_item"))
-		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgHandup, 0);
+		::PostMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgHandup, 0);
 	else if (name == _T("stop_item"))
-		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgStop, 0);
+		::PostMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgStop, 0);
 	else if (name == _T("setup_item"))
-		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgSetup, 0);
+		::PostMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgSetup, 0);
 	else if (name == _T("closebtn"))
-		::SendMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgClose, 0);
+		::PostMessage(pa_hwnd_, kAM_TrayMenuMsg, MenuMsgClose, 0);
 
 	ShowWindow(SW_HIDE);
 }

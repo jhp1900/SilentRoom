@@ -17,12 +17,12 @@
             <Button name="login_btn" text="登录" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
           </HorizontalLayout>
         </VerticalLayout>
+        <Label name="mask_label" float="true" pos="0,0,300,190" bkcolor="#01000000" />
+        <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
       </VerticalLayout>
       <Container borderround="5,5">
         <Button name="speak_btn" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
       </Container>
     </TabLayout>
-    <Label name="mask_label" float="true" pos="0,0,300,190" bkcolor="#01000000" />
-    <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
   </Container>
 </Window>

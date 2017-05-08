@@ -138,35 +138,35 @@ LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 {
 	TrackMouseEvent(&track_mouse_event_);
 
-	if (timer_mouse_leave_) {
-		KillTimer(m_hWnd, 211);
-	}
+	//if (timer_mouse_leave_) {
+	//	KillTimer(m_hWnd, 211);
+	//}
 
-	if (uMsg == WM_RBUTTONDOWN) {
-		::GetCursorPos(&old_point_);
-		RECT rect = m_pm.FindControl(_T("speak_btn"))->GetPos();
+	//if (uMsg == WM_RBUTTONDOWN) {
+	//	::GetCursorPos(&old_point_);
+	//	RECT rect = m_pm.FindControl(_T("speak_btn"))->GetPos();
 
-		if (rect.right > 0 && rect.bottom > 0) {
-			move_now_ = true;
-			TrackMouseEvent(&track_mouse_event_);
-		}
-	} else if (uMsg == WM_RBUTTONUP || uMsg == WM_MOUSELEAVE) {
-		move_now_ = false;
-	} else if (uMsg == WM_MOUSEMOVE) {
-		if (move_now_) {
-			::GetCursorPos(&cursor_point_);
-			RECT rect = { 0 };
-			GetWindowRect(m_hWnd, &rect);
-			int w = rect.right - rect.left;
-			int h = rect.bottom - rect.top;
-			rect.left += (cursor_point_.x - old_point_.x);
-			rect.top += (cursor_point_.y - old_point_.y);
-			old_point_.x = cursor_point_.x;
-			old_point_.y = cursor_point_.y;
+	//	if (rect.right > 0 && rect.bottom > 0) {
+	//		move_now_ = true;
+	//		TrackMouseEvent(&track_mouse_event_);
+	//	}
+	//} else if (uMsg == WM_RBUTTONUP || uMsg == WM_MOUSELEAVE) {
+	//	move_now_ = false;
+	//} else if (uMsg == WM_MOUSEMOVE) {
+	//	if (move_now_) {
+	//		::GetCursorPos(&cursor_point_);
+	//		RECT rect = { 0 };
+	//		GetWindowRect(m_hWnd, &rect);
+	//		int w = rect.right - rect.left;
+	//		int h = rect.bottom - rect.top;
+	//		rect.left += (cursor_point_.x - old_point_.x);
+	//		rect.top += (cursor_point_.y - old_point_.y);
+	//		old_point_.x = cursor_point_.x;
+	//		old_point_.y = cursor_point_.y;
 
-			MoveWindow(m_hWnd, rect.left, rect.top, w, h, false);
-		}
-	}
+	//		MoveWindow(m_hWnd, rect.left, rect.top, w, h, false);
+	//	}
+	//}
 	return LRESULT();
 }
 
@@ -177,7 +177,7 @@ LRESULT MainWnd::OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & b
 
 LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	if (!login_succeed_) {
+	if (login_succeed_) {
 		switch (wparam) {
 		case 1: {
 			OutputDebugStringA("CTRL + 1:发言 \n");
@@ -205,10 +205,11 @@ LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandl
 
 LRESULT MainWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	OutputDebugStringA("---mouse leave---\n");
-	SetTimer(m_hWnd, 211, 4000, NULL);
-	timer_mouse_leave_ = true;
-
+	if (login_succeed_) {
+		OutputDebugStringA("---mouse leave---\n");
+		SetTimer(m_hWnd, 211, 4000, NULL);
+		timer_mouse_leave_ = true;
+	}
 	return LRESULT();
 }
 
@@ -218,13 +219,11 @@ LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 		OutputDebugStringA("time up\n");
 		RECT rectwindow;
 		GetWindowRect(m_hWnd, &rectwindow);
-		if (GetSystemMetrics(SM_CXSCREEN) - rectwindow.left < 400) {
-			mouse_move_old_position_.x = rectwindow.left;
-			mouse_move_old_position_.y = rectwindow.top;
-			speak_button_ont_the_edge_ = true;
-			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 20, rectwindow.top, 20, 40, false);
+		mouse_move_old_position_.x = rectwindow.left;
+		mouse_move_old_position_.y = rectwindow.top;
+		speak_button_ont_the_edge_ = true;
+		MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 20, rectwindow.top, 20, 40, false);
 
-		}
 		KillTimer(this->m_hWnd, 211);
 	}
 
@@ -253,14 +252,10 @@ void MainWnd::WebClientInit()
 	have_server_ip_ = false;
 
 	/* 获取服务器IP，判断是否需要设置IP信息 */
-	//auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	//std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
-	//std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
-	//local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
-
-	std::string server_ip = "10.18.3.67";
-	std::string server_port = "8082";
-	local_ip_ = "10.18.3.67";
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
+	std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
+	local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
 
 	if (server_ip == "" || server_port == "" || local_ip_ == "") {
 		if (MessageBox(m_hWnd, _T("IP配置尚未完善，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
@@ -298,7 +293,7 @@ bool MainWnd::Login()
 	stu_info_.operate_type_ = OperateType::LOGON;
 	stu_info_.stream_ip_ = local_ip_;
 	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
-	LoginAnimation();
+	//LoginAnimation();
 	return true;
 }
 
@@ -362,9 +357,11 @@ void MainWnd::Speak()
 
 void MainWnd::StopSpeak()
 {
-	stu_info_.handup_ = false;
-	stu_info_.operate_type_ = OperateType::STOP_SPEAK;
-	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
+	if (stu_info_.handup_) {
+		stu_info_.handup_ = false;
+		stu_info_.operate_type_ = OperateType::STOP_SPEAK;
+		rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
+	}
 }
 
 bool MainWnd::HandUp()

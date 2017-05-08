@@ -31,7 +31,7 @@ private:
 
 private:
 	static App *instance_;
-	SCHook schook_;
+	//SCHook schook_;
 	std::unique_ptr<MainWnd> main_wnd_;
 	std::unique_ptr<VLCTool> vlc_tool_;
 	std::unique_ptr<XmlManager> xml_mnge_;
