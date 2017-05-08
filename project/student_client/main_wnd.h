@@ -88,4 +88,8 @@ private:
 	bool speak_button_ont_the_edge_;
 	HWND login_hwnd_;
 	bool have_server_ip_;
+
+	int wnd_w_, wnd_h_;		// 窗体的宽高
+	int ep_x_, ep_y_;		// 登录动效终点位置
+	int hide_w_;			// 隐藏状态的窗体宽度
 };

@@ -19,7 +19,12 @@ MainWnd::MainWnd()
 	, login_hwnd_(nullptr)
 	, have_server_ip_(false)
 	, login_succeed_(false)
+	, wnd_w_(100)
+	, wnd_h_(227)
+	, hide_w_(6)
+	, ep_y_(150)
 {
+	ep_x_ = GetSystemMetrics(SM_CXSCREEN) - wnd_w_;
 	stu_info_.appid_ = appid_str;
 }
 
@@ -34,8 +39,6 @@ MainWnd::~MainWnd()
 void MainWnd::InitWindow()
 {
 	AddTray();				// 添加托盘
-	//SetAutoGetIP();			// 设置电脑为自动获取IP
-	//GetLocalIP(local_ip_);	// 获取本机ip
 
 	json_operate_.reset(new JsonOperate);
 	web_client_.reset(new WebStudentClient);
@@ -56,12 +59,21 @@ void MainWnd::InitWindow()
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 {
-	if (msg.pSender->GetName() == _T("close_btn"))
-		Close();
-	else if (msg.pSender->GetName() == _T("login_btn"))
+	CDuiString name = msg.pSender->GetName();
+	if (name == _T("close_btn") || name == _T("closebtn"))
+		OnCloseMsg();
+	else if (name == _T("login_btn"))
 		Login();
-	else if (msg.pSender->GetName() == _T("speak_btn"))
+	else if (name == _T("speak_item"))
 		Speak();
+	else if (name == _T("handup_item"))
+		HandUp();
+	else if (name == _T("stop_item"))
+		StopSpeak();
+	else if (name == _T("setup_item")) {
+		SetupWnd setup_wnd(m_hWnd);
+		setup_wnd.DoModal(login_hwnd_);
+	}
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -185,9 +197,6 @@ LRESULT MainWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL &
 
 LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	int ep_x = GetSystemMetrics(SM_CXSCREEN) - 100;
-	int ep_y = 200;
-
 	auto timer_211 = [&]() {
 		OutputDebugStringA("time up\n");
 		SetTimer(m_hWnd, 213, 1, nullptr);
@@ -197,16 +206,16 @@ LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 	auto timer_212 = [&]() {
 		RECT rect;
 		GetWindowRect(m_hWnd, &rect);
-		int add_x = (ep_x - rect.left) / 10;
-		int add_y = (rect.top - ep_y) / 10;
+		int add_x = (ep_x_ - rect.left) / 10;
+		int add_y = (rect.top - ep_y_) / 10;
 		if (add_x > 1 || add_x < -1 || add_y > 1 || add_y < -1) {
 			int x = rect.left + add_x;
 			int y = rect.top - add_y;
-			MoveWindow(m_hWnd, x, y, 100, 227, true);
+			MoveWindow(m_hWnd, x, y, wnd_w_, wnd_h_, true);
 		}
 		else {
 			KillTimer(this->m_hWnd, 212);
-			MoveWindow(m_hWnd, ep_x, ep_y, 100, 227, true);
+			MoveWindow(m_hWnd, ep_x_, ep_y_, wnd_w_, wnd_h_, true);
 		}
 	};
 
@@ -214,11 +223,11 @@ LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 		RECT rect;
 		GetWindowRect(m_hWnd, &rect);
 		int w = GetSystemMetrics(SM_CXSCREEN) - rect.left;
-		if (w > 6) {
-			MoveWindow(m_hWnd, rect.left + 2, rect.top, w - 2, 227, false);
+		if (w > hide_w_) {
+			MoveWindow(m_hWnd, rect.left + 2, ep_y_, w - 2, wnd_h_, false);
 		}
 		else{
-			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 6, rect.top, 6, 227, false);
+			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - hide_w_, ep_y_, hide_w_, wnd_h_, false);
 			KillTimer(m_hWnd, 213);
 			speak_button_ont_the_edge_ = true;
 			static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(2);
@@ -229,11 +238,12 @@ LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 		RECT rect;
 		GetWindowRect(m_hWnd, &rect);
 		int w = GetSystemMetrics(SM_CXSCREEN) - rect.left;
-		if (w < 100) {
-			MoveWindow(m_hWnd, rect.left - 2, rect.top, w + 2, 227, false);
+		if (w < wnd_w_) {
+			MoveWindow(m_hWnd, rect.left - 2, ep_y_, w + 2, wnd_h_, false);
 		}
 		else {
 			KillTimer(m_hWnd, 214);
+			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - wnd_w_, ep_y_, wnd_w_, wnd_h_, false);
 		}
 	};
 
@@ -324,10 +334,9 @@ void MainWnd::LoginAnimation()
 	m_pm.FindControl(_T("mask_label"))->SetVisible(false);
 	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
 
-	int w = 100, h = 227;
-	int x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
-	int y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
-	MoveWindow(m_hWnd, x, y, w, h, true);
+	int x = (GetSystemMetrics(SM_CXSCREEN) - wnd_w_) / 2;
+	int y = (GetSystemMetrics(SM_CYSCREEN) - wnd_h_) / 2;
+	MoveWindow(m_hWnd, x, y, wnd_w_, wnd_h_, true);
 	SetTimer(m_hWnd, 212, 5, NULL);
 }
 
