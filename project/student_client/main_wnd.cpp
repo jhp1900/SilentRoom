@@ -137,36 +137,6 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHa
 LRESULT MainWnd::OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	TrackMouseEvent(&track_mouse_event_);
-
-	//if (timer_mouse_leave_) {
-	//	KillTimer(m_hWnd, 211);
-	//}
-
-	//if (uMsg == WM_RBUTTONDOWN) {
-	//	::GetCursorPos(&old_point_);
-	//	RECT rect = m_pm.FindControl(_T("speak_btn"))->GetPos();
-
-	//	if (rect.right > 0 && rect.bottom > 0) {
-	//		move_now_ = true;
-	//		TrackMouseEvent(&track_mouse_event_);
-	//	}
-	//} else if (uMsg == WM_RBUTTONUP || uMsg == WM_MOUSELEAVE) {
-	//	move_now_ = false;
-	//} else if (uMsg == WM_MOUSEMOVE) {
-	//	if (move_now_) {
-	//		::GetCursorPos(&cursor_point_);
-	//		RECT rect = { 0 };
-	//		GetWindowRect(m_hWnd, &rect);
-	//		int w = rect.right - rect.left;
-	//		int h = rect.bottom - rect.top;
-	//		rect.left += (cursor_point_.x - old_point_.x);
-	//		rect.top += (cursor_point_.y - old_point_.y);
-	//		old_point_.x = cursor_point_.x;
-	//		old_point_.y = cursor_point_.y;
-
-	//		MoveWindow(m_hWnd, rect.left, rect.top, w, h, false);
-	//	}
-	//}
 	return LRESULT();
 }
 
@@ -205,7 +175,7 @@ LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandl
 
 LRESULT MainWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	if (login_succeed_) {
+	if (login_succeed_ && !speak_button_ont_the_edge_) {
 		OutputDebugStringA("---mouse leave---\n");
 		SetTimer(m_hWnd, 211, 4000, NULL);
 		timer_mouse_leave_ = true;
@@ -215,16 +185,67 @@ LRESULT MainWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL &
 
 LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	if (wparam == 211) {
-		OutputDebugStringA("time up\n");
-		RECT rectwindow;
-		GetWindowRect(m_hWnd, &rectwindow);
-		mouse_move_old_position_.x = rectwindow.left;
-		mouse_move_old_position_.y = rectwindow.top;
-		speak_button_ont_the_edge_ = true;
-		MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 20, rectwindow.top, 20, 40, false);
+	int ep_x = GetSystemMetrics(SM_CXSCREEN) - 100;
+	int ep_y = 200;
 
+	auto timer_211 = [&]() {
+		OutputDebugStringA("time up\n");
+		SetTimer(m_hWnd, 213, 1, nullptr);
 		KillTimer(this->m_hWnd, 211);
+	};
+
+	auto timer_212 = [&]() {
+		RECT rect;
+		GetWindowRect(m_hWnd, &rect);
+		int add_x = (ep_x - rect.left) / 10;
+		int add_y = (rect.top - ep_y) / 10;
+		if (add_x > 1 || add_x < -1 || add_y > 1 || add_y < -1) {
+			int x = rect.left + add_x;
+			int y = rect.top - add_y;
+			MoveWindow(m_hWnd, x, y, 100, 227, true);
+		}
+		else {
+			KillTimer(this->m_hWnd, 212);
+			MoveWindow(m_hWnd, ep_x, ep_y, 100, 227, true);
+		}
+	};
+
+	auto timer_213 = [&]() {
+		RECT rect;
+		GetWindowRect(m_hWnd, &rect);
+		int w = GetSystemMetrics(SM_CXSCREEN) - rect.left;
+		if (w > 6) {
+			MoveWindow(m_hWnd, rect.left + 2, rect.top, w - 2, 227, false);
+		}
+		else{
+			MoveWindow(m_hWnd, GetSystemMetrics(SM_CXSCREEN) - 6, rect.top, 6, 227, false);
+			KillTimer(m_hWnd, 213);
+			speak_button_ont_the_edge_ = true;
+			static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(2);
+		}
+	};
+
+	auto timer_214 = [&]() {
+		RECT rect;
+		GetWindowRect(m_hWnd, &rect);
+		int w = GetSystemMetrics(SM_CXSCREEN) - rect.left;
+		if (w < 100) {
+			MoveWindow(m_hWnd, rect.left - 2, rect.top, w + 2, 227, false);
+		}
+		else {
+			KillTimer(m_hWnd, 214);
+		}
+	};
+
+	switch (wparam)
+	{
+	case 211: timer_211(); break;
+	case 212: timer_212(); break;
+	case 213: timer_213(); break;
+	case 214: timer_214(); break;
+	default:
+		bHandled = false;
+		break;
 	}
 
 	return LRESULT();
@@ -237,7 +258,8 @@ LRESULT MainWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bH
 	case WM_MOUSEHOVER:
 		if (speak_button_ont_the_edge_) {
 			OutputDebugStringA("mouse hover \n");
-			MoveWindow(m_hWnd, mouse_move_old_position_.x, mouse_move_old_position_.y, 60, 60, false);
+			SetTimer(m_hWnd, 214, 1, nullptr);
+			static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
 			speak_button_ont_the_edge_ = false;
 		}
 		break;
@@ -302,49 +324,11 @@ void MainWnd::LoginAnimation()
 	m_pm.FindControl(_T("mask_label"))->SetVisible(false);
 	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
 
-	RECT rect = { 0 };
-	GetWindowRect(m_hWnd, &rect);
-	POINT centre = { 0 }, top = { 0 };
-	centre.x = (rect.right + rect.left) / 2;
-	centre.y = (rect.bottom + rect.top) / 2;
-	for (int i = (rect.right - rect.left) / 2; i >= 30; --i) {
-		MoveWindow(m_hWnd, centre.x - i, centre.y - i, i * 2, i * 2, true);
-		//Sleep(1);
-	}
-
-	int x = GetSystemMetrics(SM_CXSCREEN) - 110;
-	int temp = 0;
-	bool is_break = false;
-	while (true) {
-		GetWindowRect(m_hWnd, &rect);
-		top.x = rect.left;
-		top.y = rect.top;
-		temp = abs(x - top.x);
-		if (temp) {
-			temp /= 10;
-			if (temp)
-				top.x += temp;
-			else
-				top.x += 1;
-		} else {
-			is_break = true;
-		}
-
-		temp = abs(top.y - 50);
-		if (temp) {
-			temp /= 10;
-			if (temp)
-				top.y -= temp;
-			else
-				top.y -= 1;
-		} else if(is_break) {
-			break;
-		}
-		
-		MoveWindow(m_hWnd, top.x, top.y, 60, 60, true);
-		Sleep(2);
-	}
-	::SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	int w = 100, h = 227;
+	int x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
+	int y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
+	MoveWindow(m_hWnd, x, y, w, h, true);
+	SetTimer(m_hWnd, 212, 5, NULL);
 }
 
 void MainWnd::Speak()

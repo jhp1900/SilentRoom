@@ -11,6 +11,10 @@ MenuWnd::~MenuWnd()
 
 void MenuWnd::InitWindow()
 {
+	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
+	track_mouse_event_.dwFlags = TME_LEAVE | TME_HOVER;
+	track_mouse_event_.hwndTrack = this->m_hWnd;
+	track_mouse_event_.dwHoverTime = 10;
 }
 
 HWND MenuWnd::CreateWithStyle(DWORD style)
@@ -47,6 +51,12 @@ LRESULT MenuWnd::ResponseDefaultKeyEvent(WPARAM wParam)
 	return LRESULT();
 }
 
+LRESULT MenuWnd::OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	//ShowWindow(SW_HIDE);
+	return LRESULT();
+}
+
 void MenuWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 {
 	CDuiString name = msg.pSender->GetName();
@@ -66,6 +76,8 @@ void MenuWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 
 void MenuWnd::PopupWnd(PPOINT point, bool left_bottom)
 {
+	TrackMouseEvent(&track_mouse_event_);
+
 	int srceen_width = ::GetSystemMetrics(SM_CXSCREEN);
 	int srceen_height = ::GetSystemMetrics(SM_CYSCREEN);
 	int x = point->x;

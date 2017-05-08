@@ -23,6 +23,8 @@ public:
 		DUIMSG_HANDLER(WM_SHOWWINDOW, OnShowWindow)
 		DUIMSG_HANDLER(WM_KEYDOWN, OnKeyDown)
 		DUIMSG_HANDLER(WM_KILLFOCUS, OnKillFocus)
+		DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseLeaveWnd)
+		//DUIMSG_HANDLER(WM_MOUSEHOVER, OnMouseHover)
 	END_DUIMSG_MAP()
 
 	BEGIN_DUINOTIFY_MAP(MenuWnd)
@@ -40,6 +42,8 @@ private:
 	virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled) override;
 	virtual LRESULT ResponseDefaultKeyEvent(WPARAM wParam) override;
 
+	LRESULT OnMouseLeaveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+
 private:
 	void OnClickBtn(TNotifyUI& msg, bool& handled);
 
@@ -48,5 +52,6 @@ public:
 
 private:
 	HWND pa_hwnd_;
+	TRACKMOUSEEVENT track_mouse_event_;
 };
 
