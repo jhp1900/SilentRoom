@@ -42,7 +42,7 @@ int App::Run()
 	if (!main_wnd_)
 		return -1;
 
-	main_wnd_->CreateDuiWindow(NULL, _T(""), UI_WNDSTYLE_FRAME, WS_EX_TOPMOST);
+	main_wnd_->CreateDuiWindow(NULL, _T("Slientroom"), UI_WNDSTYLE_FRAME, WS_EX_TOPMOST);
 	if (main_wnd_->GetHWND() == nullptr)
 		return -1;
 	//schook_.SetViewer(*main_wnd_);

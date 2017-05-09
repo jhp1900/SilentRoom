@@ -127,7 +127,9 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	login_hwnd_ = NULL;		// 登录成功后，"设置界面的窗口"不再以本窗口为父窗口！
 	login_succeed_ = true;
 	LoginAnimation();		// 登录动效
-
+	DWORD dwexstyle = GetWindowLong(m_hWnd, GWL_EXSTYLE);
+	dwexstyle ^= WS_EX_TOOLWINDOW;
+	SetWindowLong(m_hWnd, GWL_EXSTYLE, dwexstyle);
 	// 初始化、启动 ivga
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
 		MessageBox(m_hWnd, _T("屏幕推流失败!"), _T("Message"), MB_OK);
