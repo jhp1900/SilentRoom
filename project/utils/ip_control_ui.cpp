@@ -67,7 +67,7 @@ BOOL IpControlUI::IsReasonable()
 	return TRUE;
 }
 
-void IpControlUI::SetEditState(BOOL state)
+void IpControlUI::SetEditState(bool state)
 {
 	for (auto iter : edit_vector_) {
 		iter->SetEnabled(state);

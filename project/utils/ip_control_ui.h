@@ -21,7 +21,7 @@ public:
 
 public:
 	BOOL IsReasonable();
-	void SetEditState(BOOL state);
+	void SetEditState(bool state);
 
 private:
 	vector<CEditUI*> edit_vector_;

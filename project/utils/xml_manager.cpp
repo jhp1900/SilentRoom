@@ -44,7 +44,7 @@ CDuiString XmlManager::GetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name)
 		attr = "";
 		SaveFile();
 	}
-	return CA2W(attr.as_string());
+	return *attr.as_string();
 }
 
 bool XmlManager::SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, LPCTSTR val)
