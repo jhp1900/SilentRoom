@@ -7,7 +7,7 @@ class MainWnd;
 class VLCTool;
 class XmlManager;
 
-const string appid_str = "06";
+const string appid_str = "01";
 
 class App
 {

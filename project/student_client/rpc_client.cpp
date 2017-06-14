@@ -58,13 +58,15 @@ void RpcClient::SetDisplayPointPort(const char * port)
 
 bool RpcClient::HandupOperat(const char* student_data)
 {
+	bool ret = true;
 	RpcTryExcept{
 		Handup((unsigned char*)student_data);
 	} RpcExcept(1) {
 		printf("RPC Exception %d\n", RpcExceptionCode());
+		ret = false;
 	}
 	RpcEndExcept
 
-	return true;
+	return ret;
 }
 

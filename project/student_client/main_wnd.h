@@ -60,6 +60,7 @@ private:
 
 	void WebClientInit();
 	bool Login();			// 响应登录事件
+	void Logout();			// 登出
 	void LoginAnimation();	// 登录动效
 	void Speak();			// 响应发言事件
 	void StopSpeak();

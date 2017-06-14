@@ -331,6 +331,12 @@ bool MainWnd::Login()
 	return true;
 }
 
+void MainWnd::Logout()
+{
+	stu_info_.operate_type_ = OperateType::QUIT;
+	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
+}
+
 void MainWnd::LoginAnimation()
 {
 	m_pm.FindControl(_T("mask_label"))->SetVisible(false);
@@ -347,7 +353,8 @@ void MainWnd::Speak()
 	// 请求发言；
 	stu_info_.handup_ = true;
 	stu_info_.operate_type_ = OperateType::SPEAK;
-	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
+	if(!rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_)))
+		stu_info_.handup_ = false;
 }
 
 void MainWnd::StopSpeak()
@@ -363,7 +370,8 @@ bool MainWnd::HandUp()
 {
 	stu_info_.handup_ = true;
 	stu_info_.operate_type_ = OperateType::HANDUP;
-	rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_));
+	if(!rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_)))
+		stu_info_.handup_ = false;
 	return false;
 }
 
@@ -387,5 +395,6 @@ void MainWnd::AddTray()
 void MainWnd::OnCloseMsg()
 {
 	StopSpeak();		// 退出程序前，先结束发言；
+	Logout();			// 向服务器发出登出信息；
 	Close();
 }
