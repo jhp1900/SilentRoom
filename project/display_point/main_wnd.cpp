@@ -244,7 +244,7 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 	json_operate.JsonAnalysis(ret_data.c_str(), student_data);
 	memset((char*)wparam, 0, ret_data.length());
 	if (student_data.operate_type_ == OperateType::KEEPA_LIVE) {
-		if (student_data.stream_ip_ == "null" && student_data.stream_ip_ == "")
+		if (student_data.stream_ip_ == "null")
 			return LRESULT();
 		else if (student_data == last_sutdentdata_) {
 			return LRESULT();
@@ -252,7 +252,8 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 			last_sutdentdata_ = student_data;	//保存上次播放流，避免重复播放同一流
 
 			if (student_data.handup_) {
-				PlayStream(student_data.stream_ip_, student_data.naem_);
+				if(student_data.stream_ip_ != local_ip_)	// 播放的流，应该满足非本地址广播的流
+					PlayStream(student_data.stream_ip_, student_data.naem_);
 			} else {
 				StopStream();					//自由讨论判断
 			}
