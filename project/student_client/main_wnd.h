@@ -7,6 +7,7 @@
 #include "..\utils\json_operate.h"
 #include "..\utils\web_student_client.h"
 #include "hook.h"
+#include <wlanapi.h>
 
 class MainWnd : public WindowImplBase
 {
@@ -21,6 +22,7 @@ public:
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
 		DUIMSG_HANDLER(kAM_WebRetMsg, OnWebRetMsg)
 		DUIMSG_HANDLER(kAM_IPSetupMsg, OnIpSetupMsg)
+		DUIMSG_HANDLER(kAM_ChoiceNICMsg, OnChoiceNICMsg)
 		DUIMSG_HANDLER(WM_RBUTTONDOWN, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
 		//DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
@@ -49,6 +51,7 @@ private:
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnChoiceNICMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
@@ -68,6 +71,10 @@ private:
 	//void SetupWnd();
 	void AddTray();			// 添加托盘
 	void OnCloseMsg();
+	bool InitNativeWifi();
+	bool ConnectWifi(GUID guid);
+	bool OnConnBtn();
+	bool OnChioceIp(LPCTSTR ip);
 
 private:
 	NOTIFYICONDATA tray_data_;
@@ -93,4 +100,7 @@ private:
 	int wnd_w_, wnd_h_;		// 窗体的宽高
 	int ep_x_, ep_y_;		// 登录动效终点位置
 	int hide_w_;			// 隐藏状态的窗体宽度
+
+	HANDLE hClient_;
+	std::vector<std::pair<GUID, std::wstring>> wlan_nic_;
 };

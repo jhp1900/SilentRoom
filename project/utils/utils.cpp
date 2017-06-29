@@ -34,6 +34,30 @@ void GetLocalIP(std::vector<std::wstring> &ips)
 	}
 }
 
+bool GetNICInfo(std::vector<std::pair<GUID, std::wstring>>& nic_info)
+{
+	INetConnectionManager *net_manager = nullptr;
+	INetConnection *net_conn = nullptr;
+	IEnumNetConnection *net_enum = nullptr;
+	ULONG celt_fetched;
+
+	setlocale(LC_CTYPE, "");
+	CoInitialize(NULL);
+	CoCreateInstance(CLSID_ConnectionManager, NULL, CLSCTX_SERVER, IID_INetConnectionManager, (void**)&net_manager);
+	if (net_manager == nullptr) {
+		MessageBox(nullptr, _T("ÍøÂç¼ì²âÊ§°Ü£¡"), _T("ERROR"), MB_OK);
+		return false;
+	}
+
+	net_manager->EnumConnections(NCME_DEFAULT, &net_enum);
+	NETCON_PROPERTIES *net_proper;
+	while (net_enum->Next(1, &net_conn, &celt_fetched) == S_OK) {
+		net_conn->GetProperties(&net_proper);
+		nic_info.push_back({ net_proper->guidId, net_proper->pszwName });
+	}
+	return true;
+}
+
 void SetAutoGetIP()
 {
 	auto set_ip = [](LPCTSTR type, LPCTSTR net_name) {

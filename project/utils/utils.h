@@ -5,6 +5,7 @@
 *	loc_ip: 输出参数，用于存储本机Ip
 */
 void GetLocalIP(std::vector<std::wstring> &ips);
+bool GetNICInfo(std::vector<std::pair<GUID, std::wstring>> &nic_info);
 
 /*	设置电脑为自动获取IP
 */

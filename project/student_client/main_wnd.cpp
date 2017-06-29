@@ -7,6 +7,10 @@
 #include "..\utils\setup_wnd.h"
 #include "..\utils\xml_manager.h"
 #include "..\utils\utils.h"
+#include <tchar.h>
+
+#pragma comment(lib, "wlanapi.lib")
+#pragma comment(lib, "ole32.lib")
 
 MainWnd::MainWnd()
 	: tray_data_({0})
@@ -40,10 +44,13 @@ void MainWnd::InitWindow()
 {
 	AddTray();				// 添加托盘
 
+	if (!InitNativeWifi())
+		return;
+
 	json_operate_.reset(new JsonOperate);
 	web_client_.reset(new WebStudentClient);
 
-	/* 鼠标事件初始化 */
+	///* 鼠标事件初始化 */
 	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
 	track_mouse_event_.dwFlags = TME_LEAVE | TME_HOVER;
 	track_mouse_event_.hwndTrack = m_hWnd;
@@ -54,7 +61,7 @@ void MainWnd::InitWindow()
 	RegisterHotKey(m_hWnd, 3, MOD_CONTROL, '3');
 	RegisterHotKey(m_hWnd, 4, MOD_CONTROL, 'X');
 	login_hwnd_ = m_hWnd;
-	WebClientInit();
+	//WebClientInit();
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
@@ -73,6 +80,17 @@ void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 	else if (name == _T("setup_item")) {
 		SetupWnd setup_wnd(m_hWnd);
 		setup_wnd.DoModal(login_hwnd_);
+	}
+	else if (name == L"conn_btn") {
+		OnConnBtn();
+	}
+	else if (name == L"chioce_ip_btn") {
+		auto ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
+		if (ip_list)
+			OnChioceIp(ip_list->GetText());
+	}
+	else if (name == L"wifi_set_btn") {
+		
 	}
 }
 
@@ -145,6 +163,29 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
 {
 	WebClientInit();		// 当 IP设置完成后，重新初始化 Web 客户端
+	return LRESULT();
+}
+
+LRESULT MainWnd::OnChoiceNICMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+{
+	std::vector<std::wstring> ips;
+	GetLocalIP(ips);
+	if (ips.size() > 1) {
+		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(1);
+		CComboBoxUI *ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
+		for (auto ip : ips) {
+			auto elemen = new CListLabelElementUI;
+			elemen->SetText(ip.c_str());
+			ip_list->Add(elemen);
+		}
+	}
+	else if(ips.size() == 1){
+		OnChioceIp(ips.at(0).c_str());
+	}
+	else {
+		MessageBox(m_hWnd, L"无可用IP！", L"ERROR", MB_OK);
+	}
+
 	return LRESULT();
 }
 
@@ -397,4 +438,179 @@ void MainWnd::OnCloseMsg()
 	StopSpeak();		// 退出程序前，先结束发言；
 	Logout();			// 向服务器发出登出信息；
 	Close();
+}
+
+bool MainWnd::InitNativeWifi()
+{
+	DWORD dwResult = 0;
+	DWORD dwMaxClien = 2;
+	DWORD dwCurVersion = 0;
+
+	dwResult = WlanOpenHandle(dwMaxClien, NULL, &dwCurVersion, &hClient_);
+	if (dwResult != ERROR_SUCCESS) {
+		WCHAR out[MAX_PATH];
+		_stprintf_s(out, L"WlanOpenHandle failed with error: %u\n", dwResult);
+		OutputDebugString(out);
+		return false;
+	}
+
+	PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
+	PWLAN_INTERFACE_INFO pIfInfo = nullptr;
+
+	dwResult = WlanEnumInterfaces(hClient_, nullptr, &pIfList);
+	if (dwResult != ERROR_SUCCESS) {
+		WCHAR out[MAX_PATH];
+		_stprintf_s(out, L"WlanEnumInterfaces failed with error: %u\n", dwResult);
+		OutputDebugString(out);
+		return false;
+	}
+
+	if (pIfList->dwNumberOfItems == 1) {		// 如果只有一张无线网卡，且连接成功，则直接跳转到IP选择界面
+		if (ConnectWifi(pIfList->InterfaceInfo[0].InterfaceGuid)) {
+			PostMessage(kAM_ChoiceNICMsg, 0, 0);
+			return true;
+		}
+	}
+	else if (pIfList->dwNumberOfItems == 0) {
+		MessageBox(m_hWnd, L"未检测到无线网卡！", L"ERROR", MB_OK);
+	}
+
+	std::vector<std::pair<GUID, std::wstring>> all_nic;
+	if (!GetNICInfo(all_nic))
+		return false;
+
+	for (int index_card = 0; index_card < pIfList->dwNumberOfItems; ++index_card) {
+		pIfInfo = &pIfList->InterfaceInfo[index_card];
+		for (auto item : all_nic) {
+			if (item.first == pIfInfo->InterfaceGuid) {
+				wlan_nic_.push_back(item);
+				break;
+			}
+		}
+
+		//PWLAN_AVAILABLE_NETWORK_LIST available_list = nullptr;
+		//dwResult = WlanGetAvailableNetworkList(hClient, &pIfInfo->InterfaceGuid, WLAN_AVAILABLE_NETWORK_INCLUDE_ALL_MANUAL_HIDDEN_PROFILES, nullptr, &available_list);
+		//if (available_list != nullptr) {
+		//	for (int index_network = 0; index_network < available_list->dwNumberOfItems; ++index_network) {
+		//		WLAN_AVAILABLE_NETWORK network = available_list[index_network].Network[0];
+		//		int a = 0;
+		//	}
+		//}
+	}
+
+	CComboBoxUI *wlan_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("wlan_list")));
+	if (!wlan_list)
+		return false;
+	for (auto item : wlan_nic_) {
+		auto elemen = new CListLabelElementUI;
+		elemen->SetText(item.second.c_str());
+		wlan_list->Add(elemen);
+	}
+
+	return true;
+}
+
+bool MainWnd::ConnectWifi(GUID guid)
+{
+	DWORD dwResult = 0;
+	DWORD dwFlags;
+	DWORD pdwGrantedAccess;
+	LPWSTR xmlfile;
+	dwResult = WlanGetProfile(hClient_, &guid, L"TingFox", nullptr, &xmlfile, &dwFlags, &pdwGrantedAccess);
+	if (dwResult != ERROR_SUCCESS) {
+		LPCWSTR profileXml;
+		std::wstring strHead = L"<?xml version=\"1.0\"?>\
+				<WLANProfile xmlns=\"http://www.microsoft.com/networking/WLAN/profile/v1\">\
+				<name>TingFox</name>\
+				<SSIDConfig>\
+				<SSID>\
+				<name>TingFox</name>\
+				</SSID>\
+				</SSIDConfig>\
+				<connectionType>ESS</connectionType>\
+				<connectionMode>auto</connectionMode>\
+				<MSM>\
+				<security>\
+				<authEncryption>\
+				<authentication>WPA2PSK</authentication>\
+				<encryption>AES</encryption>\
+				<useOneX>false</useOneX>\
+				</authEncryption>\
+				<sharedKey>\
+				<keyType>passPhrase</keyType>\
+				<protected>false</protected>\
+				<keyMaterial>tingfox876718</keyMaterial>\
+				</sharedKey>\
+				</security>\
+				</MSM>\
+				</WLANProfile>";
+
+		profileXml = strHead.c_str();
+		dwFlags = 0;
+		WLAN_REASON_CODE dwReasonCode;
+		dwResult = WlanSetProfile(hClient_, &guid, dwFlags, profileXml, nullptr, true, nullptr, &dwReasonCode);
+		if (dwResult != ERROR_SUCCESS)
+			OutputDebugString(L"\n- - - - - 设置配置文件失败！ - - - - -\n");
+	}
+
+	// 通过以保存的配置文件连接
+	if (dwResult == ERROR_SUCCESS) {
+		WLAN_CONNECTION_PARAMETERS connect_param;
+		connect_param.wlanConnectionMode = wlan_connection_mode_profile;
+		connect_param.strProfile = L"TingFox";
+		connect_param.pDot11Ssid = nullptr;
+		connect_param.dot11BssType = dot11_BSS_type_infrastructure;
+		connect_param.pDesiredBssidList = nullptr;
+		connect_param.dwFlags = WLAN_CONNECTION_HIDDEN_NETWORK;
+
+		dwResult = WlanConnect(hClient_, &guid, &connect_param, nullptr);
+		WCHAR out[MAX_PATH];
+		if (dwResult == ERROR_SUCCESS) {
+			_stprintf_s(out, L"\n- - - - - 连接成功！ - - - - -\n");
+			OutputDebugString(out);
+			return true;
+		}
+		else {
+			_stprintf_s(out, L"\n- - - - - 连接失败！ - - - - -\n");
+			OutputDebugString(out);
+			return false;
+		}
+	}
+
+	return false;
+}
+
+bool MainWnd::OnConnBtn()
+{
+	CComboBoxUI *wlan_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("wlan_list")));
+	if (!wlan_list)
+		return false;
+
+	CDuiString nic_name = wlan_list->GetText();
+	if (wlan_list->GetText() == L"")
+		return false;
+
+	for (auto item : wlan_nic_) {
+		if (nic_name == item.second.c_str())
+			if (ConnectWifi(item.first)) {
+				PostMessage(kAM_ChoiceNICMsg, 0, 0);
+				return true;
+			}
+			else {
+				return false;
+			}
+	}
+
+	return false;
+}
+
+bool MainWnd::OnChioceIp(LPCTSTR ip)
+{
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	if (xml_mnge->SetNodeAttr(_T("LocalIP"), _T("value"), ip)) {
+		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(0);
+		WebClientInit();
+		return true;
+	}
+	return false;
 }
