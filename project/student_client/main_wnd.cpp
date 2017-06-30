@@ -12,8 +12,9 @@
 #pragma comment(lib, "wlanapi.lib")
 #pragma comment(lib, "ole32.lib")
 
-MainWnd::MainWnd()
-	: tray_data_({0})
+MainWnd::MainWnd(bool is_admin)
+	: is_admin_(is_admin)
+	, tray_data_({0})
 	, local_ip_("")
 	, stu_info_()
 	, rpc_client_(nullptr)
@@ -29,7 +30,8 @@ MainWnd::MainWnd()
 	, ep_y_(150)
 {
 	ep_x_ = GetSystemMetrics(SM_CXSCREEN) - wnd_w_;
-	stu_info_.appid_ = appid_str;
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	stu_info_.appid_ = CW2A(xml_mnge->GetNodeAttr(L"AppID", L"value"));
 }
 
 MainWnd::~MainWnd()
@@ -43,6 +45,9 @@ MainWnd::~MainWnd()
 void MainWnd::InitWindow()
 {
 	AddTray();				// 添加托盘
+
+	if(is_admin_)
+		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(3);
 
 	if (!InitNativeWifi())
 		return;
@@ -93,7 +98,7 @@ void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 		PostMessage(kAM_ChoiceNICMsg, 0, 0);
 	}
 	else if (name == L"wifi_set_btn") {
-		
+		OnSetWLANInfo();
 	}
 }
 
@@ -522,19 +527,26 @@ bool MainWnd::InitNativeWifi()
 
 bool MainWnd::ConnectWifi(GUID guid)
 {
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	auto wifi_name = xml_mnge->GetNodeAttr(L"WLAN", L"name");
+	auto wifi_pwd = xml_mnge->GetNodeAttr(L"WLAN", L"pwd");
+
+	if (wifi_name == L"" || wifi_pwd == L"") {
+		MessageBox(m_hWnd, L"WIFI信息有误，请联系管理员！", L"ERROR", MB_OK);
+		return false;
+	}
+
 	DWORD dwResult = 0;
 	DWORD dwFlags;
 	DWORD pdwGrantedAccess;
 	LPWSTR xmlfile;
-	dwResult = WlanGetProfile(hClient_, &guid, L"TingFox", nullptr, &xmlfile, &dwFlags, &pdwGrantedAccess);
+	dwResult = WlanGetProfile(hClient_, &guid, wifi_name, nullptr, &xmlfile, &dwFlags, &pdwGrantedAccess);
 	if (dwResult != ERROR_SUCCESS) {
 		LPCWSTR profileXml;
-		std::wstring strHead = L"<?xml version=\"1.0\"?>\
-				<WLANProfile xmlns=\"http://www.microsoft.com/networking/WLAN/profile/v1\">\
-				<name>TingFox</name>\
-				<SSIDConfig>\
-				<SSID>\
-				<name>TingFox</name>\
+		std::wstring strHead0 = L"<?xml version=\"1.0\"?>\
+				<WLANProfile xmlns=\"http://www.microsoft.com/networking/WLAN/profile/v1\"><name>";
+		std::wstring strHead1 = L"</name><SSIDConfig><SSID><name>";
+		std::wstring strHead2 = L"</name>\
 				</SSID>\
 				</SSIDConfig>\
 				<connectionType>ESS</connectionType>\
@@ -549,13 +561,15 @@ bool MainWnd::ConnectWifi(GUID guid)
 				<sharedKey>\
 				<keyType>passPhrase</keyType>\
 				<protected>false</protected>\
-				<keyMaterial>tingfox876718</keyMaterial>\
+				<keyMaterial>";
+		std::wstring strHead3 = L"</keyMaterial>\
 				</sharedKey>\
 				</security>\
 				</MSM>\
 				</WLANProfile>";
+		strHead0 = strHead0 + wifi_name.GetData() + strHead1 + wifi_name.GetData() + strHead2 + wifi_pwd.GetData() + strHead3;
 
-		profileXml = strHead.c_str();
+		profileXml = strHead0.c_str();
 		dwFlags = 0;
 		WLAN_REASON_CODE dwReasonCode;
 		dwResult = WlanSetProfile(hClient_, &guid, dwFlags, profileXml, nullptr, true, nullptr, &dwReasonCode);
@@ -567,7 +581,7 @@ bool MainWnd::ConnectWifi(GUID guid)
 	if (dwResult == ERROR_SUCCESS) {
 		WLAN_CONNECTION_PARAMETERS connect_param;
 		connect_param.wlanConnectionMode = wlan_connection_mode_profile;
-		connect_param.strProfile = L"TingFox";
+		connect_param.strProfile = wifi_name;
 		connect_param.pDot11Ssid = nullptr;
 		connect_param.dot11BssType = dot11_BSS_type_infrastructure;
 		connect_param.pDesiredBssidList = nullptr;
@@ -625,4 +639,22 @@ bool MainWnd::OnChioceIp(LPCTSTR ip)
 		}
 	}
 	return false;
+}
+
+bool MainWnd::OnSetWLANInfo()
+{
+	auto app_id = m_pm.FindControl(L"app_id")->GetText();
+	auto wifi_name = m_pm.FindControl(L"wifi_name")->GetText();
+	auto wifi_pad = m_pm.FindControl(L"wifi_pwd")->GetText();
+	if (app_id == L"" || wifi_name == L"" || wifi_pad == L"") {
+		MessageBox(m_hWnd, L"信息不合理", L"ERROR", MB_OK);
+		return false;
+	}
+
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	xml_mnge->SetNodeAttr(L"AppID", L"value", app_id);
+	xml_mnge->SetNodeAttr(L"WLAN", L"name", wifi_name.GetData());
+	xml_mnge->SetNodeAttr(L"WLAN", L"pwd", wifi_pad.GetData());
+	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(0);
+	return true;
 }

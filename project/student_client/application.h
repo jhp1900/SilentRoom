@@ -7,8 +7,6 @@ class MainWnd;
 class VLCTool;
 class XmlManager;
 
-const string appid_str = "02";
-
 class App
 {
 private:
@@ -20,7 +18,7 @@ public:
 	static void DestroyInstance();
 
 	bool Initialize(HINSTANCE inst);
-	int Run();
+	int Run(bool is_admin = false);
 
 	MainWnd *GetMainWnd() { return main_wnd_.get(); }
 	VLCTool *GetVLCTool() { return vlc_tool_.get(); }

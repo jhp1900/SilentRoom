@@ -36,9 +36,9 @@ bool App::Initialize(HINSTANCE inst)
 	return true;
 }
 
-int App::Run()
+int App::Run(bool is_admin /* = false */)
 {
-	main_wnd_.reset(new MainWnd());
+	main_wnd_.reset(new MainWnd(is_admin));
 	if (!main_wnd_)
 		return -1;
 

@@ -69,15 +69,23 @@
         <GifAnim name="" bkimage="res/test.gif" />
       </Container>
       <VerticalLayout inset="0,25,25,0">
-        <VerticalLayout bkcolor="#FFffffff">
+        <VerticalLayout bkcolor="#FFffffff" inset="40,0,40,0" childpadding="5">
           <Control />
-          <HorizontalLayout height="40" inset="60,5,60,5">
-            <Edit name="" text="wifi名" align="center" font="1" numberonly="true" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          <Control />
+          <HorizontalLayout height="30">
+            <Label width="80" text="编号:" align="center" />
+            <Edit name="app_id" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
           </HorizontalLayout>
-          <HorizontalLayout height="40" inset="60,5,60,5">
-            <Edit name="" text="密码" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          <HorizontalLayout height="30">
+            <Label width="80" text="WIFI名称:" />
+            <Edit name="wifi_name" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
           </HorizontalLayout>
-          <HorizontalLayout height="45" inset="60,5,60,5" childpadding="2">
+          <HorizontalLayout height="30" >
+            <Label width="80" text="WIFI密码:" />
+            <Edit name="wifi_pwd" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          </HorizontalLayout>
+          <Control height="5" />
+          <HorizontalLayout height="35" childpadding="2">
             <Button name="wifi_set_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
             <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
           </HorizontalLayout>

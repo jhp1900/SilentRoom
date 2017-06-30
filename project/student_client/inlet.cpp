@@ -18,10 +18,22 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmd
 	if (FAILED(Hr))
 		return 0;
 
+	bool is_admin = false;
+
+	int argc = 0;
+	PWSTR* argv = CommandLineToArgvW(::GetCommandLine(), &argc);
+	if (argv) {
+		for (int i = 0; i != argc; ++i) {
+			if (!wcscmp(argv[i], L"-admin"))
+				is_admin = true;
+		}
+		::LocalFree(argv);
+	}
+
 	App *app = App::GetInstance();
 	if (app) {
 		if (app->Initialize(hInstance))
-			app->Run();
+			app->Run(is_admin);
 		app->DestroyInstance();
 		app = nullptr;
 	}

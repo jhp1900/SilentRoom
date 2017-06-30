@@ -12,7 +12,7 @@
 class MainWnd : public WindowImplBase
 {
 public:
-	MainWnd();
+	MainWnd(bool is_admin);
 	~MainWnd();
 
 	DECLARE_DUIWND_INFO(_T("MainWnd"), CS_DBLCLKS, _T("stuc_main_wnd.xml"))
@@ -75,8 +75,10 @@ private:
 	bool ConnectWifi(GUID guid);
 	bool OnConnBtn();
 	bool OnChioceIp(LPCTSTR ip);
+	bool OnSetWLANInfo();
 
 private:
+	bool is_admin_;
 	NOTIFYICONDATA tray_data_;
 	StudentData stu_info_;
 	POINT old_point_;
