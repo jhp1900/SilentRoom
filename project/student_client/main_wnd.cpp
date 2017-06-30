@@ -89,6 +89,9 @@ void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 		if (ip_list)
 			OnChioceIp(ip_list->GetText());
 	}
+	else if (name == L"overlap_btn") {
+		PostMessage(kAM_ChoiceNICMsg, 0, 0);
+	}
 	else if (name == L"wifi_set_btn") {
 		
 	}
@@ -168,10 +171,11 @@ LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHa
 
 LRESULT MainWnd::OnChoiceNICMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
+	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(1);
 	std::vector<std::wstring> ips;
 	GetLocalIP(ips);
+	
 	if (ips.size() > 1) {
-		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(1);
 		CComboBoxUI *ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
 		for (auto ip : ips) {
 			auto elemen = new CListLabelElementUI;
@@ -180,10 +184,15 @@ LRESULT MainWnd::OnChoiceNICMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & 
 		}
 	}
 	else if(ips.size() == 1){
-		OnChioceIp(ips.at(0).c_str());
+		if (!OnChioceIp(ips.at(0).c_str())) {
+			CComboBoxUI *ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
+			auto elemen = new CListLabelElementUI;
+			elemen->SetText(ips.at(0).c_str());
+			ip_list->Add(elemen);
+		}
 	}
 	else {
-		MessageBox(m_hWnd, L"无可用IP！", L"ERROR", MB_OK);
+		m_pm.FindControl(L"ip_prompt_msg")->SetVisible(true);
 	}
 
 	return LRESULT();
@@ -322,7 +331,7 @@ LRESULT MainWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bH
 	return LRESULT();
 }
 
-void MainWnd::WebClientInit()
+bool MainWnd::WebClientInit()
 {
 	have_server_ip_ = false;
 
@@ -339,8 +348,9 @@ void MainWnd::WebClientInit()
 		}
 	} else {
 		have_server_ip_ = true;
-		web_client_->Initial(server_ip + ":" + server_port);	// 初始化 web 客户端 
+		return web_client_->Initial(server_ip + ":" + server_port);	// 初始化 web 客户端 
 	}
+	return false;
 }
 
 bool MainWnd::Login()
@@ -471,8 +481,8 @@ bool MainWnd::InitNativeWifi()
 			return true;
 		}
 	}
-	else if (pIfList->dwNumberOfItems == 0) {
-		MessageBox(m_hWnd, L"未检测到无线网卡！", L"ERROR", MB_OK);
+	else if (pIfList->dwNumberOfItems == 0) {	// 如果没有无线网卡，则给个提示
+		m_pm.FindControl(L"wlan_prompt_msg")->SetVisible(true);
 	}
 
 	std::vector<std::pair<GUID, std::wstring>> all_nic;
@@ -608,9 +618,11 @@ bool MainWnd::OnChioceIp(LPCTSTR ip)
 {
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
 	if (xml_mnge->SetNodeAttr(_T("LocalIP"), _T("value"), ip)) {
-		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(0);
-		WebClientInit();
-		return true;
+		
+		if (WebClientInit()) {
+			static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(0);
+			return true;
+		}
 	}
 	return false;
 }

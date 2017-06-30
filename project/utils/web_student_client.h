@@ -13,7 +13,7 @@ public:
 	WebStudentClient();
 	~WebStudentClient();
 
-	void Initial(std::string url);
+	bool Initial(std::string url);
 	void SendWebMessage(std::string msg);
 	void SendWebMessage(std::string, bool sleep_time);
 

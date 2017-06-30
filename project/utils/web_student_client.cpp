@@ -31,7 +31,7 @@ WebStudentClient::~WebStudentClient()
 	curl_global_cleanup();
 }
 
-void WebStudentClient::Initial(std::string url)
+bool WebStudentClient::Initial(std::string url)
 {
 	try {
 		curl_global_init(CURL_GLOBAL_ALL);
@@ -47,7 +47,9 @@ void WebStudentClient::Initial(std::string url)
 	}
 	catch (const std::exception& exc) {
 		printf("%s\n", exc.what());
+		return false;
 	}
+	return true;
 }
 
 void WebStudentClient::SendWebMessage(std::string msg)

@@ -61,7 +61,7 @@ private:
 
 	//LRESULT OnMyLButtonDown(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
-	void WebClientInit();
+	bool WebClientInit();
 	bool Login();			// 响应登录事件
 	void Logout();			// 登出
 	void LoginAnimation();	// 登录动效

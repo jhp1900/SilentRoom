@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Window bktrans="true" shadowimage="" size="325,325" maxinfo="325,325" caption="0,0,0,325">
+<Window bktrans="true" shadowimage="" size="325,325" maxinfo="325,325" caption="0,0,0,190">
   <Font id="0" name="微软雅黑" size="18" bold="false" italic="false" default="true" />
   <Font id="1" name="微软雅黑" size="16" bold="false" italic="false" />
   <Container>
@@ -22,13 +22,14 @@
           </VerticalLayout>
           <VerticalLayout inset="30,0,30,0">
             <Control />
+            <Label name="ip_prompt_msg" text="无可用IP！" textcolor="#ffff0000" visible="false" />
             <HorizontalLayout height="28">
               <Label width="46" text="IP:" />
               <Combo name="ip_list" height="28" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
               </Combo>
             </HorizontalLayout>
             <Control height="10" />
-            <HorizontalLayout height="45" childpadding="2">
+            <HorizontalLayout height="35" childpadding="2">
               <Button name="chioce_ip_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
               <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
             </HorizontalLayout>
@@ -36,15 +37,17 @@
           </VerticalLayout>
           <VerticalLayout inset="30,0,30,0">
             <Control />
+            <Label name="wlan_prompt_msg" text="未检测到无线网卡！" textcolor="#ffff0000" visible="false" />
             <HorizontalLayout height="28">
               <Label width="46" text="网卡:" />
               <Combo name="wlan_list" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
               </Combo>
             </HorizontalLayout>
             <Control height="10" />
-            <HorizontalLayout height="45" childpadding="2">
+            <HorizontalLayout height="35" childpadding="2">
               <Button name="conn_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
               <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+              <Button name="overlap_btn" text="跳过" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
             </HorizontalLayout>
             <Control />
           </VerticalLayout>
