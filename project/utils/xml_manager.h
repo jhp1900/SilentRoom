@@ -13,6 +13,7 @@ public:
 	BOOL LoadFile(CDuiString file_path, CDuiString file_name);
 	CDuiString GetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name);
 	bool SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, LPCTSTR val);
+	bool SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, bool val);
 
 public:
 	char * WideToMulti(CDuiString wide, char * multi);    // ¿í×Ö·û×ª¶à×Ö½Ú

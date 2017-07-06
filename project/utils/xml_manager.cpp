@@ -59,6 +59,18 @@ bool XmlManager::SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, LPCTSTR val)
 	return SaveFile();
 }
 
+bool XmlManager::SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, bool val)
+{
+	char temp[MAX_PATH] = { 0 };
+	pugi::xml_node node = GetNode(CW2A(nd_name));
+	pugi::xml_attribute attr = node.attribute(CW2A(attr_name));
+	if (!attr)
+		attr = node.append_attribute(CW2A(attr_name));
+	attr = val;
+
+	return SaveFile();
+}
+
 /* （工具函数） 宽字节 转 多字节 */
 char * XmlManager::WideToMulti(CDuiString wide, char * multi)
 {

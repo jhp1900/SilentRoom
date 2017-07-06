@@ -7,7 +7,9 @@
 #include "..\utils\json_operate.h"
 #include "..\utils\web_student_client.h"
 #include "hook.h"
-#include <wlanapi.h>
+#include "ip_control_ui.h"
+
+class NetworkTool;
 
 class MainWnd : public WindowImplBase
 {
@@ -17,12 +19,17 @@ public:
 
 	DECLARE_DUIWND_INFO(_T("MainWnd"), CS_DBLCLKS, _T("stuc_main_wnd.xml"))
 
+	BEGIN_DUICONTROL_CREATE(SetupWnd)
+		DUICONTROL_CREATE_FROM_XML(_T("IpControl"), _T("ip_control.xml"))
+		DUICONTROL_CREATE(_T("IpControlLayout"), IpControlUI)
+		END_DUICONTROL_CREATE()
+
 	BEGIN_DUIMSG_MAP(MainWnd)
 		DUIMSG_HANDLER(kAM_TrayCallbackMsg, OnTray)
 		DUIMSG_HANDLER(kAM_TrayMenuMsg, OnTrayMenuMsg)
 		DUIMSG_HANDLER(kAM_WebRetMsg, OnWebRetMsg)
 		DUIMSG_HANDLER(kAM_IPSetupMsg, OnIpSetupMsg)
-		DUIMSG_HANDLER(kAM_ChoiceNICMsg, OnChoiceNICMsg)
+		DUIMSG_HANDLER(kAM_IPChoiceMsg, OnIPChoiceMsg)
 		DUIMSG_HANDLER(WM_RBUTTONDOWN, OnMouseMoveWnd)
 		DUIMSG_HANDLER(WM_RBUTTONUP, OnMouseMoveWnd)
 		//DUIMSG_HANDLER(WM_MOUSELEAVE, OnMouseMoveWnd)
@@ -51,7 +58,7 @@ private:
 	LRESULT OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
-	LRESULT OnChoiceNICMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
+	LRESULT OnIPChoiceMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnMouseMoveWnd(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnNcLButDbClk(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 	LRESULT OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
@@ -61,6 +68,7 @@ private:
 
 	//LRESULT OnMyLButtonDown(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
 
+	bool InitLocalClient(std::string loca_ip);
 	bool WebClientInit();
 	bool Login();			// 响应登录事件
 	void Logout();			// 登出
@@ -71,10 +79,11 @@ private:
 	//void SetupWnd();
 	void AddTray();			// 添加托盘
 	void OnCloseMsg();
-	bool InitNativeWifi();
-	bool ConnectWifi(GUID guid);
+	bool InitNic();
+	bool ConneWifiForNic(LPCTSTR nic_name);
+	bool InitLocaIP(LPCTSTR nic_name);
 	bool OnConnBtn();
-	bool OnChioceIp(LPCTSTR ip);
+	bool OnChioceIp();
 	bool OnSetWLANInfo();
 
 private:
@@ -92,6 +101,7 @@ private:
 	std::shared_ptr<RpcClient> rpc_client_;
 	std::shared_ptr<JsonOperate> json_operate_;
 	std::shared_ptr<WebStudentClient> web_client_;
+	std::shared_ptr<NetworkTool> net_tool_;
 
 	bool login_succeed_;
 	bool timer_mouse_leave_;
@@ -102,7 +112,4 @@ private:
 	int wnd_w_, wnd_h_;		// 窗体的宽高
 	int ep_x_, ep_y_;		// 登录动效终点位置
 	int hide_w_;			// 隐藏状态的窗体宽度
-
-	HANDLE hClient_;
-	std::vector<std::pair<GUID, std::wstring>> wlan_nic_;
 };

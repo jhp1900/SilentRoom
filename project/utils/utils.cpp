@@ -25,7 +25,8 @@ void GetLocalIP(std::vector<std::wstring> &ips)
 			while (iter) {
 				oss.str(L"");
 				oss << iter->IpAddress.String;
-				ips.push_back(oss.str());
+				if (oss.str() != L"0.0.0.0")		// 屏蔽不合理的IP地址
+					ips.push_back(oss.str());
 				iter = iter->Next;
 			}
 			pIpAdapterInfo = pIpAdapterInfo->Next;
@@ -56,6 +57,31 @@ bool GetNICInfo(std::vector<std::pair<GUID, std::wstring>>& nic_info)
 		nic_info.push_back({ net_proper->guidId, net_proper->pszwName });
 	}
 	return true;
+}
+
+bool TestNic()
+{
+	PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
+	IP_ADAPTER_DNS_SERVER_ADDRESS *pDnsServer = nullptr;
+	ULONG outBufLen = 0;
+	DWORD dwRetVal = 0;
+	char buff[100];
+	DWORD bufflen = 100;
+	int i;
+	GetAdaptersAddresses(AF_UNSPEC, 0, nullptr, pAddresses, &outBufLen);
+	pAddresses = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
+	if ((dwRetVal = GetAdaptersAddresses(AF_INET, GAA_FLAG_SKIP_ANYCAST, nullptr, pAddresses, &outBufLen)) == NO_ERROR) {
+		while (pAddresses) {
+			PIP_ADAPTER_UNICAST_ADDRESS pUnicast = pAddresses->FirstUnicastAddress;
+			pDnsServer = pAddresses->FirstDnsServerAddress;
+			while (pUnicast != NULL) {
+				sockaddr_in *sa_in = (sockaddr_in*)pUnicast->Address.lpSockaddr;
+				pUnicast = pUnicast->Next;
+			}
+			pAddresses = pAddresses->Next;
+		}
+	}
+	return false;
 }
 
 void SetAutoGetIP()

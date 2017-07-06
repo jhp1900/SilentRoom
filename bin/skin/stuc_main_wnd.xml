@@ -32,6 +32,7 @@
             <HorizontalLayout height="35" childpadding="2">
               <Button name="chioce_ip_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
               <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+              <Button name="reload_btn" text="刷新" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
             </HorizontalLayout>
             <Control />
           </VerticalLayout>
@@ -80,9 +81,14 @@
             <Label width="80" text="WIFI名称:" />
             <Edit name="wifi_name" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
           </HorizontalLayout>
-          <HorizontalLayout height="30" >
+          <HorizontalLayout height="30">
             <Label width="80" text="WIFI密码:" />
             <Edit name="wifi_pwd" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
+          </HorizontalLayout>
+          <Control height="5" />
+          <CheckBox name="auto_ip_check" height="24" text="动态IP" textpadding="22,0,0,0" align="left" normalimage="file='res\checkbox.png' dest='2,6,15,19' source='0,0,13,13'" hotimage="file='res\checkbox.png' dest='2,6,15,19' source='0,13,13,26'" selectedimage="file='res\checkbox.png' dest='2,6,15,19' source='13,0,26,13'" selectedhotimage="file='res\checkbox.png' dest='2,6,15,19' source='13,13,26,26'" /> 
+          <HorizontalLayout height="27">
+            <IpControl name="ip_address" />
           </HorizontalLayout>
           <Control height="5" />
           <HorizontalLayout height="35" childpadding="2">

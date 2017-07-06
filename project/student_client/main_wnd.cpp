@@ -1,4 +1,4 @@
-#include "main_wnd.h"
+ï»¿#include "main_wnd.h"
 #include <math.h>
 #include "application.h"
 #include "resource.h"
@@ -8,6 +8,7 @@
 #include "..\utils\xml_manager.h"
 #include "..\utils\utils.h"
 #include <tchar.h>
+#include "net_tool.h"
 
 #pragma comment(lib, "wlanapi.lib")
 #pragma comment(lib, "ole32.lib")
@@ -44,29 +45,12 @@ MainWnd::~MainWnd()
 
 void MainWnd::InitWindow()
 {
-	AddTray();				// Ìí¼ÓÍĞÅÌ
-
 	if(is_admin_)
 		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(3);
 
-	if (!InitNativeWifi())
-		return;
-
-	json_operate_.reset(new JsonOperate);
-	web_client_.reset(new WebStudentClient);
-
-	///* Êó±êÊÂ¼ş³õÊ¼»¯ */
-	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
-	track_mouse_event_.dwFlags = TME_LEAVE | TME_HOVER;
-	track_mouse_event_.hwndTrack = m_hWnd;
-	track_mouse_event_.dwHoverTime = 10;
-
-	RegisterHotKey(m_hWnd, 1, MOD_CONTROL, '1');
-	RegisterHotKey(m_hWnd, 2, MOD_CONTROL, '2');
-	RegisterHotKey(m_hWnd, 3, MOD_CONTROL, '3');
-	RegisterHotKey(m_hWnd, 4, MOD_CONTROL, 'X');
-	login_hwnd_ = m_hWnd;
-	//WebClientInit();
+	net_tool_ = make_shared<NetworkTool>();
+	AddTray();				// æ·»åŠ æ‰˜ç›˜
+	InitNic();				// ç½‘ç»œåˆå§‹åŒ–
 }
 
 void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
@@ -89,17 +73,17 @@ void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 	else if (name == L"conn_btn") {
 		OnConnBtn();
 	}
-	else if (name == L"chioce_ip_btn") {
-		auto ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
-		if (ip_list)
-			OnChioceIp(ip_list->GetText());
-	}
 	else if (name == L"overlap_btn") {
-		PostMessage(kAM_ChoiceNICMsg, 0, 0);
+		PostMessage(kAM_IPChoiceMsg, 0, 0);
+	}
+	else if (name == L"chioce_ip_btn") {
+		OnChioceIp();
 	}
 	else if (name == L"wifi_set_btn") {
 		OnSetWLANInfo();
 	}
+	else if(name==L"reload_btn")
+		PostMessage(kAM_IPChoiceMsg, 0, 0);
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -145,23 +129,23 @@ LRESULT MainWnd::OnTrayMenuMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bH
 
 LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
-	/* ½âÎö´Ó·şÎñÆ÷·µ»ØµÄ json Êı¾İ */
+	/* è§£æä»æœåŠ¡å™¨è¿”å›çš„ json æ•°æ® */
 	std::string ret_data = (char*)(wparam);
 	LogonInfo logon_info;
 	json_operate_->JsonAnalysis(ret_data.c_str(), logon_info);
 
-	login_hwnd_ = NULL;		// µÇÂ¼³É¹¦ºó£¬"ÉèÖÃ½çÃæµÄ´°¿Ú"²»ÔÙÒÔ±¾´°¿ÚÎª¸¸´°¿Ú£¡
+	login_hwnd_ = NULL;		// ç™»å½•æˆåŠŸåï¼Œ"è®¾ç½®ç•Œé¢çš„çª—å£"ä¸å†ä»¥æœ¬çª—å£ä¸ºçˆ¶çª—å£ï¼
 	login_succeed_ = true;
-	LoginAnimation();		// µÇÂ¼¶¯Ğ§
+	LoginAnimation();		// ç™»å½•åŠ¨æ•ˆ
 	DWORD dwexstyle = GetWindowLong(m_hWnd, GWL_EXSTYLE);
 	dwexstyle ^= WS_EX_TOOLWINDOW;
 	SetWindowLong(m_hWnd, GWL_EXSTYLE, dwexstyle);
-	// ³õÊ¼»¯¡¢Æô¶¯ ivga
+	// åˆå§‹åŒ–ã€å¯åŠ¨ ivga
 	if (!App::GetInstance()->GetVLCTool()->BeginBroadcast(local_ip_))
-		MessageBox(m_hWnd, _T("ÆÁÄ»ÍÆÁ÷Ê§°Ü!"), _T("Message"), MB_OK);
+		MessageBox(m_hWnd, _T("å±å¹•æ¨æµå¤±è´¥!"), _T("Message"), MB_OK);
 	stu_info_.stream_ip_ = local_ip_;
 
-	// ³õÊ¼»¯¡¢Æô¶¯ rpc client
+	// åˆå§‹åŒ–ã€å¯åŠ¨ rpc client
 	rpc_client_.reset(new RpcClient);
 	rpc_client_->BindRpcServer(logon_info.group_ip.c_str(), "12322");
 
@@ -170,34 +154,38 @@ LRESULT MainWnd::OnWebRetMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHa
 
 LRESULT MainWnd::OnIpSetupMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled)
 {
-	WebClientInit();		// µ± IPÉèÖÃÍê³Éºó£¬ÖØĞÂ³õÊ¼»¯ Web ¿Í»§¶Ë
+	WebClientInit();		// å½“ IPè®¾ç½®å®Œæˆåï¼Œé‡æ–°åˆå§‹åŒ– Web å®¢æˆ·ç«¯
 	return LRESULT();
 }
 
-LRESULT MainWnd::OnChoiceNICMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
+LRESULT MainWnd::OnIPChoiceMsg(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandled)
 {
 	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(1);
+	CComboBoxUI *ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
+	if (!ip_list)
+		return 0;
+	ip_list->RemoveAll();
+
 	std::vector<std::wstring> ips;
-	GetLocalIP(ips);
-	
-	if (ips.size() > 1) {
-		CComboBoxUI *ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
-		for (auto ip : ips) {
-			auto elemen = new CListLabelElementUI;
-			elemen->SetText(ip.c_str());
-			ip_list->Add(elemen);
-		}
-	}
-	else if(ips.size() == 1){
-		if (!OnChioceIp(ips.at(0).c_str())) {
-			CComboBoxUI *ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
-			auto elemen = new CListLabelElementUI;
-			elemen->SetText(ips.at(0).c_str());
-			ip_list->Add(elemen);
-		}
+	net_tool_->GetAllLocalIP(ips);
+
+	if (ips.size() == 0) {
+		m_pm.FindControl(L"ip_prompt_msg")->SetVisible(true);
+		return false;
 	}
 	else {
-		m_pm.FindControl(L"ip_prompt_msg")->SetVisible(true);
+		m_pm.FindControl(L"ip_prompt_msg")->SetVisible(false);
+	}
+
+	for (auto ip : ips) {
+		auto elemen = new CListLabelElementUI;
+		elemen->SetText(ip.c_str());
+		ip_list->Add(elemen);
+	}
+	ip_list->SelectItem(0);
+
+	if (ips.size() == 1) {
+		OnChioceIp();
 	}
 
 	return LRESULT();
@@ -219,19 +207,19 @@ LRESULT MainWnd::OnHotKey(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bHandl
 	if (login_succeed_) {
 		switch (wparam) {
 		case 1: {
-			OutputDebugStringA("CTRL + 1:·¢ÑÔ \n");
+			OutputDebugStringA("CTRL + 1:å‘è¨€ \n");
 			Speak();
 		}break;
 		case 2: {
-			OutputDebugStringA("CTRL + 2:¾ÙÊÖ \n");
+			OutputDebugStringA("CTRL + 2:ä¸¾æ‰‹ \n");
 			HandUp();
 		}break;
 		case 3: {
-			OutputDebugStringA("CTRL + 3:½áÊø \n");
+			OutputDebugStringA("CTRL + 3:ç»“æŸ \n");
 			StopSpeak();
 		}break;
 		case 4: {
-			OutputDebugStringA("CTRL + X:ÍË³ö \n");
+			OutputDebugStringA("CTRL + X:é€€å‡º \n");
 			PostQuitMessage(0);
 		}break;
 		default:
@@ -336,50 +324,69 @@ LRESULT MainWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bH
 	return LRESULT();
 }
 
+bool MainWnd::InitLocalClient(std::string loca_ip)
+{
+	local_ip_ = loca_ip;
+	json_operate_.reset(new JsonOperate);
+	web_client_.reset(new WebStudentClient);
+
+	///* é¼ æ ‡äº‹ä»¶åˆå§‹åŒ– */
+	track_mouse_event_.cbSize = sizeof(TRACKMOUSEEVENT);
+	track_mouse_event_.dwFlags = TME_LEAVE | TME_HOVER;
+	track_mouse_event_.hwndTrack = m_hWnd;
+	track_mouse_event_.dwHoverTime = 10;
+
+	RegisterHotKey(m_hWnd, 1, MOD_CONTROL, '1');
+	RegisterHotKey(m_hWnd, 2, MOD_CONTROL, '2');
+	RegisterHotKey(m_hWnd, 3, MOD_CONTROL, '3');
+	RegisterHotKey(m_hWnd, 4, MOD_CONTROL, 'X');
+	login_hwnd_ = m_hWnd;
+	WebClientInit();
+	return true;
+}
+
 bool MainWnd::WebClientInit()
 {
 	have_server_ip_ = false;
 
-	/* »ñÈ¡·şÎñÆ÷IP£¬ÅĞ¶ÏÊÇ·ñĞèÒªÉèÖÃIPĞÅÏ¢ */
+	/* è·å–æœåŠ¡å™¨IPï¼Œåˆ¤æ–­æ˜¯å¦éœ€è¦è®¾ç½®IPä¿¡æ¯ */
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
 	std::string server_ip = CW2A(xml_mnge->GetNodeAttr(_T("ServerIp"), _T("value")).GetData());
 	std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
-	local_ip_ = CW2A(xml_mnge->GetNodeAttr(_T("LocalIP"), _T("value")).GetData());
 
-	if (server_ip == "" || server_port == "" || local_ip_ == "") {
-		if (MessageBox(m_hWnd, _T("IPÅäÖÃÉĞÎ´ÍêÉÆ£¬ÊÇ·ñ½øĞĞÉèÖÃ£¿"), _T("Message"), MB_YESNO) == IDYES) {
+	if (server_ip == "" || server_port == "") {
+		if (MessageBox(m_hWnd, _T("IPé…ç½®å°šæœªå®Œå–„ï¼Œæ˜¯å¦è¿›è¡Œè®¾ç½®ï¼Ÿ"), _T("Message"), MB_YESNO) == IDYES) {
 			SetupWnd setup_wnd(m_hWnd);
 			setup_wnd.DoModal(login_hwnd_);
 		}
 	} else {
 		have_server_ip_ = true;
-		return web_client_->Initial(server_ip + ":" + server_port);	// ³õÊ¼»¯ web ¿Í»§¶Ë 
+		return web_client_->Initial(server_ip + ":" + server_port);	// åˆå§‹åŒ– web å®¢æˆ·ç«¯ 
 	}
 	return false;
 }
 
 bool MainWnd::Login()
 {
-	/* Èç¹û·şÎñÆ÷ IP Î´ÉèÖÃºÃ£¬ÔòÖØĞÂÉèÖÃ²¢³õÊ¼»¯ Web ¿Í»§¶Ë */
+	/* å¦‚æœæœåŠ¡å™¨ IP æœªè®¾ç½®å¥½ï¼Œåˆ™é‡æ–°è®¾ç½®å¹¶åˆå§‹åŒ– Web å®¢æˆ·ç«¯ */
 	if (!have_server_ip_) {
 		WebClientInit();
 		if (!have_server_ip_)
 			return false;
 	}
 
-	/* ÅĞ¶ÏµÇÂ¼ĞÅÏ¢ÊÇ·ñºÏÀí */
-	login_hwnd_ = m_hWnd;
+	/* åˆ¤æ–­ç™»å½•ä¿¡æ¯æ˜¯å¦åˆç† */
 	CDuiString sno = m_pm.FindControl(_T("Sno"))->GetText();
 	CDuiString name = m_pm.FindControl(_T("name"))->GetText();
-	if (sno == _T("Ñ§ºÅ") || sno == _T("") || name == _T("ĞÕÃû") || name == _T("")) {
-		MessageBox(m_hWnd, _T("ÇëÈ·ÈÏµÇÂ¼ĞÅÏ¢£¡"), _T("Message"), MB_OK);
+	if (sno == _T("å­¦å·") || sno == _T("") || name == _T("å§“å") || name == _T("")) {
+		MessageBox(m_hWnd, _T("è¯·ç¡®è®¤ç™»å½•ä¿¡æ¯ï¼"), _T("Message"), MB_OK);
 		return false;
 	}
 
 	stu_info_.sno_ = CW2A(sno.GetData());
 	stu_info_.naem_ = CW2A(name.GetData());
 
-	/* ×é×°µÇÂ¼ĞÅÏ¢,µÇÂ¼·şÎñÆ÷ */
+	/* ç»„è£…ç™»å½•ä¿¡æ¯,ç™»å½•æœåŠ¡å™¨ */
 	stu_info_.operate_type_ = OperateType::LOGON;
 	stu_info_.stream_ip_ = local_ip_;
 	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
@@ -406,7 +413,7 @@ void MainWnd::LoginAnimation()
 
 void MainWnd::Speak()
 {
-	// ÇëÇó·¢ÑÔ£»
+	// è¯·æ±‚å‘è¨€ï¼›
 	stu_info_.handup_ = true;
 	stu_info_.operate_type_ = OperateType::SPEAK;
 	if(!rpc_client_->HandupOperat(json_operate_->AssembleJson(stu_info_)))
@@ -433,7 +440,7 @@ bool MainWnd::HandUp()
 
 void MainWnd::AddTray()
 {
-	// ´´½¨¡¢³õÊ¼»¯ ÍĞÅÌ²Ëµ¥´°Ìå
+	// åˆ›å»ºã€åˆå§‹åŒ– æ‰˜ç›˜èœå•çª—ä½“
 	tray_menu_.reset(new MenuWnd(m_hWnd));
 	tray_menu_->CreateWithDefaltStyle();
 
@@ -450,155 +457,75 @@ void MainWnd::AddTray()
 
 void MainWnd::OnCloseMsg()
 {
-	StopSpeak();		// ÍË³ö³ÌĞòÇ°£¬ÏÈ½áÊø·¢ÑÔ£»
-	Logout();			// Ïò·şÎñÆ÷·¢³öµÇ³öĞÅÏ¢£»
+	if (local_ip_ != "") {	// è‹¥æ­¤æ¡ä»¶ä¸æˆç«‹ï¼Œåˆ™è¯æ˜ä¸ºåˆå§‹åŒ–æœ¬åœ°å®¢æˆ·ç«¯ï¼Œåˆ™ä¸éœ€æ‰§è¡Œä»¥ä¸‹ä¸¤æ¡è¯­å¥
+		StopSpeak();		// é€€å‡ºç¨‹åºå‰ï¼Œå…ˆç»“æŸå‘è¨€ï¼›
+		Logout();			// å‘æœåŠ¡å™¨å‘å‡ºç™»å‡ºä¿¡æ¯ï¼›
+	}
 	Close();
 }
 
-bool MainWnd::InitNativeWifi()
+bool MainWnd::InitNic()
 {
-	DWORD dwResult = 0;
-	DWORD dwMaxClien = 2;
-	DWORD dwCurVersion = 0;
-
-	dwResult = WlanOpenHandle(dwMaxClien, NULL, &dwCurVersion, &hClient_);
-	if (dwResult != ERROR_SUCCESS) {
-		WCHAR out[MAX_PATH];
-		_stprintf_s(out, L"WlanOpenHandle failed with error: %u\n", dwResult);
-		OutputDebugString(out);
+	std::vector<std::pair<GUID, std::wstring>> nics;
+	if (!net_tool_->GetWlanNICVector(nics))
 		return false;
-	}
 
-	PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
-	PWLAN_INTERFACE_INFO pIfInfo = nullptr;
-
-	dwResult = WlanEnumInterfaces(hClient_, nullptr, &pIfList);
-	if (dwResult != ERROR_SUCCESS) {
-		WCHAR out[MAX_PATH];
-		_stprintf_s(out, L"WlanEnumInterfaces failed with error: %u\n", dwResult);
-		OutputDebugString(out);
-		return false;
-	}
-
-	if (pIfList->dwNumberOfItems == 1) {		// Èç¹ûÖ»ÓĞÒ»ÕÅÎŞÏßÍø¿¨£¬ÇÒÁ¬½Ó³É¹¦£¬ÔòÖ±½ÓÌø×ªµ½IPÑ¡Ôñ½çÃæ
-		if (ConnectWifi(pIfList->InterfaceInfo[0].InterfaceGuid)) {
-			PostMessage(kAM_ChoiceNICMsg, 0, 0);
-			return true;
-		}
-	}
-	else if (pIfList->dwNumberOfItems == 0) {	// Èç¹ûÃ»ÓĞÎŞÏßÍø¿¨£¬Ôò¸ø¸öÌáÊ¾
+	if (nics.size() == 0) {
 		m_pm.FindControl(L"wlan_prompt_msg")->SetVisible(true);
-	}
-
-	std::vector<std::pair<GUID, std::wstring>> all_nic;
-	if (!GetNICInfo(all_nic))
 		return false;
-
-	for (int index_card = 0; index_card < pIfList->dwNumberOfItems; ++index_card) {
-		pIfInfo = &pIfList->InterfaceInfo[index_card];
-		for (auto item : all_nic) {
-			if (item.first == pIfInfo->InterfaceGuid) {
-				wlan_nic_.push_back(item);
-				break;
-			}
-		}
-
-		//PWLAN_AVAILABLE_NETWORK_LIST available_list = nullptr;
-		//dwResult = WlanGetAvailableNetworkList(hClient, &pIfInfo->InterfaceGuid, WLAN_AVAILABLE_NETWORK_INCLUDE_ALL_MANUAL_HIDDEN_PROFILES, nullptr, &available_list);
-		//if (available_list != nullptr) {
-		//	for (int index_network = 0; index_network < available_list->dwNumberOfItems; ++index_network) {
-		//		WLAN_AVAILABLE_NETWORK network = available_list[index_network].Network[0];
-		//		int a = 0;
-		//	}
-		//}
 	}
 
 	CComboBoxUI *wlan_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("wlan_list")));
 	if (!wlan_list)
 		return false;
-	for (auto item : wlan_nic_) {
+
+	for (auto item : nics) {
 		auto elemen = new CListLabelElementUI;
 		elemen->SetText(item.second.c_str());
 		wlan_list->Add(elemen);
+	}
+	wlan_list->SelectItem(0);
+
+	if (nics.size() == 1) {
+		OnConnBtn();
 	}
 
 	return true;
 }
 
-bool MainWnd::ConnectWifi(GUID guid)
+bool MainWnd::ConneWifiForNic(LPCTSTR nic_name)
 {
-	auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	auto wifi_name = xml_mnge->GetNodeAttr(L"WLAN", L"name");
-	auto wifi_pwd = xml_mnge->GetNodeAttr(L"WLAN", L"pwd");
-
-	if (wifi_name == L"" || wifi_pwd == L"") {
-		MessageBox(m_hWnd, L"WIFIĞÅÏ¢ÓĞÎó£¬ÇëÁªÏµ¹ÜÀíÔ±£¡", L"ERROR", MB_OK);
+	std::vector<std::pair<GUID, std::wstring>> nics;
+	if (!net_tool_->GetWlanNICVector(nics))
 		return false;
+
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	LPCTSTR wifi_name = xml_mnge->GetNodeAttr(L"WLAN", L"name");
+	LPCTSTR wifi_pwd = xml_mnge->GetNodeAttr(L"WLAN", L"pwd");
+
+	for (auto item : nics)
+		if (nic_name == item.second)
+			return net_tool_->ConnectWifi(item.first, wifi_name, wifi_pwd);
+
+	return false;
+}
+
+bool MainWnd::InitLocaIP(LPCTSTR nic_name)
+{
+	//TODO:è¯»å–é…ç½®æ–‡ä»¶
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	auto manual = false;		//TODO: è¯»å–é…ç½®æ–‡ä»¶
+	if (manual) {
+		auto ip = xml_mnge->GetNodeAttr(L"LocalIP", L"ip");
+		auto gateway = xml_mnge->GetNodeAttr(L"LocalIP", L"gateway");
+		auto dns = xml_mnge->GetNodeAttr(L"LocalIP", L"dns");
+
+		if (net_tool_->SetIpForAdapter(nic_name, ip, gateway))
+			return net_tool_->SetDnsForAdapter(nic_name, dns);
 	}
-
-	DWORD dwResult = 0;
-	DWORD dwFlags;
-	DWORD pdwGrantedAccess;
-	LPWSTR xmlfile;
-	dwResult = WlanGetProfile(hClient_, &guid, wifi_name, nullptr, &xmlfile, &dwFlags, &pdwGrantedAccess);
-	if (dwResult != ERROR_SUCCESS) {
-		LPCWSTR profileXml;
-		std::wstring strHead0 = L"<?xml version=\"1.0\"?>\
-				<WLANProfile xmlns=\"http://www.microsoft.com/networking/WLAN/profile/v1\"><name>";
-		std::wstring strHead1 = L"</name><SSIDConfig><SSID><name>";
-		std::wstring strHead2 = L"</name>\
-				</SSID>\
-				</SSIDConfig>\
-				<connectionType>ESS</connectionType>\
-				<connectionMode>auto</connectionMode>\
-				<MSM>\
-				<security>\
-				<authEncryption>\
-				<authentication>WPA2PSK</authentication>\
-				<encryption>AES</encryption>\
-				<useOneX>false</useOneX>\
-				</authEncryption>\
-				<sharedKey>\
-				<keyType>passPhrase</keyType>\
-				<protected>false</protected>\
-				<keyMaterial>";
-		std::wstring strHead3 = L"</keyMaterial>\
-				</sharedKey>\
-				</security>\
-				</MSM>\
-				</WLANProfile>";
-		strHead0 = strHead0 + wifi_name.GetData() + strHead1 + wifi_name.GetData() + strHead2 + wifi_pwd.GetData() + strHead3;
-
-		profileXml = strHead0.c_str();
-		dwFlags = 0;
-		WLAN_REASON_CODE dwReasonCode;
-		dwResult = WlanSetProfile(hClient_, &guid, dwFlags, profileXml, nullptr, true, nullptr, &dwReasonCode);
-		if (dwResult != ERROR_SUCCESS)
-			OutputDebugString(L"\n- - - - - ÉèÖÃÅäÖÃÎÄ¼şÊ§°Ü£¡ - - - - -\n");
-	}
-
-	// Í¨¹ıÒÔ±£´æµÄÅäÖÃÎÄ¼şÁ¬½Ó
-	if (dwResult == ERROR_SUCCESS) {
-		WLAN_CONNECTION_PARAMETERS connect_param;
-		connect_param.wlanConnectionMode = wlan_connection_mode_profile;
-		connect_param.strProfile = wifi_name;
-		connect_param.pDot11Ssid = nullptr;
-		connect_param.dot11BssType = dot11_BSS_type_infrastructure;
-		connect_param.pDesiredBssidList = nullptr;
-		connect_param.dwFlags = WLAN_CONNECTION_HIDDEN_NETWORK;
-
-		dwResult = WlanConnect(hClient_, &guid, &connect_param, nullptr);
-		WCHAR out[MAX_PATH];
-		if (dwResult == ERROR_SUCCESS) {
-			_stprintf_s(out, L"\n- - - - - Á¬½Ó³É¹¦£¡ - - - - -\n");
-			OutputDebugString(out);
-			return true;
-		}
-		else {
-			_stprintf_s(out, L"\n- - - - - Á¬½ÓÊ§°Ü£¡ - - - - -\n");
-			OutputDebugString(out);
-			return false;
-		}
+	else {
+		net_tool_->AutoIpAll();
+		PostMessage(kAM_IPChoiceMsg, 0, 0);		// è‡ªåŠ¨è·å–IPåï¼Œè®©ç”¨æˆ·è‡ªå·±é€‰æ‹©IP
 	}
 
 	return false;
@@ -611,32 +538,39 @@ bool MainWnd::OnConnBtn()
 		return false;
 
 	CDuiString nic_name = wlan_list->GetText();
-	if (wlan_list->GetText() == L"")
+	if (nic_name == L"")
 		return false;
 
-	for (auto item : wlan_nic_) {
-		if (nic_name == item.second.c_str())
-			if (ConnectWifi(item.first)) {
-				PostMessage(kAM_ChoiceNICMsg, 0, 0);
-				return true;
-			}
-			else {
-				return false;
-			}
+	if (!ConneWifiForNic(nic_name))
+		return false;
+
+	if (!InitLocaIP(nic_name))
+		return false;
+
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	std::string loca_ip = CW2A(xml_mnge->GetNodeAttr(L"LocalIP", L"ip"));
+
+	if (InitLocalClient(loca_ip)) {		// å¦‚æœéƒ½è¿æ¥æˆåŠŸäº†ï¼Œåˆ™åˆå§‹åŒ–å­¦ç”Ÿç«¯ï¼Œå‡†å¤‡ç™»å½•
+		static_cast<CTabLayoutUI*>(m_pm.FindControl(L"Log_tab"))->SelectItem(0);
+		return true;
 	}
 
 	return false;
 }
 
-bool MainWnd::OnChioceIp(LPCTSTR ip)
+bool MainWnd::OnChioceIp()
 {
-	auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	if (xml_mnge->SetNodeAttr(_T("LocalIP"), _T("value"), ip)) {
-		
-		if (WebClientInit()) {
-			static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("Log_tab")))->SelectItem(0);
-			return true;
-		}
+	auto ip_list = static_cast<CComboBoxUI*>(m_pm.FindControl(_T("ip_list")));
+	if (!ip_list)
+		return false;
+
+	std::string loca_ip = CW2A(ip_list->GetText());
+	if (loca_ip == "")
+		return false;
+
+	if (InitLocalClient(loca_ip)) {
+		static_cast<CTabLayoutUI*>(m_pm.FindControl(L"Log_tab"))->SelectItem(0);
+		return true;
 	}
 	return false;
 }
@@ -647,14 +581,25 @@ bool MainWnd::OnSetWLANInfo()
 	auto wifi_name = m_pm.FindControl(L"wifi_name")->GetText();
 	auto wifi_pad = m_pm.FindControl(L"wifi_pwd")->GetText();
 	if (app_id == L"" || wifi_name == L"" || wifi_pad == L"") {
-		MessageBox(m_hWnd, L"ĞÅÏ¢²»ºÏÀí", L"ERROR", MB_OK);
+		MessageBox(m_hWnd, L"ä¿¡æ¯ä¸åˆç†", L"ERROR", MB_OK);
 		return false;
+	}
+
+	CDuiString loca_ip;
+	auto auto_ip_check = static_cast<CCheckBoxUI*>(m_pm.FindControl(L"auto_ip_check"));
+	if (!auto_ip_check->GetCheck()) {
+		IpControlUI *ip_ctrl = static_cast<IpControlUI*>(m_pm.FindControl(_T("ip_address")));
+		if (ip_ctrl->IsReasonable()) {
+			loca_ip = ip_ctrl->GetText();
+		}
 	}
 
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
 	xml_mnge->SetNodeAttr(L"AppID", L"value", app_id);
 	xml_mnge->SetNodeAttr(L"WLAN", L"name", wifi_name.GetData());
 	xml_mnge->SetNodeAttr(L"WLAN", L"pwd", wifi_pad.GetData());
+	//xml_mnge->SetNodeAttr(L"LocalIP", L"value", loca_ip.GetData());
+
 	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(0);
 	return true;
 }

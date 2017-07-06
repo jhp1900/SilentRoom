@@ -85,7 +85,7 @@
     <OutDir>$(SolutionDir)bin\$(ProjectName)\</OutDir>
     <IntDir>$(SolutionDir)Temp\$(ProjectName)\obj\</IntDir>
     <LibraryPath>..\..\third_party\duilib;..\..\third_party\libvlc_lib;..\..\third_party\libcurl\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;..\..\third_party\pugixml;$(ProjectDir)..\..\third_party\libcurl\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\third_party\rapidjson\include;..\..\third_party\libvlc_include;..\..\third_party\pugixml;..\..\third_party\libcurl\include;..\utils;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -173,6 +173,7 @@
     <ClInclude Include="main_wnd.h" />
     <ClInclude Include="debug_tools.h" />
     <ClInclude Include="menu_wnd.h" />
+    <ClInclude Include="net_tool.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="rpc_client.h" />
     <ClInclude Include="stdafx.h" />
@@ -228,6 +229,7 @@
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</ForcedIncludeFiles>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</ForcedIncludeFiles>
     </ClCompile>
+    <ClCompile Include="net_tool.cpp" />
     <ClCompile Include="rpc_client.cpp">
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</ForcedIncludeFiles>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</ForcedIncludeFiles>
