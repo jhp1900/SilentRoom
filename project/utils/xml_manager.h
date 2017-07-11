@@ -12,6 +12,7 @@ public:
 	BOOL IsLoad() const { return is_load_; }
 	BOOL LoadFile(CDuiString file_path, CDuiString file_name);
 	CDuiString GetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name);
+	bool GetNodeAttrToBool(LPCTSTR nd_name, LPCTSTR attr_name);
 	bool SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, LPCTSTR val);
 	bool SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, bool val);
 

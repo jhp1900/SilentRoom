@@ -47,6 +47,19 @@ CDuiString XmlManager::GetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name)
 	return CA2W(attr.as_string());
 }
 
+bool XmlManager::GetNodeAttrToBool(LPCTSTR nd_name, LPCTSTR attr_name)
+{
+	char temp[MAX_PATH] = { 0 };
+	pugi::xml_node node = GetNode(CW2A(nd_name));
+	pugi::xml_attribute attr = node.attribute(CW2A(attr_name));
+	if (!attr) {
+		attr = node.append_attribute(CW2A(attr_name));
+		attr = true;
+		SaveFile();
+	}
+	return attr.as_bool();
+}
+
 bool XmlManager::SetNodeAttr(LPCTSTR nd_name, LPCTSTR attr_name, LPCTSTR val)
 {
 	char temp[MAX_PATH] = { 0 };
