@@ -1,59 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Window bktrans="true" shadowimage="" size="325,325" maxinfo="325,325" caption="0,0,0,190">
+<Window bktrans="true" shadowimage="" size="325,415" maxinfo="325,415" caption="0,0,0,415">
   <Font id="0" name="微软雅黑" size="18" bold="false" italic="false" default="true" />
   <Font id="1" name="微软雅黑" size="16" bold="false" italic="false" />
   <Container>
     <TabLayout name="anima_tab" selectedid="0">
-      <VerticalLayout inset="0,25,25,0">
-        <Container bkcolor="#FFffffff">
-          <GifAnim bkimage="res/test.gif" />
-        </Container>
-        <TabLayout name="Log_tab" height="135" bkcolor="#FFffffff" selectedid="2">
-          <VerticalLayout>
-            <HorizontalLayout height="40" inset="60,5,60,5">
-              <Edit name="Sno" text="学号" align="center" font="1" numberonly="true" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
-            </HorizontalLayout>
-            <HorizontalLayout height="40" inset="60,5,60,5">
-              <Edit name="name" text="姓名" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
-            </HorizontalLayout>
-            <HorizontalLayout height="45" inset="60,5,60,5">
-              <Button name="login_btn" text="登录" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-            </HorizontalLayout>
-          </VerticalLayout>
-          <VerticalLayout inset="30,0,30,0">
-            <Control />
-            <Label name="ip_prompt_msg" text="无可用IP！" textcolor="#ffff0000" visible="false" />
-            <HorizontalLayout height="28">
-              <Label width="46" text="IP:" />
-              <Combo name="ip_list" height="28" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
-              </Combo>
-            </HorizontalLayout>
-            <Control height="10" />
-            <HorizontalLayout height="35" childpadding="2">
-              <Button name="chioce_ip_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-              <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-              <Button name="reload_btn" text="刷新" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-            </HorizontalLayout>
-            <Control />
-          </VerticalLayout>
-          <VerticalLayout inset="30,0,30,0">
-            <Control />
-            <Label name="wlan_prompt_msg" text="未检测到无线网卡！" textcolor="#ffff0000" visible="false" />
-            <HorizontalLayout height="28">
-              <Label width="46" text="网卡:" />
-              <Combo name="wlan_list" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
-              </Combo>
-            </HorizontalLayout>
-            <Control height="10" />
-            <HorizontalLayout height="35" childpadding="2">
-              <Button name="conn_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-              <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-              <Button name="overlap_btn" text="跳过" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-            </HorizontalLayout>
-            <Control />
-          </VerticalLayout>
-        </TabLayout>
-        <Label name="mask_label" float="true" pos="0,0,300,190" bkcolor="#01000000" />
+      <VerticalLayout inset="0,25,25,90">
+        <VerticalLayout>
+          <Container bkcolor="#FFffffff">
+            <GifAnim bkimage="res/test.gif" />
+          </Container>
+          <TabLayout name="Log_tab" float="true" bkcolor="#01000000" selectedid="3">
+            <VerticalLayout>
+              <Control />
+              <HorizontalLayout height="40" inset="60,5,60,5">
+                <Edit name="Sno" text="学号" align="center" font="1" numberonly="true" bkcolor="" nativebkcolor="#00cbcbcb" borderround="5,5" bordersize="1" bordercolor="#33aaaaaa" />
+              </HorizontalLayout>
+              <HorizontalLayout height="40" inset="60,5,60,5">
+                <Edit name="name" text="姓名" align="center" font="1" borderround="5,5" bkcolor="" nativebkcolor="#00cbcbcb"  bordersize="1" bordercolor="#33aaaaaa" />
+              </HorizontalLayout>
+              <HorizontalLayout height="45" inset="60,5,60,5">
+                <Button name="login_btn" text="登录" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+              </HorizontalLayout>
+              <Control />
+            </VerticalLayout>
+            <VerticalLayout inset="30,0,30,0">
+              <Control />
+              <Label name="ip_prompt_msg" text="无可用IP！" textcolor="#ffff0000" visible="false" />
+              <HorizontalLayout height="28">
+                <Label width="46" text="IP:" />
+                <Combo name="ip_list" height="28" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
+                </Combo>
+              </HorizontalLayout>
+              <Control height="10" />
+              <HorizontalLayout height="35" childpadding="2">
+                <Button name="chioce_ip_btn" text="确定" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+                <Button name="close_btn" text="取消" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+                <Button name="reload_btn" text="刷新" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+              </HorizontalLayout>
+              <Control />
+            </VerticalLayout>
+            <VerticalLayout inset="30,0,30,0">
+              <Control />
+              <Label name="" text="IP 初始化中。。。" align="center" />
+              <Control />
+            </VerticalLayout>
+            <VerticalLayout inset="30,0,30,0">
+              <Control />
+              <Label name="wlan_prompt_msg" text="未检测到无线网卡！" textcolor="#ffff0000" visible="false" />
+              <HorizontalLayout height="28">
+                <Label width="46" text="网卡:" />
+                <Combo name="wlan_list" textpadding="10,0,10,0" itemtextpadding="10,2,10,0" bordercolor="#ffaaaaaa" bordersize="1" normalimage="file='res\combo.png' source='0,0,216,32'">
+                </Combo>
+              </HorizontalLayout>
+              <Control height="10" />
+              <HorizontalLayout height="35" childpadding="2">
+                <Button name="conn_btn" text="确定" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+                <Button name="close_btn" text="取消" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+                <Button name="overlap_btn" text="跳过" bkcolor="#33088808" hotbkcolor="#ff852136" borderround="5,5" />
+              </HorizontalLayout>
+              <Control />
+            </VerticalLayout>
+          </TabLayout>
+        </VerticalLayout>
+        <!-- <Label name="mask_label" float="true" pos="0,0,300,190" bkcolor="#01000000" /> -->
         <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
       </VerticalLayout>
       <VerticalLayout width="100" height="227" bkcolor="#88555555" inset="5,5,5,5" childpadding="2">
@@ -69,34 +78,54 @@
       <Container width="6" height="227">
         <GifAnim name="" bkimage="res/test.gif" />
       </Container>
-      <VerticalLayout inset="0,25,25,0">
-        <VerticalLayout bkcolor="#FFffffff" inset="40,0,40,0" childpadding="5">
-          <Control />
-          <Control />
-          <HorizontalLayout height="30">
-            <Label width="80" text="编号:" align="center" />
+      <VerticalLayout bkcolor="#FFffffff" borderround="4,4" inset="20,52,20,10">
+        <Control />
+        <VerticalLayout height="310" childpadding="4" vscrollbar="true">
+          <HorizontalLayout height="30" inset="0,0,2,0">
+            <Label width="80" text="编号:" font="1" />
             <Edit name="app_id" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
           </HorizontalLayout>
-          <HorizontalLayout height="30">
-            <Label width="80" text="WIFI名称:" />
+          <HorizontalLayout height="30" inset="0,0,2,0">
+            <Label width="80" text="WIFI名称:" font="1" />
             <Edit name="wifi_name" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
           </HorizontalLayout>
-          <HorizontalLayout height="30">
-            <Label width="80" text="WIFI密码:" />
+          <HorizontalLayout height="30" inset="0,0,2,0">
+            <Label width="80" text="WIFI密码:" font="1" />
             <Edit name="wifi_pwd" text="" align="center" font="1" borderround="5,5" bordersize="1" bordercolor="#ff456789" />
           </HorizontalLayout>
-          <Control height="5" />
-          <CheckBox name="auto_ip_check" height="24" text="动态IP" textpadding="22,0,0,0" align="left" normalimage="file='res\checkbox.png' dest='2,6,15,19' source='0,0,13,13'" hotimage="file='res\checkbox.png' dest='2,6,15,19' source='0,13,13,26'" selectedimage="file='res\checkbox.png' dest='2,6,15,19' source='13,0,26,13'" selectedhotimage="file='res\checkbox.png' dest='2,6,15,19' source='13,13,26,26'" /> 
-          <HorizontalLayout height="27">
-            <IpControl name="ip_address" />
+          <Control height="3" />
+          <Control height="1" bkcolor="#ff555555" />
+          <Control height="3" />
+          <CheckBox name="auto_ip_check" height="24" width="120" text="自动获取IP" textpadding="22,0,0,0" align="left" normalimage="file='res\checkbox.png' dest='2,6,15,19' source='0,0,13,13'" hotimage="file='res\checkbox.png' dest='2,6,15,19' source='0,13,13,26'" selectedimage="file='res\checkbox.png' dest='2,6,15,19' source='13,0,26,13'" selectedhotimage="file='res\checkbox.png' dest='2,6,15,19' source='13,13,26,26'" /> 
+          <VerticalLayout height="85" childpadding="2" inset="36,0,2,0">
+            <HorizontalLayout height="27">
+              <Label text="IP" width="44" font="1" />
+              <IpControl name="ip_addr" />
+            </HorizontalLayout>
+            <HorizontalLayout height="27">
+              <Label text="网关" width="44" font="1" />
+              <IpControl name="gateway_addr" />
+            </HorizontalLayout>
+            <HorizontalLayout height="27">
+              <Label text="DNS" width="44" font="1" />
+              <IpControl name="dns_addr" />
+            </HorizontalLayout>
+          </VerticalLayout>
+          <Control height="3" />
+          <Control height="1" bkcolor="#ff555555" />
+          <Control height="3" />
+          <Label height="18" text="服务器信息" />
+          <HorizontalLayout height="27" inset="0,0,2,0">
+            <IpControl name="svip_addr" />
+            <Control width="5" />
+            <Edit name="port" width="60" numberonly="true" align="center" maxchar="5" bordercolor="#ffaaaaaa" bordersize="1" />
           </HorizontalLayout>
-          <Control height="5" />
-          <HorizontalLayout height="35" childpadding="2">
-            <Button name="wifi_set_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-            <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
-          </HorizontalLayout>
-          <Control />
         </VerticalLayout>
+        <Control />
+        <HorizontalLayout height="35" childpadding="2">
+          <Button name="wifi_set_btn" text="确定" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+          <Button name="close_btn" text="取消" bkcolor="#ff088808" hotbkcolor="#ff852136" borderround="5,5" />
+        </HorizontalLayout>
         <Button name="close_btn" float="true" pos="275,0,325,50" bkimage="res/close_1.png" pushedimage="res/close.png" />
       </VerticalLayout>
     </TabLayout>

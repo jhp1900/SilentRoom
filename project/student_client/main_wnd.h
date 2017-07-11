@@ -45,6 +45,7 @@ public:
 
 	BEGIN_DUINOTIFY_MAP(MainWnd)
 		DUINOTIFY_TYPE_HANDLER(DUI_MSGTYPE_CLICK, OnClickBtn)
+		DUINOTIFY_HANDLER(L"auto_ip_check", DUI_MSGTYPE_SELECTCHANGED, OnIpCheckChanged)
 	END_DUINOTIFY_MAP()
 
 public:
@@ -52,6 +53,7 @@ public:
 
 private:
 	void OnClickBtn(TNotifyUI &msg, bool &handled);		// 点击事件过滤器
+	void OnIpCheckChanged(TNotifyUI &msg, bool &handled);
 
 	virtual LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) override;
 	LRESULT OnTray(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL& bHandled);
@@ -70,6 +72,7 @@ private:
 
 	bool InitLocalClient(std::string loca_ip);
 	bool WebClientInit();
+	bool AdminSetwndInit();
 	bool Login();			// 响应登录事件
 	void Logout();			// 登出
 	void LoginAnimation();	// 登录动效

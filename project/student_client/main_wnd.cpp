@@ -31,8 +31,6 @@ MainWnd::MainWnd(bool is_admin)
 	, ep_y_(150)
 {
 	ep_x_ = GetSystemMetrics(SM_CXSCREEN) - wnd_w_;
-	auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	stu_info_.appid_ = CW2A(xml_mnge->GetNodeAttr(L"AppID", L"value"));
 }
 
 MainWnd::~MainWnd()
@@ -45,8 +43,10 @@ MainWnd::~MainWnd()
 
 void MainWnd::InitWindow()
 {
-	if(is_admin_)
+	if (is_admin_) {
 		static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(3);
+		AdminSetwndInit();
+	}
 
 	net_tool_ = make_shared<NetworkTool>();
 	AddTray();				// 添加托盘
@@ -84,6 +84,14 @@ void MainWnd::OnClickBtn(TNotifyUI & msg, bool & handled)
 	}
 	else if(name==L"reload_btn")
 		PostMessage(kAM_IPChoiceMsg, 0, 0);
+}
+
+void MainWnd::OnIpCheckChanged(TNotifyUI & msg, bool & handled)
+{
+	auto select = static_cast<CCheckBoxUI*>(msg.pSender)->IsSelected();
+	static_cast<IpControlUI*>(m_pm.FindControl(L"ip_addr"))->SetEditState(!select);
+	static_cast<IpControlUI*>(m_pm.FindControl(L"gateway_addr"))->SetEditState(!select);
+	static_cast<IpControlUI*>(m_pm.FindControl(L"dns_addr"))->SetEditState(!select);
 }
 
 LRESULT MainWnd::OnClose(UINT, WPARAM, LPARAM, BOOL & bHandled)
@@ -292,12 +300,18 @@ LRESULT MainWnd::OnMouseTimer(UINT uMsg, WPARAM wparam, LPARAM lparam, BOOL & bH
 		}
 	};
 
+	auto timer_221 = [&]() {
+		KillTimer(m_hWnd, 221);
+		PostMessage(kAM_IPChoiceMsg, 0, 0);
+	};
+
 	switch (wparam)
 	{
 	case 211: timer_211(); break;
 	case 212: timer_212(); break;
 	case 213: timer_213(); break;
 	case 214: timer_214(); break;
+	case 221: timer_221(); break;
 	default:
 		bHandled = false;
 		break;
@@ -327,6 +341,8 @@ LRESULT MainWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bH
 bool MainWnd::InitLocalClient(std::string loca_ip)
 {
 	local_ip_ = loca_ip;
+	std::string out_msg = "\n - - - LoaclIP : " + local_ip_ + " - - - \n";
+	OutputDebugStringA(out_msg.c_str());
 	json_operate_.reset(new JsonOperate);
 	web_client_.reset(new WebStudentClient);
 
@@ -355,10 +371,11 @@ bool MainWnd::WebClientInit()
 	std::string server_port = CW2A(xml_mnge->GetNodeAttr(_T("ServerPort"), _T("value")).GetData());
 
 	if (server_ip == "" || server_port == "") {
-		if (MessageBox(m_hWnd, _T("IP配置尚未完善，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
-			SetupWnd setup_wnd(m_hWnd);
-			setup_wnd.DoModal(login_hwnd_);
-		}
+		MessageBox(m_hWnd, L"IP配置尚未完善,请联系管理员", L"Message", MB_OK);
+		//if (MessageBox(m_hWnd, _T("IP配置尚未完善，是否进行设置？"), _T("Message"), MB_YESNO) == IDYES) {
+		//	SetupWnd setup_wnd(m_hWnd);
+		//	setup_wnd.DoModal(login_hwnd_);
+		//}
 	} else {
 		have_server_ip_ = true;
 		return web_client_->Initial(server_ip + ":" + server_port);	// 初始化 web 客户端 
@@ -366,8 +383,45 @@ bool MainWnd::WebClientInit()
 	return false;
 }
 
+bool MainWnd::AdminSetwndInit()
+{
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	m_pm.FindControl(L"app_id")->SetText(xml_mnge->GetNodeAttr(L"AppID", L"value"));
+	m_pm.FindControl(L"wifi_name")->SetText(xml_mnge->GetNodeAttr(L"WLAN", L"name"));
+	m_pm.FindControl(L"wifi_pwd")->SetText(xml_mnge->GetNodeAttr(L"WLAN", L"pwd"));
+
+	auto auto_ip_attr = xml_mnge->GetNodeAttrToBool(L"LocalIP", L"auto_ip");
+	auto ip_attr = xml_mnge->GetNodeAttr(L"LocalIP", L"ip");
+	auto gateway_attr = xml_mnge->GetNodeAttr(L"LocalIP", L"gateway");
+	auto dns_attr = xml_mnge->GetNodeAttr(L"LocalIP", L"dns");
+
+	auto auto_ip = static_cast<CCheckBoxUI*>(m_pm.FindControl(L"auto_ip_check"));
+	auto ip_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"ip_addr"));
+	auto gateway_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"gateway_addr"));
+	auto dns_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"dns_addr"));
+
+	auto_ip->Selected(auto_ip_attr);
+	ip_addr->SetText(ip_attr);
+	gateway_addr->SetText(gateway_attr);
+	dns_addr->SetText(dns_attr);
+
+	auto svip_attr = xml_mnge->GetNodeAttr(L"ServerIp", L"value");
+	static_cast<IpControlUI*>(m_pm.FindControl(L"svip_addr"))->SetText(svip_attr);
+	m_pm.FindControl(L"port")->SetText(xml_mnge->GetNodeAttr(L"ServerPort", L"value"));
+
+	return true;
+}
+
 bool MainWnd::Login()
 {
+	auto xml_mnge = App::GetInstance()->GetXmlMnge();
+	auto appid = xml_mnge->GetNodeAttr(L"AppID", L"value");
+	if (appid == L"") {
+		MessageBox(m_hWnd, L"学生端ID配置有误，请联系管理员", L"Warning", MB_OK);
+		return false;
+	}
+	stu_info_.appid_ = CW2A(appid);
+
 	/* 如果服务器 IP 未设置好，则重新设置并初始化 Web 客户端 */
 	if (!have_server_ip_) {
 		WebClientInit();
@@ -500,8 +554,13 @@ bool MainWnd::ConneWifiForNic(LPCTSTR nic_name)
 		return false;
 
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	LPCTSTR wifi_name = xml_mnge->GetNodeAttr(L"WLAN", L"name");
-	LPCTSTR wifi_pwd = xml_mnge->GetNodeAttr(L"WLAN", L"pwd");
+	auto wifi_name = xml_mnge->GetNodeAttr(L"WLAN", L"name");
+	auto wifi_pwd = xml_mnge->GetNodeAttr(L"WLAN", L"pwd");
+
+	if (wifi_name == L"" || wifi_pwd == L"") {
+		MessageBox(m_hWnd, L"无线网络配置有误，请联系管理员", L"Warning", MB_OK);
+		return false;
+	}
 
 	for (auto item : nics)
 		if (nic_name == item.second)
@@ -512,20 +571,22 @@ bool MainWnd::ConneWifiForNic(LPCTSTR nic_name)
 
 bool MainWnd::InitLocaIP(LPCTSTR nic_name)
 {
-	//TODO:读取配置文件
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
-	auto manual = false;		//TODO: 读取配置文件
-	if (manual) {
+	auto auto_ip = xml_mnge->GetNodeAttrToBool(L"LocalIP", L"auto_ip");
+	if (auto_ip) {
+		net_tool_->AutoIpForAdapter(nic_name);
+		static_cast<CTabLayoutUI*>(m_pm.FindControl(L"Log_tab"))->SelectItem(2);
+		// 两秒钟的等待，等IP设置完成后，再进行IP选择
+		// 由于是自动获取IP，当有多张网卡的时候可能会有多个IP，所以这里需要用户手动选择启用哪个IP！
+		SetTimer(m_hWnd, 221, 3000, NULL);
+	}
+	else {
 		auto ip = xml_mnge->GetNodeAttr(L"LocalIP", L"ip");
 		auto gateway = xml_mnge->GetNodeAttr(L"LocalIP", L"gateway");
 		auto dns = xml_mnge->GetNodeAttr(L"LocalIP", L"dns");
 
 		if (net_tool_->SetIpForAdapter(nic_name, ip, gateway))
 			return net_tool_->SetDnsForAdapter(nic_name, dns);
-	}
-	else {
-		net_tool_->AutoIpAll();
-		PostMessage(kAM_IPChoiceMsg, 0, 0);		// 自动获取IP后，让用户自己选择IP
 	}
 
 	return false;
@@ -585,20 +646,38 @@ bool MainWnd::OnSetWLANInfo()
 		return false;
 	}
 
-	CDuiString loca_ip;
-	auto auto_ip_check = static_cast<CCheckBoxUI*>(m_pm.FindControl(L"auto_ip_check"));
-	if (!auto_ip_check->GetCheck()) {
-		IpControlUI *ip_ctrl = static_cast<IpControlUI*>(m_pm.FindControl(_T("ip_address")));
-		if (ip_ctrl->IsReasonable()) {
-			loca_ip = ip_ctrl->GetText();
-		}
-	}
-
 	auto xml_mnge = App::GetInstance()->GetXmlMnge();
 	xml_mnge->SetNodeAttr(L"AppID", L"value", app_id);
 	xml_mnge->SetNodeAttr(L"WLAN", L"name", wifi_name.GetData());
 	xml_mnge->SetNodeAttr(L"WLAN", L"pwd", wifi_pad.GetData());
-	//xml_mnge->SetNodeAttr(L"LocalIP", L"value", loca_ip.GetData());
+
+	auto auto_ip_check = static_cast<CCheckBoxUI*>(m_pm.FindControl(L"auto_ip_check"));
+	auto selected = auto_ip_check->IsSelected();
+	xml_mnge->SetNodeAttr(L"LocalIP", L"auto_ip", selected);
+	if (!selected) {
+		auto ip_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"ip_addr"));
+		auto gateway_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"gateway_addr"));
+		auto dns_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"dns_addr"));
+
+		if(!ip_addr->IsReasonable() || 
+			!gateway_addr->IsReasonable() || 
+			!dns_addr->IsReasonable()) {
+			MessageBox(m_hWnd, L"信息不合理", L"ERROR", MB_OK);
+			return false;
+		}
+		xml_mnge->SetNodeAttr(L"LocalIP", L"ip", ip_addr->GetText());
+		xml_mnge->SetNodeAttr(L"LocalIP", L"gateway", gateway_addr->GetText());
+		xml_mnge->SetNodeAttr(L"LocalIP", L"dns", dns_addr->GetText());
+	}
+
+	auto svip_addr = static_cast<IpControlUI*>(m_pm.FindControl(L"svip_addr"));
+	auto sv_port = m_pm.FindControl(L"port")->GetText();
+	if (!svip_addr->IsReasonable() || sv_port == L"") {
+		MessageBox(m_hWnd, L"信息不合理", L"ERROR", MB_OK);
+		return false;
+	}
+	xml_mnge->SetNodeAttr(L"ServerIp", L"value", svip_addr->GetText());
+	xml_mnge->SetNodeAttr(L"ServerPort", L"value", sv_port);
 
 	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(0);
 	return true;
