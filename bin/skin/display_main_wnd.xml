@@ -6,7 +6,7 @@
       <Control />
       <HorizontalLayout height="200">
         <Control />
-        <Label name="point_label" width="350" height="200" text="欢迎使用***!" font="0" align="center" bkcolor="#88555555" borderround="10,10" />
+        <Label name="point_label" width="350" height="200" text="欢迎使用智慧教室!" font="0" align="center" bkcolor="#88555555" borderround="10,10" />
         <Control />
       </HorizontalLayout>
       <Control />
