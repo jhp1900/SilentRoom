@@ -26,7 +26,7 @@ MainWnd::MainWnd(bool is_admin)
 	, have_server_ip_(false)
 	, login_succeed_(false)
 	, wnd_w_(100)
-	, wnd_h_(227)
+	, wnd_h_(187)
 	, hide_w_(6)
 	, ep_y_(150)
 {
@@ -456,7 +456,7 @@ void MainWnd::Logout()
 
 void MainWnd::LoginAnimation()
 {
-	m_pm.FindControl(_T("mask_label"))->SetVisible(false);
+	//m_pm.FindControl(_T("mask_label"))->SetVisible(false);
 	static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("anima_tab")))->SelectItem(1);
 
 	int x = (GetSystemMetrics(SM_CXSCREEN) - wnd_w_) / 2;
