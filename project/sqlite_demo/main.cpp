@@ -47,7 +47,13 @@ int main()
 	//}
 	//sql_tool.CloseDB();
 
-
+	char sql[_MAX_PATH] = { 0 };
+	string name = "name";
+	string addr = "addr";
+	int sno = 123;
+	sprintf_s(sql, "test %s, %d, %s", name.c_str(), sno, addr.c_str());
+	
+	printf(sql);
 
 	system("pause");
 	return 0;

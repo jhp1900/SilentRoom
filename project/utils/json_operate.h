@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __JSON_OPERATE__
+#define __JSON_OPERATE__
 
 #include <iostream>
 #include <rapidjson\rapidjson.h>
@@ -10,27 +11,27 @@
 struct LogonInfo
 {
 	std::string appid;
-	std::string group_info;
+	std::string group_name;
 	std::string group_ip;
 };
 
 struct MasterData {
-	std::string id;
+	std::string sno;
 	std::string name;
-	std::string group_info;
-	bool status;
+	std::string group_name;
+	bool handup;
 };
 
-struct GroupManage
+struct ClientInfo
 {
 	std::string appid;			// 学生机编号
-	std::string group_info;		// 所在组
+	std::string group_name;		// 所在组
 };
 
-struct GroupIP
+struct GroupInfo
 {
-	std::string group_info;		// 小组名
-	std::string ip_info;		// 小组IP
+	std::string group_name;		// 小组名
+	std::string group_ip;		// 小组IP
 };
 
 enum OperateType {
@@ -39,9 +40,9 @@ enum OperateType {
 	HANDUP = 2,				// 举手发言，在老师广播的情况使用
 	SPEAK = 3,				// 发言，小组讨论使用
 	STOP_SPEAK = 4,			// 结束发言
-	KEEPA_LIVE = 5,			// 心跳包
+	KEEPA_LIVE = 5,			// 
 	TEACHER_CONTROL = 6,	// 教师操控，教师确定使用哪个流
-	QUIT = 7,				// 学生退出，正常或非正常
+	LOGOUT = 7,				// 登出
 };
 
 /* 学生发言信息结构体 */
@@ -82,8 +83,8 @@ public:
 	const char* AssembleJson(const StudentData &stu_data);
 	const char* AssembleJson(const LogonInfo &logon_info);
 	const char* AssembleJson(const std::vector<MasterData> &mast_dt);
-	const char* AssembleJson(const std::vector<GroupManage> &group_mng);
-	const char* AssembleJson(const std::vector<GroupIP> &group_ip);
+	const char* AssembleJson(const std::vector<ClientInfo> &group_mng);
+	const char* AssembleJson(const std::vector<GroupInfo> &group_ip);
 	void JsonAnalysis(const char* json_data, StudentData &stu_data);
 	void JsonAnalysis(const char* json_data, LogonInfo &logon_info);
 
@@ -92,3 +93,4 @@ private:
 	std::string assemble_json_str_;
 };
 
+#endif	// __JSON_OPERATE__

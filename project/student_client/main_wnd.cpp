@@ -450,7 +450,7 @@ bool MainWnd::Login()
 
 void MainWnd::Logout()
 {
-	stu_info_.operate_type_ = OperateType::QUIT;
+	stu_info_.operate_type_ = OperateType::LOGOUT;
 	web_client_->SendWebMessage(json_operate_->AssembleJson(stu_info_));
 }
 

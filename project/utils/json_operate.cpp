@@ -65,9 +65,9 @@ const char * JsonOperate::AssembleJson(const LogonInfo & logon_info)
 	appid.SetString(logon_info.appid.c_str(), allocator);
 	root.AddMember("appid", appid, allocator);
 
-	Value group_info(kStringType);
-	group_info.SetString(logon_info.group_info.c_str(), allocator);
-	root.AddMember("group_info", group_info, allocator);
+	Value group_name(kStringType);
+	group_name.SetString(logon_info.group_name.c_str(), allocator);
+	root.AddMember("group_name", group_name, allocator);
 
 	Value group_ip(kStringType);
 	group_ip.SetString(logon_info.group_ip.c_str(), allocator);
@@ -92,20 +92,20 @@ const char * JsonOperate::AssembleJson(const std::vector<MasterData>& mast_dt)
 		Value object(kObjectType);
 
 		Value sno(kStringType);
-		sno.SetString(iter.id.c_str(), allocator);
+		sno.SetString(iter.sno.c_str(), allocator);
 		object.AddMember("sno", sno, allocator);
 
 		Value name(kStringType);
 		name.SetString(iter.name.c_str(), allocator);
 		object.AddMember("name", name, allocator);
 
-		Value group_info(kStringType);
-		group_info.SetString(iter.group_info.c_str(), allocator);
-		object.AddMember("group_info", group_info, allocator);
+		Value group_name(kStringType);
+		group_name.SetString(iter.group_name.c_str(), allocator);
+		object.AddMember("group_name", group_name, allocator);
 
 		Value status(kFalseType);
-		status.SetBool(iter.status);
-		object.AddMember("status", status, allocator);
+		status.SetBool(iter.handup);
+		object.AddMember("handup", status, allocator);
 
 		json_array.PushBack(object, allocator);
 	}
@@ -118,7 +118,7 @@ const char * JsonOperate::AssembleJson(const std::vector<MasterData>& mast_dt)
 	return assemble_json_str_.c_str();
 }
 
-const char* JsonOperate::AssembleJson(const std::vector<GroupManage> &group_mng)
+const char* JsonOperate::AssembleJson(const std::vector<ClientInfo> &group_mng)
 {
 	using namespace rapidjson;
 	Document doc;
@@ -132,9 +132,9 @@ const char* JsonOperate::AssembleJson(const std::vector<GroupManage> &group_mng)
 		appid.SetString(iter.appid.c_str(), allocator);
 		object.AddMember("appid", appid, allocator);
 
-		Value group_info(kStringType);
-		group_info.SetString(iter.group_info.c_str(), allocator);
-		object.AddMember("group_info", group_info, allocator);
+		Value group_name(kStringType);
+		group_name.SetString(iter.group_name.c_str(), allocator);
+		object.AddMember("group_name", group_name, allocator);
 
 		json_array.PushBack(object, allocator);
 	}
@@ -147,7 +147,7 @@ const char* JsonOperate::AssembleJson(const std::vector<GroupManage> &group_mng)
 	return assemble_json_str_.c_str();
 }
 
-const char* JsonOperate::AssembleJson(const std::vector<GroupIP> &group_ip)
+const char* JsonOperate::AssembleJson(const std::vector<GroupInfo> &group_ip)
 {
 	using namespace rapidjson;
 	Document doc;
@@ -157,13 +157,13 @@ const char* JsonOperate::AssembleJson(const std::vector<GroupIP> &group_ip)
 	for (auto &iter : group_ip) {
 		Value object(kObjectType);
 
-		Value group_info(kStringType);
-		group_info.SetString(iter.group_info.c_str(), allocator);
-		object.AddMember("name", group_info, allocator);
+		Value group_name(kStringType);
+		group_name.SetString(iter.group_name.c_str(), allocator);
+		object.AddMember("name", group_name, allocator);
 
-		Value ip_info(kStringType);
-		ip_info.SetString(iter.ip_info.c_str(), allocator);
-		object.AddMember("name", ip_info, allocator);
+		Value group_ip(kStringType);
+		group_ip.SetString(iter.group_ip.c_str(), allocator);
+		object.AddMember("group_ip", group_ip, allocator);
 
 		json_array.PushBack(object, allocator);
 	}
@@ -178,21 +178,17 @@ const char* JsonOperate::AssembleJson(const std::vector<GroupIP> &group_ip)
 
 void JsonOperate::JsonAnalysis(const char * stu_data, StudentData & log_info)
 {
-	try {
-		using namespace rapidjson;
-		Document doc;
-		doc.Parse<0>(stu_data);
+	assert(stu_data);
+	using namespace rapidjson;
+	Document doc;
+	doc.Parse<0>(stu_data);
 
-		log_info.appid_ = doc["appid"].GetString();
-		log_info.sno_ = doc["sno"].GetString();
-		log_info.naem_ = doc["name"].GetString();
-		log_info.handup_ = doc["handup"].GetBool();
-		log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
-		log_info.stream_ip_ = doc["stream_ip"].GetString();
-	}
-	catch (...) {
-		OutputDebugStringA("json pharse error!");
-	}
+	log_info.appid_ = doc["appid"].GetString();
+	log_info.sno_ = doc["sno"].GetString();
+	log_info.naem_ = doc["name"].GetString();
+	log_info.handup_ = doc["handup"].GetBool();
+	log_info.operate_type_ = OperateType(doc["operatetype"].GetInt());
+	log_info.stream_ip_ = doc["stream_ip"].GetString();
 }
 
 void JsonOperate::JsonAnalysis(const char * json_data, LogonInfo & logon_info)
@@ -203,6 +199,6 @@ void JsonOperate::JsonAnalysis(const char * json_data, LogonInfo & logon_info)
 	doc.Parse<0>(json_data);
 
 	logon_info.appid = doc["appid"].GetString();
-	logon_info.group_info = doc["group_info"].GetString();
+	logon_info.group_name = doc["group_name"].GetString();
 	logon_info.group_ip = doc["group_ip"].GetString();
 }
